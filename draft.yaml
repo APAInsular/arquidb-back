@@ -1,0 +1,22 @@
+models:
+  Person:
+    identificationType: enum:DNI,NIF
+    identificationNumber: char:9
+    name: string
+    surnames: string
+    observations: string nullable
+
+  Collegiate:
+    person_id: id foreign:Person onDelete:cascade
+    birthDate: date
+    nationality: string
+    bankingEntity: string
+    accountNumber: char:24
+    college: string
+    originCollege: string
+    originCollegeNumber: string
+    degree: enum:"Technical Architect"
+    collegiateNumber: string
+
+controllers:
+  # ...
