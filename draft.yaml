@@ -17,6 +17,70 @@ models:
     originCollegeNumber: string
     degree: enum:"Technical Architect"
     collegiateNumber: string
+    specialty: string
+    terminationDate: date
+    graduationDate: date
+    careerEndET: string
+    webPage: string
+    superiorCouncilRegNumber: string
+    situation: string nullable
+    relationships:
+      belongsTo: Person
+  
+  Client:
+    person_id: id foreign:Person onDelete:cascade
+    postalCode: char:5
+    relationships:
+      belongsTo: Person
+  
+  Expedient:
+    title: string
+    number: char:8
+    startDate: datetime
+    endDate: datetime
+    description: string
+    site: string
+    postalCode: char:5
+    budget: decimal:9,2
+    relationships:
+      hasMany: Phase
+  
+  Phase:
+    phase: enum:000,100,200,300,310,400,450,500,550,600,620,640,700,780,800,850,900,911,920,930,940,950,960,970,980
+    title: string
+    expedient_id: id foreign:Expedient onDelete:restrict
+    relationships:
+      hasMany: Document
+      belongsTo: Expedient
+  
+  Document:
+    name: string
+    type: enum:1,2,3
+    phase_id: id foreign:Phase onDelete:restrict
+    relationships:
+      belongsTo: Phase
+  
+  Role:
+    role: enum:Superadmin,Visor,User
+    relationships:
+      hasMany: User
+  
+  # User:
+  #   relationships:
+  #     hasMany: Record
+  #     belongsTo: Role
+
+  Permit:
+    permit: string
+  
+  Record:
+    user_id: id foreign:User onDelete:restrict
+    action: enum:create,update,delete,sign
+    affectedTable: string
+    affectedRecord_id: integer
+    date: timestamp
+    relationships:
+      belongsTo: User
 
 controllers:
   # ...

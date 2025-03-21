@@ -1,11 +1,2 @@
-created:
-    - database/factories/PersonFactory.php
-    - database/factories/CollegiateFactory.php
-    - database/migrations/2025_03_21_132304_create_people_table.php
-    - database/migrations/2025_03_21_132305_create_collegiates_table.php
-    - app/Models/Person.php
-    - app/Models/Collegiate.php
 models:
     User: { name: string, email: string, email_verified_at: 'timestamp nullable', password: string, remember_token: 'string:100 nullable' }
-    Person: { identificationType: 'enum:DNI,NIF', identificationNumber: 'char:9', name: string, surnames: string, observations: 'string nullable' }
-    Collegiate: { person_id: 'id foreign:Person onDelete:cascade', birthDate: date, nationality: string, bankingEntity: string, accountNumber: 'char:24', college: string, originCollege: string, originCollegeNumber: string, degree: 'enum:"Technical Architect","Architect"' }
