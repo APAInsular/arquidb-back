@@ -77,6 +77,18 @@ models:
     relationships:
       belongsTo: User
 
+  Phone:
+    person_id: id foreign:Person onDelete:cascade
+    phone: char:9
+  
+  Address:
+    person_id: id foreign:Person onDelete:cascade
+    address: string
+  
+  Email:
+    person_id: id foreign:Person onDelete:cascade
+    email: string
+
 controllers:
   # ...
 
