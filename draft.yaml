@@ -32,6 +32,7 @@ models:
   Client:
     person_id: id foreign:Person onDelete:cascade
     postalCode: char:5
+    agent: string nullable
     relationships:
       belongsTo: Person
   
@@ -60,13 +61,13 @@ models:
     name: string
     type: enum:1,2,3
     phase_id: id foreign:Phase onDelete:restrict
+    user_id: id foreign:User nullable onDelete:restrict
     relationships:
-      belongsTo: Phase
+      belongsTo: Phase,User
 
   # User:
   #   relationships:
-  #     hasMany: Record
-  #     belongsTo: Role
+  #     hasMany: Record,Document
 
   Record:
     user_id: id foreign:User onDelete:restrict
@@ -91,8 +92,3 @@ models:
 
 controllers:
   # ...
-
-tables:
-  signatures:
-    document_id: id foreign:documents onDelete:cascade
-    user_id: id foreign:users onDelete:restrict
