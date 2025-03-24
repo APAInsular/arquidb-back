@@ -5,6 +5,8 @@ models:
     name: string
     surnames: string
     observations: string nullable
+    relationships:
+      belongsToMany: Expedient
 
   Collegiate:
     person_id: id foreign:Person onDelete:cascade
@@ -44,6 +46,7 @@ models:
     budget: decimal:9,2
     relationships:
       hasMany: Phase
+      belongsToMany: Person
   
   Phase:
     phase: enum:000,100,200,300,310,400,450,500,550,600,620,640,700,780,800,850,900,911,920,930,940,950,960,970,980
@@ -59,20 +62,12 @@ models:
     phase_id: id foreign:Phase onDelete:restrict
     relationships:
       belongsTo: Phase
-  
-  Role:
-    role: enum:Superadmin,Visor,User
-    relationships:
-      hasMany: User
-  
+
   # User:
   #   relationships:
   #     hasMany: Record
   #     belongsTo: Role
 
-  Permit:
-    permit: string
-  
   Record:
     user_id: id foreign:User onDelete:restrict
     action: enum:create,update,delete,sign
@@ -84,3 +79,8 @@ models:
 
 controllers:
   # ...
+
+tables:
+  signatures:
+    document_id: id foreign:documents onDelete:cascade
+    user_id: id foreign:users onDelete:restrict
