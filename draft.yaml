@@ -7,6 +7,7 @@ models:
     observations: string nullable
     relationships:
       belongsToMany: Expedient
+      hasMany: Phone, Address, Email
 
   Collegiate:
     person_id: id foreign:Person onDelete:cascade
@@ -81,14 +82,48 @@ models:
   Phone:
     person_id: id foreign:Person onDelete:cascade
     phone: char:9
+    relationships:
+      belongsTo: Person
   
   Address:
     person_id: id foreign:Person onDelete:cascade
     address: string
+    relationships:
+      belongsTo: Person
   
   Email:
     person_id: id foreign:Person onDelete:cascade
     email: string
+    relationships:
+      belongsTo: Person
 
 controllers:
-  # ...
+  Api\v1\Person:
+    resource: none
+
+  Api\v1\Collegiate:
+    resource: none
+  
+  Api\v1\Client:
+    resource: none
+  
+  Api\v1\Expedient:
+    resource: none
+  
+  Api\v1\Phase:
+    resource: none
+  
+  Api\v1\Document:
+    resource: none
+  
+  Api\v1\Record:
+    resource: none
+  
+  Api\v1\Phone:
+    resource: none
+  
+  Api\v1\Address:
+    resource: none
+  
+  Api\v1\Email:
+    resource: none
