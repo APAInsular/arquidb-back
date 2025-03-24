@@ -32,7 +32,6 @@ models:
   
   Client:
     person_id: id foreign:Person onDelete:cascade
-    postalCode: char:5
     agent: string nullable
     relationships:
       belongsTo: Person
@@ -87,7 +86,8 @@ models:
   
   Address:
     person_id: id foreign:Person onDelete:cascade
-    address: string
+    # address: string Añadir campos faltantes
+    postalCode: char:5
     relationships:
       belongsTo: Person
   
