@@ -133,4 +133,4 @@ controllers:
   Api\v1\Email:
     resource: none
 
-seeders: Person, Collegiate, Client, Expedient, Phase, Document, User, Record, Phone, Address, Email
+seeders: Person, Collegiate, Client, Expedient, Phase, Document, Record, Phone, Address, Email
