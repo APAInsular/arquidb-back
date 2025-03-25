@@ -86,7 +86,12 @@ models:
   
   Address:
     person_id: id foreign:Person onDelete:cascade
-    # address: string Añadir campos faltantes
+    country: string
+    province: string
+    municipality: string
+    locality: string
+    street: string
+    number: tinyInteger
     postalCode: char:5
     relationships:
       belongsTo: Person
@@ -127,3 +132,5 @@ controllers:
   
   Api\v1\Email:
     resource: none
+
+seeders: Person, Collegiate, Client, Expedient, Phase, Document, User, Record, Phone, Address, Email
