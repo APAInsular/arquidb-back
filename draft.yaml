@@ -20,11 +20,11 @@ models:
     originCollegeNumber: string
     degree: enum:"Technical Architect"
     collegiateNumber: string
-    specialty: string
+    specialty: string nullable
     terminationDate: date
     graduationDate: date
     careerEndET: string
-    webPage: string
+    webPage: string nullable
     superiorCouncilRegNumber: string
     situation: string nullable
     relationships:
@@ -41,7 +41,7 @@ models:
     number: char:8
     startDate: datetime
     endDate: datetime
-    description: string
+    description: string nullable
     site: string
     postalCode: char:5
     budget: decimal:9,2
@@ -86,9 +86,9 @@ models:
   
   Address:
     person_id: id foreign:Person onDelete:cascade
-    country: string
-    province: string
-    municipality: string
+    country: string nullable
+    province: string nullable
+    municipality: string nullable
     locality: string
     street: string
     number: tinyInteger
