@@ -22,6 +22,10 @@ class RolesAndPermissionsSeeder extends Seeder
         $update = Permission::create(['name' => 'UPDATE ALL']);
         $delete = Permission::create(['name' => 'DELETE ALL']);
 
+        $permissions = [
+            'get persons'
+        ];
+
         // 3. Assign permission to a role
         $superAdmin->givePermissionTo(Permission::all());
         $visor->givePermissionTo(Permission::all());

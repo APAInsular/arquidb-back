@@ -3,7 +3,8 @@ models:
     identificationType: enum:DNI,NIF
     identificationNumber: char:9
     name: string
-    surnames: string
+    firstSurname: string
+    secondSurname: string nullable
     observations: string nullable
     relationships:
       belongsToMany: Expedient
@@ -11,21 +12,21 @@ models:
 
   Collegiate:
     personId: id foreign:Person onDelete:cascade
-    birthDate: date
-    nationality: string
-    bankingEntity: string
-    accountNumber: char:24
-    college: string
-    originCollege: string
-    originCollegeNumber: string
+    birthDate: date nullable
+    nationality: string nullable
+    bankingEntity: string nullable
+    accountNumber: char:24 nullable
+    college: string nullable
+    originCollege: string nullable
+    originCollegeNumber: string nullable
     degree: enum:"Technical Architect"
-    collegiateNumber: string
+    collegiateNumber: string nullable
     specialty: string nullable
-    terminationDate: date
-    graduationDate: date
-    careerEndET: string
+    terminationDate: date nullable
+    graduationDate: date nullable
+    careerEndET: string nullable
     webPage: string nullable
-    superiorCouncilRegNumber: string
+    superiorCouncilRegNumber: string nullable
     situation: string nullable
     relationships:
       belongsTo: Person
@@ -40,11 +41,11 @@ models:
     title: string
     number: char:8
     startDate: datetime
-    endDate: datetime
+    endDate: datetime nullable
     description: string nullable
     site: string
-    postalCode: char:5
-    budget: decimal:9,2
+    postalCode: char:5 nullable
+    budget: decimal:9,2 nullable
     relationships:
       hasMany: Phase
       belongsToMany: Person
