@@ -11,7 +11,7 @@ models:
       hasMany: Phone, Address, Email
 
   Collegiate:
-    personId: id foreign:Person onDelete:cascade
+    person_id: id foreign:Person onDelete:cascade
     birthDate: date nullable
     nationality: string nullable
     bankingEntity: string nullable
@@ -32,7 +32,7 @@ models:
       belongsTo: Person
   
   Client:
-    personId: id foreign:Person onDelete:cascade
+    person_id: id foreign:Person onDelete:cascade
     agent: string nullable
     relationships:
       belongsTo: Person
@@ -53,7 +53,7 @@ models:
   Phase:
     phase: enum:000,100,200,300,310,400,450,500,550,600,620,640,700,780,800,850,900,911,920,930,940,950,960,970,980
     title: string
-    expedientId: id foreign:Expedient onDelete:restrict
+    expedient_id: id foreign:Expedient onDelete:restrict
     relationships:
       hasMany: Document
       belongsTo: Expedient
@@ -61,8 +61,8 @@ models:
   Document:
     name: string
     type: enum:1,2,3
-    phaseId: id foreign:Phase onDelete:restrict
-    userId: id foreign:User nullable onDelete:restrict
+    phase_id: id foreign:Phase onDelete:restrict
+    user_id: id foreign:User nullable onDelete:restrict
     relationships:
       belongsTo: Phase,User
 
@@ -71,22 +71,22 @@ models:
   #     hasMany: Record,Document
 
   Record:
-    userId: id foreign:User onDelete:restrict
+    user_id: id foreign:User onDelete:restrict
     action: enum:create,update,delete,sign
     affectedTable: string
-    affectedRecordId: integer
+    affectedRecord_id: integer
     date: timestamp
     relationships:
       belongsTo: User
 
   Phone:
-    personId: id foreign:Person onDelete:cascade
+    person_id: id foreign:Person onDelete:cascade
     phone: char:9
     relationships:
       belongsTo: Person
   
   Address:
-    personId: id foreign:Person onDelete:cascade
+    person_id: id foreign:Person onDelete:cascade
     country: string nullable
     province: string nullable
     municipality: string nullable
@@ -98,7 +98,7 @@ models:
       belongsTo: Person
   
   Email:
-    personId: id foreign:Person onDelete:cascade
+    person_id: id foreign:Person onDelete:cascade
     email: string
     relationships:
       belongsTo: Person
