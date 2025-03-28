@@ -1,10 +1,10 @@
 models:
   Person:
-    identificationType: enum:DNI,NIF
-    identificationNumber: char:9
+    identification_type: enum:DNI,NIF
+    identification_number: char:9
     name: string
-    firstSurname: string
-    secondSurname: string nullable
+    first_surname: string
+    second_surname: string nullable
     observations: string nullable
     relationships:
       belongsToMany: Expedient
@@ -12,21 +12,21 @@ models:
 
   Collegiate:
     person_id: id foreign:Person onDelete:cascade
-    birthDate: date nullable
+    birth_date: date nullable
     nationality: string nullable
-    bankingEntity: string nullable
-    accountNumber: char:24 nullable
+    banking_entity: string nullable
+    account_number: char:24 nullable
     college: string nullable
-    originCollege: string nullable
-    originCollegeNumber: string nullable
+    origin_college: string nullable
+    origin_college_number: string nullable
     degree: enum:"Technical Architect"
-    collegiateNumber: string nullable
+    collegiate_number: string nullable
     specialty: string nullable
-    terminationDate: date nullable
-    graduationDate: date nullable
-    careerEndET: string nullable
-    webPage: string nullable
-    superiorCouncilRegNumber: string nullable
+    termination_date: date nullable
+    graduation_date: date nullable
+    career_end_et: string nullable
+    web_page: string nullable
+    council_reg_number: string nullable
     situation: string nullable
     relationships:
       belongsTo: Person
@@ -40,11 +40,11 @@ models:
   Expedient:
     title: string
     number: char:8
-    startDate: datetime
-    endDate: datetime nullable
+    start_date: datetime
+    end_date: datetime nullable
     description: string nullable
     site: string
-    postalCode: char:5 nullable
+    postal_code: char:5 nullable
     budget: decimal:9,2 nullable
     relationships:
       hasMany: Phase
@@ -73,8 +73,8 @@ models:
   Record:
     user_id: id foreign:User onDelete:restrict
     action: enum:create,update,delete,sign
-    affectedTable: string
-    affectedRecord_id: integer
+    affected_table: string
+    affected_record_id: integer
     date: timestamp
     relationships:
       belongsTo: User
@@ -93,7 +93,7 @@ models:
     locality: string
     street: string
     number: tinyInteger
-    postalCode: char:5
+    postal_code: char:5
     relationships:
       belongsTo: Person
   

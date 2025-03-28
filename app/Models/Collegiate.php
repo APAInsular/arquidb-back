@@ -17,21 +17,21 @@ class Collegiate extends Model
      */
     protected $fillable = [
         'person_id',
-        'birthDate',
+        'birth_date',
         'nationality',
-        'bankingEntity',
-        'accountNumber',
+        'banking_entity',
+        'account_number',
         'college',
-        'originCollege',
-        'originCollegeNumber',
+        'origin_college',
+        'origin_college_number',
         'degree',
-        'collegiateNumber',
+        'collegiate_number',
         'specialty',
-        'terminationDate',
-        'graduationDate',
-        'careerEndET',
-        'webPage',
-        'superiorCouncilRegNumber',
+        'termination_date',
+        'graduation_date',
+        'career_end_et',
+        'web_page',
+        'council_reg_number',
         'situation',
     ];
 
@@ -43,9 +43,9 @@ class Collegiate extends Model
     protected $casts = [
         'id' => 'integer',
         'person_id' => 'integer',
-        'birthDate' => 'date',
-        'terminationDate' => 'date',
-        'graduationDate' => 'date',
+        'birth_date' => 'date',
+        'termination_date' => 'date',
+        'graduation_date' => 'date',
     ];
 
     public function person(): BelongsTo

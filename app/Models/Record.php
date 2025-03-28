@@ -18,8 +18,8 @@ class Record extends Model
     protected $fillable = [
         'user_id',
         'action',
-        'affectedTable',
-        'affectedRecord_id',
+        'affected_table',
+        'affected_record_id',
         'date',
     ];
 

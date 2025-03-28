@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('people', function (Blueprint $table) {
             $table->id();
-            $table->enum('identificationType', ["DNI","NIF"]);
-            $table->char('identificationNumber', 9);
+            $table->enum('identification_type', ["DNI","NIF"]);
+            $table->char('identification_number', 9);
             $table->string('name');
-            $table->string('firstSurname');
-            $table->string('secondSurname')->nullable();
+            $table->string('first_surname');
+            $table->string('second_surname')->nullable();
             $table->string('observations')->nullable();
             $table->timestamps();
         });

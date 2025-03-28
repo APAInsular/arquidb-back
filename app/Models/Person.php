@@ -17,11 +17,11 @@ class Person extends Model
      * @var array
      */
     protected $fillable = [
-        'identificationType',
-        'identificationNumber',
+        'identification_type',
+        'identification_number',
         'name',
-        'firstSurname',
-        'secondSurname',
+        'first_surname',
+        'second_surname',
         'observations',
     ];
 
@@ -36,7 +36,7 @@ class Person extends Model
 
     public function expedients(): BelongsToMany
     {
-        return $this->belongsToMany(Expedient::class);
+        return $this->belongsToMany(Expedient::class, 'expedient_person');
     }
 
     public function phones(): HasMany

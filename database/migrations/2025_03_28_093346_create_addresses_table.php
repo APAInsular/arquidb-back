@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('locality');
             $table->string('street');
             $table->tinyInteger('number');
-            $table->char('postalCode', 5);
+            $table->char('postal_code', 5);
             $table->timestamps();
         });
 

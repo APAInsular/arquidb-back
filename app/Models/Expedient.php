@@ -19,11 +19,11 @@ class Expedient extends Model
     protected $fillable = [
         'title',
         'number',
-        'startDate',
-        'endDate',
+        'start_date',
+        'end_date',
         'description',
         'site',
-        'postalCode',
+        'postal_code',
         'budget',
     ];
 
@@ -34,8 +34,8 @@ class Expedient extends Model
      */
     protected $casts = [
         'id' => 'integer',
-        'startDate' => 'datetime',
-        'endDate' => 'datetime',
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
         'budget' => 'decimal:2',
     ];
 
@@ -46,6 +46,6 @@ class Expedient extends Model
 
     public function people(): BelongsToMany
     {
-        return $this->belongsToMany(Person::class);
+        return $this->belongsToMany(Person::class, 'expedient_person');
     }
 }

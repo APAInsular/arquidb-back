@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('expedient_person', function (Blueprint $table) {
             $table->foreignId('expedient_id');
             $table->foreignId('person_id');
+            $table->timestamps();
         });
 
         Schema::enableForeignKeyConstraints();

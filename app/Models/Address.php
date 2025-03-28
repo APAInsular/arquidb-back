@@ -23,7 +23,7 @@ class Address extends Model
         'locality',
         'street',
         'number',
-        'postalCode',
+        'postal_code',
     ];
 
     /**
