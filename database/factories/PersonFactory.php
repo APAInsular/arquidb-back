@@ -21,11 +21,11 @@ class PersonFactory extends Factory
     public function definition(): array
     {
         return [
-            'identificationType' => fake()->randomElement(["DNI","NIF"]),
-            'identificationNumber' => fake()->randomLetter(),
+            'identification_type' => fake()->randomElement(["DNI","NIF"]),
+            'identification_number' => fake()->randomLetter(),
             'name' => fake()->name(),
-            'firstSurname' => fake()->word(),
-            'secondSurname' => fake()->word(),
+            'first_surname' => fake()->word(),
+            'second_surname' => fake()->word(),
             'observations' => fake()->word(),
         ];
     }

@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             PhoneSeeder::class,
             AddressSeeder::class,
             EmailSeeder::class,
+            ExpedientHasPersonSeeder::class,
         ]);
     }
 }

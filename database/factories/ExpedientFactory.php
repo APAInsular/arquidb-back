@@ -23,11 +23,11 @@ class ExpedientFactory extends Factory
         return [
             'title' => fake()->sentence(4),
             'number' => fake()->randomLetter(),
-            'startDate' => fake()->dateTime(),
-            'endDate' => fake()->dateTime(),
+            'start_date' => fake()->dateTime(),
+            'end_date' => fake()->dateTime(),
             'description' => fake()->text(),
             'site' => fake()->word(),
-            'postalCode' => fake()->randomLetter(),
+            'postal_code' => fake()->randomLetter(),
             'budget' => fake()->randomFloat(2, 0, 9999999.99),
         ];
     }

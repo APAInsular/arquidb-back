@@ -13,13 +13,16 @@ return new class extends Migration
     {
         Schema::disableForeignKeyConstraints();
 
-        Schema::create('records', function (Blueprint $table) {
+        Schema::create('expedients', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('restrict');
-            $table->enum('action', ["create","update","delete","sign"]);
-            $table->string('affectedTable');
-            $table->integer('affectedRecord_id');
-            $table->timestamp('date');
+            $table->string('title');
+            $table->char('number', 8);
+            $table->dateTime('start_date');
+            $table->dateTime('end_date')->nullable();
+            $table->string('description')->nullable();
+            $table->string('site');
+            $table->char('postal_code', 5)->nullable();
+            $table->decimal('budget', 9, 2)->nullable();
             $table->timestamps();
         });
 
@@ -31,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('records');
+        Schema::dropIfExists('expedients');
     }
 };

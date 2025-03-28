@@ -29,7 +29,7 @@ class AddressFactory extends Factory
             'locality' => fake()->word(),
             'street' => fake()->streetName(),
             'number' => fake()->numberBetween(-8, 8),
-            'postalCode' => fake()->randomLetter(),
+            'postal_code' => fake()->randomLetter(),
         ];
     }
 }

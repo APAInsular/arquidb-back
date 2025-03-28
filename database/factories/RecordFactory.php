@@ -24,8 +24,8 @@ class RecordFactory extends Factory
         return [
             'user_id' => User::factory(),
             'action' => fake()->randomElement(["create","update","delete","sign"]),
-            'affectedTable' => fake()->word(),
-            'affectedRecord_id' => fake()->numberBetween(-10000, 10000),
+            'affected_table' => fake()->word(),
+            'affected_record_id' => fake()->numberBetween(-10000, 10000),
             'date' => fake()->dateTime(),
         ];
     }
