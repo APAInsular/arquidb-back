@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\v1\PhoneController;
 use App\Http\Controllers\Api\v1\RecordController;
 use App\Http\Controllers\Api\v1\UserDocumentsController;
 use App\Http\Controllers\Api\v1\UserRecordsController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Orion\Facades\Orion;
@@ -26,11 +27,14 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::post('login', [AuthenticatedSessionController::class, 'store']);
+Route::post('logout', [AuthenticatedSessionController::class, 'destroy']);
 
 
 Route::group(['as' => 'api.'], function () {
 
     // Tablas Generales
+    // Orion::resource('users', UserController::class);
     Orion::resource('address', AddressController::class);
     Orion::resource('client', ClientController::class);
     Orion::resource('collegiate', CollegiateController::class);
