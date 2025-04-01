@@ -1,2 +1,54 @@
+created:
+    - database/factories/PersonFactory.php
+    - database/factories/CollegiateFactory.php
+    - database/factories/ClientFactory.php
+    - database/factories/ExpedientFactory.php
+    - database/factories/PhaseFactory.php
+    - database/factories/DocumentFactory.php
+    - database/factories/RecordFactory.php
+    - database/factories/PhoneFactory.php
+    - database/factories/AddressFactory.php
+    - database/factories/EmailFactory.php
+    - database/migrations/2025_03_28_093338_create_people_table.php
+    - database/migrations/2025_03_28_093339_create_collegiates_table.php
+    - database/migrations/2025_03_28_093340_create_clients_table.php
+    - database/migrations/2025_03_28_093341_create_expedients_table.php
+    - database/migrations/2025_03_28_093342_create_phases_table.php
+    - database/migrations/2025_03_28_093343_create_documents_table.php
+    - database/migrations/2025_03_28_093344_create_records_table.php
+    - database/migrations/2025_03_28_093345_create_phones_table.php
+    - database/migrations/2025_03_28_093346_create_addresses_table.php
+    - database/migrations/2025_03_28_093347_create_emails_table.php
+    - database/migrations/2025_03_28_093348_create_expedient_person_table.php
+    - app/Models/Person.php
+    - app/Models/Collegiate.php
+    - app/Models/Client.php
+    - app/Models/Expedient.php
+    - app/Models/Phase.php
+    - app/Models/Document.php
+    - app/Models/Record.php
+    - app/Models/Phone.php
+    - app/Models/Address.php
+    - app/Models/Email.php
+    - database/seeders/PersonSeeder.php
+    - database/seeders/CollegiateSeeder.php
+    - database/seeders/ClientSeeder.php
+    - database/seeders/ExpedientSeeder.php
+    - database/seeders/PhaseSeeder.php
+    - database/seeders/DocumentSeeder.php
+    - database/seeders/RecordSeeder.php
+    - database/seeders/PhoneSeeder.php
+    - database/seeders/AddressSeeder.php
+    - database/seeders/EmailSeeder.php
 models:
     User: { name: string, email: string, email_verified_at: 'timestamp nullable', password: string, remember_token: 'string:100 nullable' }
+    Person: { identification_type: 'enum:DNI,NIF', identification_number: 'char:9', name: string, first_surname: string, second_surname: 'string nullable', observations: 'string nullable', relationships: { belongsToMany: Expedient, hasMany: 'Phone, Address, Email' } }
+    Collegiate: { person_id: 'id foreign:Person onDelete:cascade', birth_date: 'date nullable', nationality: 'string nullable', banking_entity: 'string nullable', account_number: 'char:24 nullable', college: 'string nullable', origin_college: 'string nullable', origin_college_number: 'string nullable', degree: 'enum:"Technical Architect"', collegiate_number: 'string nullable', specialty: 'string nullable', termination_date: 'date nullable', graduation_date: 'date nullable', career_end_et: 'string nullable', web_page: 'string nullable', council_reg_number: 'string nullable', situation: 'string nullable', relationships: { belongsTo: Person } }
+    Client: { person_id: 'id foreign:Person onDelete:cascade', agent: 'string nullable', relationships: { belongsTo: Person } }
+    Expedient: { title: string, number: 'char:8', start_date: datetime, end_date: 'datetime nullable', description: 'string nullable', site: string, postal_code: 'char:5 nullable', budget: 'decimal:9,2 nullable', relationships: { hasMany: Phase, belongsToMany: Person } }
+    Phase: { phase: 'enum:000,100,200,300,310,400,450,500,550,600,620,640,700,780,800,850,900,911,920,930,940,950,960,970,980', title: string, expedient_id: 'id foreign:Expedient onDelete:restrict', relationships: { hasMany: Document, belongsTo: Expedient } }
+    Document: { name: string, type: 'enum:1,2,3', phase_id: 'id foreign:Phase onDelete:restrict', user_id: 'id foreign:User nullable onDelete:restrict', relationships: { belongsTo: 'Phase,User' } }
+    Record: { user_id: 'id foreign:User onDelete:restrict', action: 'enum:create,update,delete,sign', affected_table: string, affected_record_id: integer, date: timestamp, relationships: { belongsTo: User } }
+    Phone: { person_id: 'id foreign:Person onDelete:cascade', phone: 'char:9', relationships: { belongsTo: Person } }
+    Address: { person_id: 'id foreign:Person onDelete:cascade', country: 'string nullable', province: 'string nullable', municipality: 'string nullable', locality: string, street: string, number: tinyInteger, postal_code: 'char:5', relationships: { belongsTo: Person } }
+    Email: { person_id: 'id foreign:Person onDelete:cascade', email: string, relationships: { belongsTo: Person } }

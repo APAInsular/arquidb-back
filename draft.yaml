@@ -1,38 +1,38 @@
 models:
   Person:
-    identificationType: enum:DNI,NIF
-    identificationNumber: char:9
+    identification_type: enum:DNI,NIF
+    identification_number: char:9
     name: string
-    firstSurname: string
-    secondSurname: string nullable
+    first_surname: string
+    second_surname: string nullable
     observations: string nullable
     relationships:
       belongsToMany: Expedient
       hasMany: Phone, Address, Email
 
   Collegiate:
-    personId: id foreign:Person onDelete:cascade
-    birthDate: date nullable
+    person_id: id foreign:Person onDelete:cascade
+    birth_date: date nullable
     nationality: string nullable
-    bankingEntity: string nullable
-    accountNumber: char:24 nullable
+    banking_entity: string nullable
+    account_number: char:24 nullable
     college: string nullable
-    originCollege: string nullable
-    originCollegeNumber: string nullable
+    origin_college: string nullable
+    origin_college_number: string nullable
     degree: enum:"Technical Architect"
-    collegiateNumber: string nullable
+    collegiate_number: string nullable
     specialty: string nullable
-    terminationDate: date nullable
-    graduationDate: date nullable
-    careerEndET: string nullable
-    webPage: string nullable
-    superiorCouncilRegNumber: string nullable
+    termination_date: date nullable
+    graduation_date: date nullable
+    career_end_et: string nullable
+    web_page: string nullable
+    council_reg_number: string nullable
     situation: string nullable
     relationships:
       belongsTo: Person
   
   Client:
-    personId: id foreign:Person onDelete:cascade
+    person_id: id foreign:Person onDelete:cascade
     agent: string nullable
     relationships:
       belongsTo: Person
@@ -40,11 +40,11 @@ models:
   Expedient:
     title: string
     number: char:8
-    startDate: datetime
-    endDate: datetime nullable
+    start_date: datetime
+    end_date: datetime nullable
     description: string nullable
     site: string
-    postalCode: char:5 nullable
+    postal_code: char:5 nullable
     budget: decimal:9,2 nullable
     relationships:
       hasMany: Phase
@@ -53,7 +53,7 @@ models:
   Phase:
     phase: enum:000,100,200,300,310,400,450,500,550,600,620,640,700,780,800,850,900,911,920,930,940,950,960,970,980
     title: string
-    expedientId: id foreign:Expedient onDelete:restrict
+    expedient_id: id foreign:Expedient onDelete:restrict
     relationships:
       hasMany: Document
       belongsTo: Expedient
@@ -61,8 +61,8 @@ models:
   Document:
     name: string
     type: enum:1,2,3
-    phaseId: id foreign:Phase onDelete:restrict
-    userId: id foreign:User nullable onDelete:restrict
+    phase_id: id foreign:Phase onDelete:restrict
+    user_id: id foreign:User nullable onDelete:restrict
     relationships:
       belongsTo: Phase,User
 
@@ -71,34 +71,34 @@ models:
   #     hasMany: Record,Document
 
   Record:
-    userId: id foreign:User onDelete:restrict
+    user_id: id foreign:User onDelete:restrict
     action: enum:create,update,delete,sign
-    affectedTable: string
-    affectedRecordId: integer
+    affected_table: string
+    affected_record_id: integer
     date: timestamp
     relationships:
       belongsTo: User
 
   Phone:
-    personId: id foreign:Person onDelete:cascade
+    person_id: id foreign:Person onDelete:cascade
     phone: char:9
     relationships:
       belongsTo: Person
   
   Address:
-    personId: id foreign:Person onDelete:cascade
+    person_id: id foreign:Person onDelete:cascade
     country: string nullable
     province: string nullable
     municipality: string nullable
     locality: string
     street: string
     number: tinyInteger
-    postalCode: char:5
+    postal_code: char:5
     relationships:
       belongsTo: Person
   
   Email:
-    personId: id foreign:Person onDelete:cascade
+    person_id: id foreign:Person onDelete:cascade
     email: string
     relationships:
       belongsTo: Person
