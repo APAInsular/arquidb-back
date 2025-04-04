@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\v1\ExpedientController;
 use App\Http\Controllers\Api\v1\ExpedientHasPersonsController;
 use App\Http\Controllers\Api\v1\ExpedientPhasesController;
 use App\Http\Controllers\Api\v1\PersonAddressController;
+use App\Http\Controllers\Api\v1\PersonClientsController;
+use App\Http\Controllers\Api\v1\PersonCollegiatesController;
 use App\Http\Controllers\Api\v1\PersonController;
 use App\Http\Controllers\Api\v1\PersonEmailsController;
 use App\Http\Controllers\Api\v1\PersonPhonesController;
@@ -16,6 +18,7 @@ use App\Http\Controllers\Api\v1\PhaseController;
 use App\Http\Controllers\Api\v1\PhaseDocumentsController;
 use App\Http\Controllers\Api\v1\PhoneController;
 use App\Http\Controllers\Api\v1\RecordController;
+use App\Http\Controllers\Api\v1\UserController;
 use App\Http\Controllers\Api\v1\UserDocumentsController;
 use App\Http\Controllers\Api\v1\UserRecordsController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -30,11 +33,13 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 Route::post('login', [AuthenticatedSessionController::class, 'store']);
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy']);
 
+Route::get('/personCollegiate/{id}', [PersonCollegiatesController::class, 'Personcollegiate']);
+
 
 Route::group(['as' => 'api.'], function () {
 
     // Tablas Generales
-    // Orion::resource('users', UserController::class);
+    Orion::resource('users', UserController::class);
     Orion::resource('address', AddressController::class);
     Orion::resource('client', ClientController::class);
     Orion::resource('collegiate', CollegiateController::class);
@@ -56,6 +61,9 @@ Route::group(['as' => 'api.'], function () {
     Orion::hasManyResource('person', 'address', PersonAddressController::class);
     Orion::hasManyResource('person', 'emails', PersonEmailsController::class);
     Orion::hasManyResource('person', 'phones', PersonPhonesController::class);
+
+    Orion::hasManyResource('person', 'clients', PersonClientsController::class);
+    Orion::hasManyResource('person', 'collegiates', PersonCollegiatesController::class);
 
     // relaciones del usuario 
     Orion::hasManyResource('user', 'documents', UserDocumentsController::class);
