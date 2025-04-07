@@ -37,6 +37,16 @@ models:
     relationships:
       belongsTo: Person
   
+  Center:
+    name: string
+    municipality: string nullable
+    locality: string
+    street: string
+    number: tinyInteger
+    phone: char:9
+    relationships:
+      hasMany: Expedient, User
+
   Expedient:
     title: string
     number: char:8
@@ -46,9 +56,11 @@ models:
     site: string
     postal_code: char:5 nullable
     budget: decimal:9,2 nullable
+    center_id: id foreign:Center onDelete:restrict
     relationships:
       hasMany: Phase
       belongsToMany: Person
+      belongsTo: Center
   
   Phase:
     phase: enum:000,100,200,300,310,400,450,500,550,600,620,640,700,780,800,850,900,911,920,930,940,950,960,970,980
@@ -112,6 +124,9 @@ controllers:
   
   Api\v1\Client:
     resource: none
+
+  Api\v1\Center:
+    resource: none
   
   Api\v1\Expedient:
     resource: none
@@ -134,4 +149,4 @@ controllers:
   Api\v1\Email:
     resource: none
 
-seeders: Person, Collegiate, Client, Expedient, Phase, Document, Record, Phone, Address, Email
+seeders: Person, Collegiate, Client, Center, Expedient, Phase, Document, Record, Phone, Address, Email
