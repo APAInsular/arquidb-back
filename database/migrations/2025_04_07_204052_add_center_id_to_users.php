@@ -11,15 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::disableForeignKeyConstraints();
-
-        Schema::create('expedient_person', function (Blueprint $table) {
-            $table->foreignId('expedient_id');
-            $table->foreignId('person_id');
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreignId('center_id')->constrained()->onDelete('restrict');
         });
-
-        Schema::enableForeignKeyConstraints();
     }
 
     /**
@@ -27,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('expedient_person');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('center_id');
+        });
     }
 };

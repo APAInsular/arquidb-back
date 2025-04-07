@@ -14,5 +14,4 @@ class AddressController extends Controller
     use DisableAuthorization, DisablePagination;
 
     protected $model = Address::class;
-
 }

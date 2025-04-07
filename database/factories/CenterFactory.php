@@ -26,7 +26,7 @@ class CenterFactory extends Factory
             'locality' => fake()->word(),
             'street' => fake()->streetName(),
             'number' => fake()->numberBetween(-8, 8),
-            'phone' => fake()->phoneNumber(),
+            'phone' => fake()->numerify('#########'),
         ];
     }
 }
