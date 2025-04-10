@@ -5,6 +5,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use App\Models\Expedient;
+use App\Models\Center;
 
 class ExpedientFactory extends Factory
 {
@@ -29,6 +30,7 @@ class ExpedientFactory extends Factory
             'site' => fake()->word(),
             'postal_code' => fake()->randomLetter(),
             'budget' => fake()->randomFloat(2, 0, 9999999.99),
+            'center_id' => Center::factory(),
         ];
     }
 }

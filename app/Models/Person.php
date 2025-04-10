@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Person extends Model
 {
@@ -37,6 +38,16 @@ class Person extends Model
     public function expedients(): BelongsToMany
     {
         return $this->belongsToMany(Expedient::class, 'expedient_person');
+    }
+
+    public function collegiates(): HasOne
+    {
+        return $this->hasOne(Collegiate::class);
+    }
+    
+    public function clients(): HasOne
+    {
+        return $this->hasOne(Client::class);
     }
 
     public function phones(): HasMany

@@ -13,16 +13,14 @@ return new class extends Migration
     {
         Schema::disableForeignKeyConstraints();
 
-        Schema::create('expedients', function (Blueprint $table) {
+        Schema::create('centers', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->char('number', 8);
-            $table->dateTime('start_date');
-            $table->dateTime('end_date')->nullable();
-            $table->string('description')->nullable();
-            $table->string('site');
-            $table->char('postal_code', 5)->nullable();
-            $table->decimal('budget', 9, 2)->nullable();
+            $table->string('name');
+            $table->string('municipality')->nullable();
+            $table->string('locality');
+            $table->string('street');
+            $table->tinyInteger('number');
+            $table->char('phone', 9);
             $table->timestamps();
         });
 
@@ -34,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('expedients');
+        Schema::dropIfExists('centers');
     }
 };
