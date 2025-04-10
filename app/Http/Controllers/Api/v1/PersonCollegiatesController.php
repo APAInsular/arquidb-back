@@ -8,10 +8,12 @@ use App\Models\Collegiate;
 use App\Models\Email;
 use App\Models\Person;
 use App\Models\Phone;
+use DB;
 use Illuminate\Http\Request;
 use Orion\Concerns\DisableAuthorization;
 use Orion\Concerns\DisablePagination;
 use Orion\Http\Controllers\RelationController;
+use Orion\Http\Requests\Request as OrionRequest;
 use View;
 
 class PersonCollegiatesController extends RelationController
@@ -23,6 +25,49 @@ class PersonCollegiatesController extends RelationController
     protected $model = Person::class;
 
     protected $relation = 'collegiates';
+
+    public function store(OrionRequest $request, ...$args)
+    {
+        try {
+            // 1. Crear la persona
+            $person = Person::create([
+                'identification_type' => $request->identification_type,
+                'identification_number' => $request->identification_number,
+                'name' => $request->name,
+                'first_surname' => $request->first_surname,
+                'second_surname' => $request->second_surname,
+                'observations' => $request->observations,
+            ]);
+
+            if (!empty($request->collegiate)) {
+                $person->collegiates()->create($request->get('collegiate'));
+            }
+
+            if (!empty($request->email)) {
+                $person->emails()->create($request->get('email'));
+            }
+
+            if (!empty($request->address)) {
+                $person->addresses()->create($request->get('address'));
+            }
+
+            if (!empty($request->phone)) {
+                $person->phones()->create($request->get('phone'));
+            }
+
+            return response()->json([
+                'message' => 'Persona creada correctamente',
+                'person' => $person->load(['collegiate', 'email', 'address', 'phone']),
+            ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al crear la persona',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 
     public function Personcollegiate($id)
     {
