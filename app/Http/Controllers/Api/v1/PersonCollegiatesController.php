@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Address;
 use App\Models\Collegiate;
+use App\Models\Email;
 use App\Models\Person;
+use App\Models\Phone;
 use Illuminate\Http\Request;
 use Orion\Concerns\DisableAuthorization;
 use Orion\Concerns\DisablePagination;
@@ -26,16 +29,24 @@ class PersonCollegiatesController extends RelationController
         $person = Person::findOrFail($id);
 
         $collegiate = Collegiate::where('person_id', $id)->get();
+        $email = Email::where('person_id', $id)->get();
+        $phone = Phone::where('person_id', $id)->get();
+        $address = Address::where('person_id', $id)->get();
 
-        if ($collegiate) {
+        if ($collegiate->isEmpty()) {
             return response()->json([
-                'person' => $person,
-                'collegiate' => $collegiate
-            ]); 
-        } else {
-            return response()->json([
-                'message' => 'No collegiate found for this person.'
+                'message' => 'No se encontro ningun colegiado',
             ], 404);
         }
+
+        return response()->json([
+            'person' => $person,
+            'collegiate' => $collegiate,
+            'email' => $email,
+            'phone' => $phone,
+            'address' => $address,
+        ]);
+
+
     }
 }
