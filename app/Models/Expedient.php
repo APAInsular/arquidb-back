@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Expedient extends Model
 {
@@ -25,6 +26,7 @@ class Expedient extends Model
         'site',
         'postal_code',
         'budget',
+        'center_id',
     ];
 
     /**
@@ -47,5 +49,10 @@ class Expedient extends Model
     public function people(): BelongsToMany
     {
         return $this->belongsToMany(Person::class, 'expedient_person');
+    }
+
+    public function center(): BelongsTo
+    {
+        return $this->belongsTo(Center::class);
     }
 }
