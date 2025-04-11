@@ -36,6 +36,7 @@ Route::post('logout', [AuthenticatedSessionController::class, 'destroy']);
 Route::get('/personCollegiate/{id}', [PersonCollegiatesController::class, 'Personcollegiate']);
 Route::post('/personCollegiate', [PersonCollegiatesController::class, 'store']);
 Route::get('/personClient/{id}', [PersonClientsController::class, 'Personclient']);
+Route::post('/personClient', [PersonClientsController::class, 'store']);
 
 
 Route::group(['as' => 'api.'], function () {
