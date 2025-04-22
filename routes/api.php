@@ -70,4 +70,5 @@ Route::group(['as' => 'api.'], function () {
     Orion::hasManyResource('user', 'documents', UserDocumentsController::class);
     Orion::hasManyResource('user', 'records', UserRecordsController::class);
 
+    Route::post('phase/titles', [PhaseController::class, 'titles']);
 });
