@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\v1\CollegiateController;
 use App\Http\Controllers\Api\v1\DocumentController;
 use App\Http\Controllers\Api\v1\EmailController;
 use App\Http\Controllers\Api\v1\ExpedientController;
-use App\Http\Controllers\Api\v1\ExpedientHasPersonsController;
+use App\Http\Controllers\Api\v1\ExpedientHasPeopleController;
 use App\Http\Controllers\Api\v1\ExpedientPhasesController;
 use App\Http\Controllers\Api\v1\PersonAddressController;
 use App\Http\Controllers\Api\v1\PersonClientsController;
@@ -58,7 +58,7 @@ Route::group(['as' => 'api.'], function () {
     Orion::hasManyResource('expedient', 'phases', ExpedientPhasesController::class);
     Orion::hasManyResource('phase', 'documents', PhaseDocumentsController::class);
 
-    Orion::belongsToManyResource('expedient', 'persons', ExpedientHasPersonsController::class);
+    Orion::belongsToManyResource('expedient', 'people', ExpedientHasPeopleController::class);
     Orion::hasManyResource('person', 'address', PersonAddressController::class);
     Orion::hasManyResource('person', 'emails', PersonEmailsController::class);
     Orion::hasManyResource('person', 'phones', PersonPhonesController::class);

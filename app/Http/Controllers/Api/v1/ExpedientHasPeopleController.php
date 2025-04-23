@@ -8,7 +8,7 @@ use Orion\Concerns\DisableAuthorization;
 use Orion\Concerns\DisablePagination;
 use Orion\Http\Controllers\RelationController;
 
-class ExpedientHasPersonsController extends RelationController
+class ExpedientHasPeopleController extends RelationController
 {
     use DisablePagination;
     use DisableAuthorization;
