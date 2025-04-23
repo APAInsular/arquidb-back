@@ -16,14 +16,14 @@ class MultiSheetImport implements WithMultipleSheets
             // '' => new PeopleImport(),
             // '' => new CollegiatesImport(),
             'tblclientes' => [
-                new PeopleImport(),
-                new ClientsImport(),
+                // new PeopleImport(),
+                // new ClientsImport(),
                 new PhonesImport(),
-                new AddressesImport(),
-                new EmailsImport(),
+                // new AddressesImport(),
+                // new EmailsImport(),
             ],
-            'TBLEXPEDIENTES' => new ExpedientsImport(),
-            'TBLEXPEDIENTES_FASES' => new PhasesImport(),
+            // 'TBLEXPEDIENTES' => new ExpedientsImport(),
+            // 'TBLEXPEDIENTES_FASES' => new PhasesImport(),
             // '' => new DocumentsImport(),
         ];
 
