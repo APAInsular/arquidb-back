@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::disableForeignKeyConstraints();
 
         Schema::create('clients', function (Blueprint $table) {
-            $table->id();
             $table->foreignId('person_id')->constrained()->cascadeOnDelete();
             $table->string('agent')->nullable();
+            $table->primary(['person_id']);
             $table->timestamps();
         });
 

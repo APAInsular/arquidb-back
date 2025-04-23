@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('street');
             $table->tinyInteger('number');
             $table->char('postal_code', 5);
+            $table->primary(['id', 'person_id']);
             $table->timestamps();
         });
 
