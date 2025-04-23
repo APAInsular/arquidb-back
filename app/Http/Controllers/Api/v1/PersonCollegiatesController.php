@@ -68,6 +68,61 @@ class PersonCollegiatesController extends RelationController
         }
     }
 
+    public function update(OrionRequest $request, ...$args)
+    {
+
+        $id = $args[0];
+
+        try {
+            $person = Person::findOrFail($id);
+
+            $person->update([
+                'identification_type' => $request->input('identification_type', $person->identification_type),
+                'identification_number' => $request->input('identification_number', $person->identification_number),
+                'name' => $request->input('name', $person->name),
+                'first_surname' => $request->input('first_surname', $person->first_surname),
+                'second_surname' => $request->input('second_surname', $person->second_surname),
+                'observations' => $request->input('observations', $person->observations),
+            ]);
+
+            if ($request->has('collegiate')) {
+                $person->collegiates()->updateOrCreate(
+                    $request->get('collegiate')
+                );
+            }
+
+            if ($request->has('email')) {
+                $person->emails()->updateOrCreate(
+                    $request->get('email')
+                );
+            }
+
+            if ($request->has('address')) {
+                $person->addresses()->updateOrCreate(
+                    $request->get('address')
+                );
+            }
+
+            if ($request->has('phone')) {
+                $person->phones()->updateOrCreate(
+                    $request->get('phone')
+                );
+            }
+
+            return response()->json([
+                'message' => 'Persona actualizada correctamente',
+                'person' => $person->load(['collegiates', 'emails', 'addresses', 'phones']),
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al actualizar la persona',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+    }
+
 
     public function Personcollegiate($id)
     {
