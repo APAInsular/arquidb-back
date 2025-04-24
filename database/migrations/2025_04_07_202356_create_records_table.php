@@ -15,7 +15,7 @@ return new class extends Migration
 
         Schema::create('records', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('restrict');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->enum('action', ["create","update","delete","sign"]);
             $table->string('affected_table');
             $table->integer('affected_record_id');

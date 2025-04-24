@@ -10,6 +10,7 @@ use App\Models\Person;
 use App\Models\Phone;
 use DB;
 use Illuminate\Http\Request;
+use Log;
 use Orion\Concerns\DisableAuthorization;
 use Orion\Concerns\DisablePagination;
 use Orion\Http\Controllers\RelationController;
@@ -29,7 +30,7 @@ class PersonCollegiatesController extends RelationController
     public function store(OrionRequest $request, ...$args)
     {
         try {
-            // 1. Crear la persona
+
             $person = Person::create([
                 'identification_type' => $request->identification_type,
                 'identification_number' => $request->identification_number,
@@ -40,7 +41,14 @@ class PersonCollegiatesController extends RelationController
             ]);
 
             if (!empty($request->collegiate)) {
-                $person->collegiates()->create($request->get('collegiate'));
+                
+                $data = $request->get('collegiate');
+
+                $data['birth_date'] = isset($data['birth_date']) ? substr($data['birth_date'], 0, 10) : null;
+                $data['graduation_date'] = isset($data['graduation_date']) ? substr($data['graduation_date'], 0, 10) : null;
+                $data['termination_date'] = isset($data['termination_date']) ? substr($data['termination_date'], 0, 10) : null;
+
+                $person->collegiates()->create($data);
             }
 
             if (!empty($request->email)) {
@@ -86,25 +94,28 @@ class PersonCollegiatesController extends RelationController
             ]);
 
             if ($request->has('collegiate')) {
-                $person->collegiates()->updateOrCreate(
-                    $request->get('collegiate')
-                );
+                $data = $request->get('collegiate');
+                $data['birth_date'] = isset($data['birth_date']) ? substr($data['birth_date'], 0, 10) : null;
+                $data['graduation_date'] = isset($data['graduation_date']) ? substr($data['graduation_date'], 0, 10) : null;
+                $data['termination_date'] = isset($data['termination_date']) ? substr($data['termination_date'], 0, 10) : null;
+
+                $person->collegiates()->first()->update($data);
             }
 
             if ($request->has('email')) {
-                $person->emails()->updateOrCreate(
+                $person->emails()->update(
                     $request->get('email')
                 );
             }
 
             if ($request->has('address')) {
-                $person->addresses()->updateOrCreate(
+                $person->addresses()->update(
                     $request->get('address')
                 );
             }
 
             if ($request->has('phone')) {
-                $person->phones()->updateOrCreate(
+                $person->phones()->update(
                     $request->get('phone')
                 );
             }
@@ -115,6 +126,11 @@ class PersonCollegiatesController extends RelationController
             ], 200);
 
         } catch (\Exception $e) {
+            Log::error('Error al actualizar persona', [
+                'exception' => $e,
+                'request_data' => $request->all(),
+            ]);
+
             return response()->json([
                 'message' => 'Error al actualizar la persona',
                 'error' => $e->getMessage(),
