@@ -15,7 +15,7 @@ class ExcelImportController extends Controller
         DB::beginTransaction();
 
         try {
-            $filePath = storage_path('app/private/Prueba.XLS');
+            $filePath = storage_path('app\private\Prueba.XLS');
 
             if (!file_exists($filePath)) {
                 throw new \Exception("Archivo no encontrado: $filePath");
