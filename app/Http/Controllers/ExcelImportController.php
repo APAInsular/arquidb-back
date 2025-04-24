@@ -5,28 +5,45 @@ namespace App\Http\Controllers;
 use App\Imports\MultiSheetImport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ExcelImportController extends Controller
 {
     public function import(Request $request)
     {
-        // $request->validate([
-        //     'file' => 'required|mimes:xlsx,xls'
-        // ]);
+        DB::beginTransaction();
 
         try {
-            // $file = $request->file('file');
+            $filePath = storage_path('app/private/Prueba.XLS');
 
-            Excel::import(new MultiSheetImport, 'Prueba.XLS');
+            if (!file_exists($filePath)) {
+                throw new \Exception("Archivo no encontrado: $filePath");
+            }
+
+            $import = new MultiSheetImport();
+            Excel::import($import, $filePath);
+
+            DB::commit();
 
             return response()->json([
-                'message' => 'Datos importados correctamente a múltiples modelos',
-                'success' => true
+                'message' => 'Importación completada',
+                'success' => true,
+                'results' => [
+                    'processed' => $import->getRowCount(),
+                    'successful' => $import->getSuccessCount(),
+                    'failed' => $import->getErrorCount(),
+                ],
             ], 200);
         } catch (\Exception $e) {
+            DB::rollBack();
+
             return response()->json([
-                'message' => 'Error al importar datos: ' . $e->getMessage(),
-                'success' => false
+                'message' => 'Error en la importación',
+                'success' => false,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
             ], 500);
         }
     }

@@ -72,5 +72,5 @@ Route::group(['as' => 'api.'], function () {
     Orion::hasManyResource('user', 'records', UserRecordsController::class);
 
     Route::post('phase/titles', [PhaseController::class, 'titles']);
-    Route::get('/import-excel', [ExcelImportController::class, 'import']);
+    Route::post('/import-excel', [ExcelImportController::class, 'import']);
 });

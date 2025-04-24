@@ -8,10 +8,17 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Concerns\SkipsOnError;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class PhonesImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnError, WithBatchInserts
 {
+    protected $tracker;
+
+    public function __construct(MultiSheetImport $tracker)
+    {
+        $this->tracker = $tracker;
+    }
     /**
      * @param array $row
      *
@@ -43,9 +50,27 @@ class PhonesImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnEr
 
     public function model(array $row)
     {
-        return new Phone([
-            'person_id' => 16,
-            'phone' => $row['Telefonos'],
-        ]);
+        // Verifica que los datos se están leyendo correctamente
+        Log::info('Processing phone row:', $row);
+
+        $this->tracker->incrementProcessed();
+
+        // return new Phone([
+        //     'person_id' => 16,
+        //     'phone' => $row['Telefonos'],
+        // ]);
+        try {
+            $phone = new Phone([
+                'person_id' => 16,
+                'phone' => $row['Telefonos'],
+            ]);
+
+            $this->tracker->incrementSuccessful();
+            return $phone;
+        } catch (\Exception $e) {
+            $this->tracker->incrementFailed();
+            Log::error('Error importing phone: ' . $e->getMessage());
+            return null;
+        }
     }
 }

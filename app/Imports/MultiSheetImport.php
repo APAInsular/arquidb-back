@@ -2,15 +2,29 @@
 
 namespace App\Imports;
 
+use App\Traits\ImportTracker;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Events\BeforeImport;
+use Maatwebsite\Excel\Events\AfterImport;
+use Illuminate\Support\Facades\Log;
 
-class MultiSheetImport implements WithMultipleSheets
+class MultiSheetImport implements WithMultipleSheets, WithEvents
 {
+    use ImportTracker;
     /**
      * @return array
      */
+    public $results = [
+        'processed' => 0,
+        'successful' => 0,
+        'failed' => 0
+    ];
+
     public function sheets(): array
     {
+        $this->resetCounters();
+
         return [
             // Aquí defines qué importador corresponde a cada hoja
             // '' => new PeopleImport(),
@@ -18,7 +32,7 @@ class MultiSheetImport implements WithMultipleSheets
             'tblclientes' => [
                 // new PeopleImport(),
                 // new ClientsImport(),
-                new PhonesImport(),
+                new PhonesImport($this),
                 // new AddressesImport(),
                 // new EmailsImport(),
             ],
@@ -42,5 +56,19 @@ class MultiSheetImport implements WithMultipleSheets
         // 0 => new ClientsImport(),
         // 1 => new ProductsImport(),
         // 2 => new OrdersImport(),
+    }
+
+    public function registerEvents(): array
+    {
+        return [
+            BeforeImport::class => function (BeforeImport $event) {
+                $this->resetCounters();
+                Log::info('Starting import process');
+            },
+            AfterImport::class => function (AfterImport $event) {
+                // $this->results['processed'] = $event->getDelegate()->getHighestDataRow() - 1;
+                Log::info('Import process completed');
+            },
+        ];
     }
 }
