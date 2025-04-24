@@ -12,14 +12,6 @@ use Illuminate\Support\Facades\Log;
 class MultiSheetImport implements WithMultipleSheets, WithEvents
 {
     use ImportTracker;
-    /**
-     * @return array
-     */
-    public $results = [
-        'processed' => 0,
-        'successful' => 0,
-        'failed' => 0
-    ];
 
     public function sheets(): array
     {
@@ -32,7 +24,7 @@ class MultiSheetImport implements WithMultipleSheets, WithEvents
             'tblclientes' => [
                 // new PeopleImport(),
                 // new ClientsImport(),
-                new PhonesImport($this),
+                new PhonesImport($this, 16),
                 // new AddressesImport(),
                 // new EmailsImport(),
             ],
@@ -66,8 +58,11 @@ class MultiSheetImport implements WithMultipleSheets, WithEvents
                 Log::info('Starting import process');
             },
             AfterImport::class => function (AfterImport $event) {
-                // $this->results['processed'] = $event->getDelegate()->getHighestDataRow() - 1;
-                Log::info('Import process completed');
+                Log::info("Import completed. Stats: ", [
+                    'processed' => $this->processed,
+                    'successful' => $this->successful,
+                    'failed' => $this->failed
+                ]);
             },
         ];
     }

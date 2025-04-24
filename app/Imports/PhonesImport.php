@@ -14,63 +14,99 @@ use Throwable;
 class PhonesImport implements ToModel, WithHeadingRow, WithValidation, SkipsOnError, WithBatchInserts
 {
     protected $tracker;
+    protected $personId;
 
-    public function __construct(MultiSheetImport $tracker)
+    public function __construct(MultiSheetImport $tracker, $personId = null)
     {
         $this->tracker = $tracker;
+        $this->personId = $personId ?? 16; // Valor por defecto
     }
-    /**
-     * @param array $row
-     *
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
+
     public function batchSize(): int
     {
-        return 1000; // Procesar 1000 filas a la vez
+        return 1000;
     }
 
     public function rules(): array
     {
         return [
-            'phone' => 'required|char:9|unique',
+            'Telefonos' => 'required|digits:9', // Cambiado a digits:9
+            // Si necesitas que sea único, considera usar:
+            // 'Telefonos' => 'required|digits:9|unique:phones,phone'
         ];
     }
 
     public function customValidationMessages()
     {
         return [
-            'phone.char:9' => 'Introduce un numero de 9 digitos',
+            'Telefonos.digits' => 'El teléfono debe tener exactamente 9 dígitos',
+            'Telefonos.required' => 'El campo teléfono es requerido',
         ];
-    }
-
-    public function onError(Throwable $e)
-    {
-        return response()->json($e);
     }
 
     public function model(array $row)
     {
-        // Verifica que los datos se están leyendo correctamente
-        Log::info('Processing phone row:', $row);
+        $phoneNumbers = $this->extractPhoneNumbers($row['Telefonos'] ?? $row[18] ?? '');
+
+        if (empty($phoneNumbers)) {
+            Log::warning('No valid phone numbers found in row: ', $row);
+            return null;
+        }
+
+        $models = [];
+        foreach ($phoneNumbers as $number) {
+            try {
+                $models[] = new Phone([
+                    'person_id' => $this->personId,
+                    'phone' => $number,
+                ]);
+                $this->tracker->incrementSuccessful();
+            } catch (\Exception $e) {
+                $this->tracker->incrementFailed();
+                Log::error("Error saving phone {$number}: " . $e->getMessage());
+            }
+        }
 
         $this->tracker->incrementProcessed();
 
-        // return new Phone([
-        //     'person_id' => 16,
-        //     'phone' => $row['Telefonos'],
-        // ]);
-        try {
-            $phone = new Phone([
-                'person_id' => 16,
-                'phone' => $row['Telefonos'],
-            ]);
+        // Laravel Excel espera que devolvamos un solo modelo o null
+        // Devolvemos el último modelo creado o null si no hubo ninguno
+        return !empty($models) ? end($models) : null;
+    }
 
-            $this->tracker->incrementSuccessful();
-            return $phone;
-        } catch (\Exception $e) {
-            $this->tracker->incrementFailed();
-            Log::error('Error importing phone: ' . $e->getMessage());
-            return null;
+    protected function extractPhoneNumbers(string $phoneString): array
+    {
+        // Separar por guiones, comas o puntos y coma
+        $rawNumbers = preg_split('/[-,\;\s]+/', $phoneString);
+
+        $validNumbers = [];
+        foreach ($rawNumbers as $number) {
+            $cleanNumber = $this->cleanPhoneNumber($number);
+            if ($this->isValidPhone($cleanNumber)) {
+                $validNumbers[] = $cleanNumber;
+            }
         }
+
+        return $validNumbers;
+    }
+
+    protected function cleanPhoneNumber(string $number): string
+    {
+        // Eliminar espacios y caracteres no numéricos
+        return preg_replace('/[^0-9]/', '', $number);
+    }
+
+    protected function isValidPhone(string $number): bool
+    {
+        // Validar que tenga exactamente 9 dígitos
+        return strlen($number) === 9 &&
+            ctype_digit($number) &&
+            in_array(substr($number, 0, 1), ['9', '6', '7']);
+    }
+
+    public function onError(Throwable $e)
+    {
+        Log::error('Import error: ' . $e->getMessage());
+        $this->tracker->incrementFailed();
     }
 }
