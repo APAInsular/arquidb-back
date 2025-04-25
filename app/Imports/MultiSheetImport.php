@@ -28,7 +28,7 @@ class MultiSheetImport implements WithMultipleSheets, WithEvents
             // new AddressesImport(),
             // new EmailsImport(),
             // ],
-            'tblclientes' => new PhonesImport($this, 21),
+            'tblclientes' => new PeopleImport($this),
             // 'TBLEXPEDIENTES' => new ExpedientsImport(),
             // 'TBLEXPEDIENTES_FASES' => new PhasesImport(),
             // '' => new DocumentsImport(),

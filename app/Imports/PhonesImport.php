@@ -64,7 +64,7 @@ class PhonesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
     protected function findPhoneColumn(array $row): string
     {
         // Buscar en posibles nombres de columnas
-        $possibleColumns = ['Telefonos', 'telefonos', 'Teléfonos', 'teléfonos', 'phone', 'phones', 18];
+        $possibleColumns = ['Telefonos', 'telefonos', 'Teléfonos', 'teléfonos', 18];
 
         foreach ($possibleColumns as $column) {
             if (isset($row[$column]) && !empty(trim($row[$column]))) {
