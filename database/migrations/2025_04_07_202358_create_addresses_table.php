@@ -18,8 +18,8 @@ return new class extends Migration
             $table->foreignId('person_id')->constrained()->cascadeOnDelete();
             $table->string('country')->nullable();
             $table->string('province')->nullable();
-            $table->string('municipality')->nullable();
-            $table->string('locality');
+            $table->string('municipality');
+            $table->string('locality')->nullable();
             $table->string('street');
             $table->tinyInteger('number');
             $table->char('postal_code', 5);
