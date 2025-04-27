@@ -21,17 +21,12 @@ class MultiSheetImport implements WithMultipleSheets, WithEvents
             // Aquí defines qué importador corresponde a cada hoja
             // '' => new PeopleImport($this),
             // '' => new CollegiatesImport(),
-            // 'tblclientes' => [
-            // new PeopleImport($this),
-            // new ClientsImport(),
-            // new PhonesImport($this, 21),
-            // new AddressesImport(),
-            // new EmailsImport(),
-            // ],
-            // 'tblclientes' => new PeopleImport($this),
             'tblclientes' => new MultiImport([
                 new PeopleImport($this),
-                new PhonesImport($this, 21),
+                // new ClientsImport(),
+                new PhonesImport($this),
+                // new AddressesImport(),
+                // new EmailsImport(),
             ], $this),
             // 'TBLEXPEDIENTES' => new ExpedientsImport(),
             // 'TBLEXPEDIENTES_FASES' => new PhasesImport(),
