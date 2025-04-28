@@ -125,7 +125,7 @@ class AddressesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatc
                 'number' => 'required|string|max:20',
                 'municipality' => 'required|string|max:100',
                 'province' => 'required|string|max:100',
-                'postal_code' => 'required|string|max:10',
+                'postal_code' => 'required|string|max:5',
                 'country' => 'nullable|string|max:100',
                 'locality' => 'nullable|string|max:100'
             ]);
