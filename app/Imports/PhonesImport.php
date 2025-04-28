@@ -35,6 +35,7 @@ class PhonesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
             if (empty($nif)) {
                 Log::warning('No se encontró NIF en fila', $row);
                 $this->tracker->incrementFailed();
+                $this->tracker->incrementProcessed();
                 return null;
             }
 
@@ -44,6 +45,7 @@ class PhonesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
             if (!$person) {
                 Log::warning("No se encontró persona con NIF: {$nif}");
                 $this->tracker->incrementFailed();
+                $this->tracker->incrementProcessed();
                 return null;
             }
 
@@ -55,6 +57,7 @@ class PhonesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
             if (empty($phoneString)) {
                 Log::warning('No se encontraron teléfonos para persona: ' . $nif, $row);
                 $this->tracker->incrementFailed();
+                $this->tracker->incrementProcessed();
                 return null;
             }
 
@@ -63,6 +66,7 @@ class PhonesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
             if (empty($phoneNumbers)) {
                 Log::warning('No se encontraron números válidos para persona: ' . $nif);
                 $this->tracker->incrementFailed();
+                $this->tracker->incrementProcessed();
                 return null;
             }
 
@@ -76,6 +80,7 @@ class PhonesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
         } catch (\Exception $e) {
             Log::error('Error procesando fila: ' . $e->getMessage());
             $this->tracker->incrementFailed();
+            $this->tracker->incrementProcessed();
             return null;
         }
     }
@@ -165,5 +170,6 @@ class PhonesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
     {
         Log::error('Error en importación: ' . $e->getMessage());
         $this->tracker->incrementFailed();
+        $this->tracker->incrementProcessed();
     }
 }

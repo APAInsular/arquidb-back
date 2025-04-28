@@ -32,6 +32,7 @@ class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
 
             if ($personData === null) {
                 $this->tracker->incrementFailed();
+                $this->tracker->incrementProcessed();
                 return null;
             }
 
@@ -43,6 +44,7 @@ class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
         } catch (\Exception $e) {
             Log::error('Error procesando fila de persona: ' . $e->getMessage());
             $this->tracker->incrementFailed();
+            $this->tracker->incrementProcessed();
             return null;
         }
     }
@@ -112,6 +114,7 @@ class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
     {
         Log::error('Error en importación de personas: ' . $e->getMessage());
         $this->tracker->incrementFailed();
+        $this->tracker->incrementProcessed();
     }
 }
 

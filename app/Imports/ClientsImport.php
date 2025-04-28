@@ -36,6 +36,7 @@ class ClientsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchI
             if (empty($nif)) {
                 Log::warning('No se encontró NIF en fila', $row);
                 $this->tracker->incrementFailed();
+                $this->tracker->incrementProcessed();
                 return null;
             }
 
@@ -45,6 +46,7 @@ class ClientsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchI
             if (!$person) {
                 Log::warning("No se encontró persona con NIF: {$nif}");
                 $this->tracker->incrementFailed();
+                $this->tracker->incrementProcessed();
                 return null;
             }
 
@@ -55,6 +57,7 @@ class ClientsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchI
 
             if (!$clientData) {
                 $this->tracker->incrementFailed();
+                $this->tracker->incrementProcessed();
                 return null;
             }
 
@@ -66,6 +69,7 @@ class ClientsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchI
         } catch (\Exception $e) {
             Log::error('Error procesando fila de cliente: ' . $e->getMessage());
             $this->tracker->incrementFailed();
+            $this->tracker->incrementProcessed();
             return null;
         }
     }
@@ -134,5 +138,6 @@ class ClientsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchI
     {
         Log::error('Error en importación de clientes: ' . $e->getMessage());
         $this->tracker->incrementFailed();
+        $this->tracker->incrementProcessed();
     }
 }
