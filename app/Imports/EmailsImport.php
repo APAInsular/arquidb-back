@@ -36,6 +36,7 @@ class EmailsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
             if (empty($nif)) {
                 Log::warning('No se encontró NIF en fila', $row);
                 $this->tracker->incrementFailed();
+                $this->tracker->incrementProcessed();
                 return null;
             }
 
@@ -45,6 +46,7 @@ class EmailsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
             if (!$person) {
                 Log::warning("No se encontró persona con NIF: {$nif}");
                 $this->tracker->incrementFailed();
+                $this->tracker->incrementProcessed();
                 return null;
             }
 
@@ -56,6 +58,7 @@ class EmailsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
             if (empty($emailString)) {
                 Log::warning('No se encontraron emails para persona: ' . $nif, $row);
                 $this->tracker->incrementFailed();
+                $this->tracker->incrementProcessed();
                 return null;
             }
 
@@ -64,19 +67,21 @@ class EmailsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
             if (empty($emails)) {
                 Log::warning('No se encontraron emails válidos para persona: ' . $nif);
                 $this->tracker->incrementFailed();
+                $this->tracker->incrementProcessed();
                 return null;
             }
 
             // 4. Guardar cada email válido
             foreach ($emails as $email) {
                 $this->saveEmail($email);
+                $this->tracker->incrementProcessed();
             }
 
-            $this->tracker->incrementProcessed();
             return null;
         } catch (\Exception $e) {
             Log::error('Error procesando fila: ' . $e->getMessage());
             $this->tracker->incrementFailed();
+            $this->tracker->incrementProcessed();
             return null;
         }
     }
@@ -189,5 +194,6 @@ class EmailsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
     {
         Log::error('Error en importación de emails: ' . $e->getMessage());
         $this->tracker->incrementFailed();
+        $this->tracker->incrementProcessed();
     }
 }

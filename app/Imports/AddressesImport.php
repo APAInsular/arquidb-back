@@ -36,6 +36,7 @@ class AddressesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatc
             if (empty($nif)) {
                 Log::warning('No se encontró NIF en fila', $row);
                 $this->tracker->incrementFailed();
+                $this->tracker->incrementProcessed();
                 return null;
             }
 
@@ -45,6 +46,7 @@ class AddressesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatc
             if (!$person) {
                 Log::warning("No se encontró persona con NIF: {$nif}");
                 $this->tracker->incrementFailed();
+                $this->tracker->incrementProcessed();
                 return null;
             }
 
@@ -55,6 +57,7 @@ class AddressesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatc
 
             if (!$addressData) {
                 $this->tracker->incrementFailed();
+                $this->tracker->incrementProcessed();
                 return null;
             }
 
@@ -66,6 +69,7 @@ class AddressesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatc
         } catch (\Exception $e) {
             Log::error('Error procesando fila de dirección: ' . $e->getMessage());
             $this->tracker->incrementFailed();
+            $this->tracker->incrementProcessed();
             return null;
         }
     }
@@ -142,5 +146,6 @@ class AddressesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatc
     {
         Log::error('Error en importación de direcciones: ' . $e->getMessage());
         $this->tracker->incrementFailed();
+        $this->tracker->incrementProcessed();
     }
 }

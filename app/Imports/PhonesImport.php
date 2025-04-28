@@ -73,9 +73,9 @@ class PhonesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
             // 4. Guardar cada número válido
             foreach ($phoneNumbers as $number) {
                 $this->savePhoneNumber($number);
+                $this->tracker->incrementProcessed();
             }
 
-            $this->tracker->incrementProcessed();
             return null;
         } catch (\Exception $e) {
             Log::error('Error procesando fila: ' . $e->getMessage());
