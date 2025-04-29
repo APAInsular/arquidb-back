@@ -55,4 +55,50 @@ class Expedient extends Model
     {
         return $this->belongsTo(Center::class);
     }
+
+    public function scopeTitle($query, $name)
+    {
+        if ($name) {
+            $query->where('title', 'LIKE', "%$name%");
+        }
+        // return $query;
+    }
+
+    public function scopePhase($query, $phase)
+    {
+        if ($phase) {
+            $query->whereHas('phases', function ($q) use ($phase) {
+                $q->where('phase', 'LIKE', "%$phase%");
+            });
+        }
+        // return $query;
+    }
+
+    public function scopeClient($query, $client)
+    {
+        if ($client) {
+            $query->whereHas('client', function ($q) use ($client) {
+                $q->where('name', 'LIKE', "%$client%");
+            });
+        }
+        // return $query;
+    }
+
+    public function scopeCollegiate($query, $collegiate)
+    {
+        if ($collegiate) {
+            $query->whereHas('collegiate', function ($q) use ($collegiate) {
+                $q->where('name', 'LIKE', "%$collegiate%");
+            });
+        }
+        // return $query;
+    }
+
+    public function scopeDateCreated($query, $date)
+    {
+        if ($date) {
+            $query->whereDate('created_at', '==', $date);
+        }
+        // return $query;
+    }
 }
