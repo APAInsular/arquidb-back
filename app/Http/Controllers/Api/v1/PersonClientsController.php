@@ -38,7 +38,7 @@ class PersonClientsController extends RelationController
                 'observations' => $request->observations,
             ]);
 
-            if (!empty($request->collegiate)) {
+            if (!empty($request->client)) {
                 $person->clients()->create($request->get('client'));
             }
 
@@ -110,7 +110,7 @@ class PersonClientsController extends RelationController
 
             return response()->json([
                 'message' => 'Persona actualizada correctamente',
-                'person' => $person->load(['collegiates', 'emails', 'addresses', 'phones']),
+                'person' => $person->load(['clients', 'emails', 'addresses', 'phones']),
             ], 200);
 
         } catch (\Exception $e) {
