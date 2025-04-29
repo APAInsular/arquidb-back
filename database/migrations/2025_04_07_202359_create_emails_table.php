@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::disableForeignKeyConstraints();
 
         Schema::create('emails', function (Blueprint $table) {
-            $table->id();
             $table->foreignId('person_id')->constrained()->cascadeOnDelete();
-            $table->string('email');
+            $table->string('email')->unique();
+            $table->primary(['person_id', 'email']);
             $table->timestamps();
         });
 

@@ -19,10 +19,11 @@ return new class extends Migration
             $table->string('country')->nullable();
             $table->string('province')->nullable();
             $table->string('municipality')->nullable();
-            $table->string('locality');
+            $table->string('locality')->nullable();
             $table->string('street');
             $table->tinyInteger('number');
             $table->char('postal_code', 5);
+            $table->primary(['id', 'person_id']);
             $table->timestamps();
         });
 

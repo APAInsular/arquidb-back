@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::disableForeignKeyConstraints();
 
         Schema::create('collegiates', function (Blueprint $table) {
-            $table->id();
             $table->foreignId('person_id')->constrained()->cascadeOnDelete();
             $table->date('birth_date')->nullable();
             $table->string('nationality')->nullable();
@@ -32,6 +31,7 @@ return new class extends Migration
             $table->string('web_page')->nullable();
             $table->string('council_reg_number')->nullable();
             $table->string('situation')->nullable();
+            $table->primary(['person_id']);
             $table->timestamps();
         });
 
