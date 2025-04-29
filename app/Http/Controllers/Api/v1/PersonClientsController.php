@@ -9,6 +9,7 @@ use App\Models\Email;
 use App\Models\Person;
 use App\Models\Phone;
 use Illuminate\Http\Request;
+use Log;
 use Orion\Concerns\DisableAuthorization;
 use Orion\Concerns\DisablePagination;
 use Orion\Http\Controllers\RelationController;
@@ -64,6 +65,66 @@ class PersonClientsController extends RelationController
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function update(OrionRequest $request, ...$args)
+    {
+
+        $id = $args[0];
+
+        try {
+            $person = Person::findOrFail($id);
+
+            $person->update([
+                'identification_type' => $request->input('identification_type', $person->identification_type),
+                'identification_number' => $request->input('identification_number', $person->identification_number),
+                'name' => $request->input('name', $person->name),
+                'first_surname' => $request->input('first_surname', $person->first_surname),
+                'second_surname' => $request->input('second_surname', $person->second_surname),
+                'observations' => $request->input('observations', $person->observations),
+            ]);
+
+            if ($request->has('client')) {
+                $person->clients()->first()->update(
+                    $request->get('client')
+                );
+            }
+
+            if ($request->has('email')) {
+                $person->emails()->update(
+                    $request->get('email')
+                );
+            }
+
+            if ($request->has('address')) {
+                $person->addresses()->update(
+                    $request->get('address')
+                );
+            }
+
+            if ($request->has('phone')) {
+                $person->phones()->update(
+                    $request->get('phone')
+                );
+            }
+
+            return response()->json([
+                'message' => 'Persona actualizada correctamente',
+                'person' => $person->load(['collegiates', 'emails', 'addresses', 'phones']),
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Error al actualizar persona', [
+                'exception' => $e,
+                'request_data' => $request->all(),
+            ]);
+
+            return response()->json([
+                'message' => 'Error al actualizar la persona',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
     }
 
     public function Personclient($id)

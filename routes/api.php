@@ -38,6 +38,7 @@ Route::post('/personCollegiate', [PersonCollegiatesController::class, 'store']);
 Route::put('/personCollegiate/{id}', [PersonCollegiatesController::class, 'update']);
 Route::get('/personClient/{id}', [PersonClientsController::class, 'Personclient']);
 Route::post('/personClient', [PersonClientsController::class, 'store']);
+Route::put('/personClient/{id}', [PersonClientsController::class, 'update']);
 
 
 Route::group(['as' => 'api.'], function () {

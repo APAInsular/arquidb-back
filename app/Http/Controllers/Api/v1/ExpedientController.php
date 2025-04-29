@@ -22,14 +22,16 @@ class ExpedientController extends Controller
         $client = $request->get('client');
         $collegiate = $request->get('collegiate');
         $dateCreated = $request->get('date');
+        $all = $request->boolean('all', false);
 
-        $expedients = Expedient::orderBy('id', 'Asc')
+        $query = Expedient::orderBy('id', 'Asc')
             ->title($title)
             ->phase($phase)
             ->client($client)
             ->collegiate($collegiate)
-            ->dateCreated($dateCreated)
-            ->paginate(5);
+            ->dateCreated($dateCreated);
+
+        $all ? $expedients = $query->get() : $expedients = $query->paginate(5);
 
         return response()->json($expedients);
 
