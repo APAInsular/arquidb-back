@@ -122,11 +122,11 @@ class AddressesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatc
             $validator = Validator::make($addressData, [
                 'person_id' => 'required|exists:people,id',
                 'street' => 'required|string|max:255',
-                'number' => 'required|string|max:20',
-                'municipality' => 'required|string|max:100',
-                'province' => 'required|string|max:100',
-                'postal_code' => 'required|string|max:5',
+                'number' => 'required|numeric', // Changed to numeric validation
+                'postal_code' => 'required|string|size:5', // Changed to exact size 5 for char(5)
                 'country' => 'nullable|string|max:100',
+                'province' => 'nullable|string|max:100',
+                'municipality' => 'nullable|string|max:100',
                 'locality' => 'nullable|string|max:100'
             ]);
 
