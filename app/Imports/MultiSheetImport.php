@@ -5,13 +5,19 @@ namespace App\Imports;
 use App\Traits\ImportTracker;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Events\BeforeImport;
 use Maatwebsite\Excel\Events\AfterImport;
 use Illuminate\Support\Facades\Log;
 
-class MultiSheetImport implements WithMultipleSheets, WithEvents
+class MultiSheetImport implements WithMultipleSheets, WithEvents, WithChunkReading
 {
     use ImportTracker;
+
+    public function chunkSize(): int
+    {
+        return 500; // Procesar 500 filas a la vez
+    }
 
     public function sheets(): array
     {
@@ -28,7 +34,7 @@ class MultiSheetImport implements WithMultipleSheets, WithEvents
                 new AddressesImport($this),
                 new EmailsImport($this),
             ], $this),
-            // 'TBLEXPEDIENTES' => new ExpedientsImport(),
+            // 'TBLEXPEDIENTES' => new ExpedientsImport($this),
             // 'TBLEXPEDIENTES_FASES' => new PhasesImport(),
             // '' => new DocumentsImport(),
         ];

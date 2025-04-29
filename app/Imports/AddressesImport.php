@@ -92,8 +92,6 @@ class AddressesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatc
         // Validar campos requeridos
         $requiredFields = [
             'direccion' => $row['direccion'] ?? $row['address'] ?? null,
-            'municipio' => $row['municipio'] ?? $row['municipality'] ?? null,
-            'provincia' => $row['provincia'] ?? $row['province'] ?? null,
             'idcodigopostal' => $row['idcodigopostal'] ?? $row['postal_code'] ?? null
         ];
 
@@ -108,8 +106,8 @@ class AddressesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatc
             'person_id' => $this->currentPersonId,
             'street' => trim($row['direccion'] ?? $row['address']),
             'number' => trim($row['num'] ?? $row['number'] ?? 'S/N'),
-            'municipality' => trim($row['municipio'] ?? $row['municipality']),
-            'province' => trim($row['provincia'] ?? $row['province']),
+            'municipality' => trim($row['municipio'] ?? $row['municipality'] ?? ''),
+            'province' => trim($row['provincia'] ?? $row['province'] ?? ''),
             'postal_code' => trim($row['idcodigopostal'] ?? $row['postal_code']),
             'country' => trim($row['pais'] ?? $row['country'] ?? 'España'),
             'locality' => trim($row['localidad'] ?? $row['locality'] ?? '')
