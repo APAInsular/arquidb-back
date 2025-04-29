@@ -55,7 +55,6 @@ class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
         $requiredFields = [
             'nif' => $row['nif'] ?? $row['Nif'] ?? null,
             'nombre' => $row['nombre'] ?? $row['Nombre'] ?? null,
-            'apellido1' => $row['apellido1'] ?? $row['Apellido1'] ?? null,
         ];
 
         foreach ($requiredFields as $field => $value) {
@@ -72,7 +71,7 @@ class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
             'identification_type' => $identificationType,
             'identification_number' => trim($row['nif']),
             'name' => trim($row['nombre']),
-            'first_surname' => trim($row['apellido1']),
+            'first_surname' => isset($row['apellido1']) ? trim($row['apellido1']) : null,
             'second_surname' => isset($row['apellido2']) ? trim($row['apellido2']) : null,
         ];
     }
@@ -117,11 +116,3 @@ class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
         $this->tracker->incrementProcessed();
     }
 }
-
-//return new Person([
-//    'identification_type' => $row[''],
-//    'identification_number' => $row['Nif'],
-//    'name' => $row['Nombre'],
-//    'first_surname' => $row['Apellido1'],
-//    'second_surname' => $row['Apellido2'] ?? null,
-//]);
