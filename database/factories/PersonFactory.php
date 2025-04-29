@@ -21,8 +21,8 @@ class PersonFactory extends Factory
     public function definition(): array
     {
         return [
-            'identification_type' => fake()->randomElement(["DNI","NIF"]),
-            'identification_number' => fake()->randomLetter(),
+            'identification_type' => fake()->randomElement(["DNI", "NIF"]),
+            'identification_number' => fake()->unique()->regexify('[A-Z0-9]{9}'),
             'name' => fake()->name(),
             'first_surname' => fake()->word(),
             'second_surname' => fake()->word(),

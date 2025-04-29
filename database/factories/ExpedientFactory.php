@@ -23,7 +23,7 @@ class ExpedientFactory extends Factory
     {
         return [
             'title' => fake()->sentence(4),
-            'number' => fake()->randomLetter(),
+            'number' => fake()->unique()->regexify('[0-9]{2}/[0-9]{6}'),
             'start_date' => fake()->dateTime(),
             'end_date' => fake()->dateTime(),
             'description' => fake()->text(),

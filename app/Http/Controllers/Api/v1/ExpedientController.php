@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Models\Client;
 use App\Models\Expedient;
 use Orion\Concerns\DisableAuthorization;
 use Orion\Concerns\DisablePagination;
@@ -17,6 +18,7 @@ class ExpedientController extends Controller
 
     public function index(OrionRequest $request)
     {
+        $number = $request->get('number');
         $title = $request->get('title');
         $phase = $request->get('phase');
         $client = $request->get('client');
@@ -25,13 +27,21 @@ class ExpedientController extends Controller
         $all = $request->boolean('all', false);
 
         $query = Expedient::orderBy('id', 'Asc')
+            ->number($number)
             ->title($title)
             ->phase($phase)
             ->client($client)
             ->collegiate($collegiate)
             ->dateCreated($dateCreated);
 
-        $all ? $expedients = $query->get() : $expedients = $query->paginate(5);
+        $query->with('people.clients', 'people.collegiates', 'phases.documents');
+
+        $all ?
+            $expedients = $query->get()
+            :
+            $expedients = $query->paginate(5);
+
+        // dd();
 
         return response()->json($expedients);
 
