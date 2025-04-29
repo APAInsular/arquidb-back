@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\v1\CollegiateController;
 use App\Http\Controllers\Api\v1\DocumentController;
 use App\Http\Controllers\Api\v1\EmailController;
 use App\Http\Controllers\Api\v1\ExpedientController;
-use App\Http\Controllers\Api\v1\ExpedientHasPersonsController;
+use App\Http\Controllers\Api\v1\ExpedientHasPeopleController;
 use App\Http\Controllers\Api\v1\ExpedientPhasesController;
 use App\Http\Controllers\Api\v1\PersonAddressController;
 use App\Http\Controllers\Api\v1\PersonClientsController;
@@ -25,6 +25,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Orion\Facades\Orion;
+use App\Http\Controllers\ExcelImportController;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
@@ -62,7 +63,7 @@ Route::group(['as' => 'api.'], function () {
     Orion::hasManyResource('expedient', 'phases', ExpedientPhasesController::class);
     Orion::hasManyResource('phase', 'documents', PhaseDocumentsController::class);
 
-    Orion::belongsToManyResource('expedient', 'persons', ExpedientHasPersonsController::class);
+    Orion::belongsToManyResource('expedient', 'people', ExpedientHasPeopleController::class);
     Orion::hasManyResource('person', 'address', PersonAddressController::class);
     Orion::hasManyResource('person', 'emails', PersonEmailsController::class);
     Orion::hasManyResource('person', 'phones', PersonPhonesController::class);
@@ -74,4 +75,6 @@ Route::group(['as' => 'api.'], function () {
     Orion::hasManyResource('user', 'documents', UserDocumentsController::class);
     Orion::hasManyResource('user', 'records', UserRecordsController::class);
 
+    Route::post('phase/titles', [PhaseController::class, 'titles']);
+    Route::post('/import-excel', [ExcelImportController::class, 'import']);
 });

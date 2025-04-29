@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::disableForeignKeyConstraints();
 
         Schema::create('phones', function (Blueprint $table) {
-            $table->id();
             $table->foreignId('person_id')->constrained()->cascadeOnDelete();
             $table->char('phone', 9);
+            $table->primary(['person_id', 'phone']);
             $table->timestamps();
         });
 
