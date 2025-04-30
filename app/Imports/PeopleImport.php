@@ -7,10 +7,11 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\SkipsOnError;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchInserts
+class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchInserts, WithChunkReading
 {
     protected $tracker;
 
@@ -22,6 +23,11 @@ class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
     public function batchSize(): int
     {
         return 1000;
+    }
+
+    public function chunkSize(): int
+    {
+        return 500; // Procesar 500 filas a la vez
     }
 
     public function model(array $row)
@@ -52,11 +58,12 @@ class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
     protected function preparePersonData(array $row): ?array
     {
         $nif = $row['nifcliente'] ?? $row['nif'];
+        $nameField = $row['nombre'] ?? $row['Nombre'] ?? $row['nomcliente'];
 
         // Validar campos obligatorios
         $requiredFields = [
             'nif' => $nif ?? null,
-            'nombre' => $row['nombre'] ?? $row['Nombre'] ?? null,
+            'nombre' => $nameField ?? null,
         ];
 
         foreach ($requiredFields as $field => $value) {
@@ -67,7 +74,6 @@ class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
         }
 
         // Determinar el nombre y apellidos
-        $nameField = $row['nombre'] ?? $row['Nombre'] ?? $row['nomcliente'];
         $nameData = $this->parseNomCliente($nameField);
 
         // Determinar el tipo de identificación basado en el NIF

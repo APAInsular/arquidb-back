@@ -27,7 +27,7 @@ class MultiSheetImport implements WithMultipleSheets, WithEvents, WithChunkReadi
             // Aquí defines qué importador corresponde a cada hoja
             // '' => new PeopleImport($this),
             // '' => new CollegiatesImport(),
-            'tblclientes' => new MultiImport([
+            'TBLEXPEDIENTES_CLIENTES' => new MultiImport([
                 new PeopleImport($this),
                 new ClientsImport($this),
                 new PhonesImport($this),
