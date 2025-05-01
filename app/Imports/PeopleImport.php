@@ -83,8 +83,8 @@ class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
             'identification_type' => $identificationType,
             'identification_number' => trim($nif),
             'name' => $nameData['name'],
-            'first_surname' =>  $nameData['first_surname'] ?? null,
-            'second_surname' =>  $nameData['second_surname'] ?? null,
+            'first_surname' =>  $nameData['first_surname'],
+            'second_surname' =>  $nameData['second_surname'],
         ];
     }
 
