@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('expedients', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->char('number', 8);
+            $table->char('number', 10);
             $table->dateTime('start_date');
             $table->dateTime('end_date')->nullable();
             $table->string('description')->nullable();
