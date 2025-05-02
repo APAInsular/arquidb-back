@@ -30,6 +30,7 @@ class Phase extends Model
     protected $casts = [
         'id' => 'integer',
         'expedient_id' => 'integer',
+        'phase' => 'string' // Añadir esto para consistencia
     ];
 
     public static function boot()

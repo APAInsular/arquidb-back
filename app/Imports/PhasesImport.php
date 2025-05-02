@@ -87,7 +87,7 @@ class PhasesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
         ];
 
         foreach ($possibleColumns as $column) {
-            if (isset($row[$column]) && !empty(trim($row[$column]))) { // Error aquí
+            if (isset($row[$column]) && !empty(trim($row[$column]))) {
                 return trim($row[$column]);
             }
         }
@@ -152,7 +152,17 @@ class PhasesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
     {
         try {
             $validator = Validator::make($phaseData, [
-                'phase' => 'required|string|max:4|regex:/^\d{3,4}$/',
+                'phase' => [
+                    'required',
+                    'string',
+                    'max:4',
+                    'regex:/^\d{3,4}$/',
+                    function ($attribute, $value, $fail) {
+                        if ($value < '000' || $value > '9999') {
+                            $fail('El campo phase debe estar entre 000 y 9999.');
+                        }
+                    }
+                ],
                 'title' => 'nullable|string|max:255',
                 'expedient_id' => 'required|exists:expedients,id'
             ]);
