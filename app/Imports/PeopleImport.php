@@ -57,8 +57,8 @@ class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
 
     protected function preparePersonData(array $row): ?array
     {
-        $nif = $row['nifcliente'] ?? $row['nif'];
-        $nameField = $row['nombre'] ?? $row['Nombre'] ?? $row['nomcliente'];
+        $nif = $row['nifcliente'] ?? $row['idcolegiado'] ?? $row['nif'];
+        $nameField = $row['nombre'] ?? $row['nomcolegiado'] ?? $row['nomcliente'];
 
         // Validar campos obligatorios
         $requiredFields = [

@@ -14,6 +14,8 @@ class MultiSheetImport implements WithMultipleSheets, WithEvents, WithChunkReadi
 {
     use ImportTracker;
 
+    private $peopleCache = [];
+
     public function chunkSize(): int
     {
         return 500; // Procesar 500 filas a la vez
@@ -22,22 +24,25 @@ class MultiSheetImport implements WithMultipleSheets, WithEvents, WithChunkReadi
     public function sheets(): array
     {
         $this->resetCounters();
+        $peopleImport = new PeopleImport($this);
 
         return [
             // Aquí defines qué importador corresponde a cada hoja
-            // '' => new PeopleImport($this),
-            // '' => new CollegiatesImport(),
-            // 'TBLEXPEDIENTES_CLIENTES' => new MultiImport([
-            //     new PeopleImport($this),
-            //     new ClientsImport($this),
-            //     new PhonesImport($this),
-            // ], $this),
+            'TBLEXPEDIENTES_COLEGIADOS' => new MultiImport([
+                $peopleImport,
+                new CollegiatesImport($this),
+            ], $this),
+            'TBLEXPEDIENTES_CLIENTES' => new MultiImport([
+                // $peopleImport,
+                // new ClientsImport($this),
+                // new PhonesImport($this),
+            ], $this),
             // 'tblclientes' => new MultiImport([
             //     new AddressesImport($this),
             //     new EmailsImport($this),
             // ], $this),
-            'TBLEXPEDIENTES' => new ExpedientsImport($this),
-            'TBLEXPEDIENTES_FASES' => new PhasesImport($this),
+            // 'TBLEXPEDIENTES' => new ExpedientsImport($this),
+            // 'TBLEXPEDIENTES_FASES' => new PhasesImport($this),
             // '' => new DocumentsImport(),
         ];
 

@@ -5,14 +5,19 @@ namespace App\Imports;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\SkipsOnError;
 use Maatwebsite\Excel\Events\BeforeSheet;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
-class MultiImport implements ToModel, WithEvents, WithHeadingRow
+class MultiImport implements ToModel, WithEvents, WithHeadingRow, WithBatchInserts, WithChunkReading, SkipsOnError
 {
     protected $importers;
     protected $tracker;
+    protected $currentRow;
 
     public function __construct(array $importers, $tracker)
     {
@@ -22,43 +27,97 @@ class MultiImport implements ToModel, WithEvents, WithHeadingRow
 
     public function model(array $row)
     {
-        Log::debug("Processing row in MultiImporter", $row);
+        $this->currentRow = $row;
+
+        Log::debug("Processing row in MultiImporter", ['row' => $row]);
+
         foreach ($this->importers as $importer) {
-            Log::debug("Executing " . get_class($importer));
+            $importerClass = get_class($importer);
+            Log::debug("Executing importer: {$importerClass}");
+
             try {
-                $importer->model($row);
+                $result = $importer->model($row);
+                Log::debug("Importer {$importerClass} processed row successfully");
             } catch (\Exception $e) {
-                // Manejar error individual del importador
+                Log::error("Error in importer {$importerClass}: " . $e->getMessage(), [
+                    'row' => $row,
+                    'error' => $e
+                ]);
+                // $this->tracker->incrementFailed();
                 continue;
             }
         }
 
-        return null; // No retornamos modelo directamente
+        return null;
     }
 
     public function registerEvents(): array
     {
-        return [
+        $events = [
             BeforeSheet::class => function (BeforeSheet $event) {
                 foreach ($this->importers as $importer) {
-                    if (method_exists($importer, 'registerEvents')) {
-                        $events = $importer->registerEvents();
-                        if (isset($events[BeforeSheet::class])) {
-                            $events[BeforeSheet::class]($event);
-                        }
-                    }
+                    $this->forwardEvent($importer, $event, BeforeSheet::class);
                 }
             },
             AfterSheet::class => function (AfterSheet $event) {
                 foreach ($this->importers as $importer) {
-                    if (method_exists($importer, 'registerEvents')) {
-                        $events = $importer->registerEvents();
-                        if (isset($events[AfterSheet::class])) {
-                            $events[AfterSheet::class]($event);
-                        }
-                    }
+                    $this->forwardEvent($importer, $event, AfterSheet::class);
                 }
             }
         ];
+
+        return $events;
+    }
+
+    protected function forwardEvent($importer, $event, string $eventClass)
+    {
+        if (method_exists($importer, 'registerEvents')) {
+            $importerEvents = $importer->registerEvents();
+            if (isset($importerEvents[$eventClass])) {
+                try {
+                    $importerEvents[$eventClass]($event);
+                } catch (\Exception $e) {
+                    Log::error("Error forwarding {$eventClass} to " . get_class($importer) . ": " . $e->getMessage());
+                }
+            }
+        }
+    }
+
+    public function batchSize(): int
+    {
+        $sizes = array_map(function ($importer) {
+            return method_exists($importer, 'batchSize') ? $importer->batchSize() : 1000;
+        }, $this->importers);
+
+        return min($sizes); // Usamos el tamaño de batch más pequeño
+    }
+
+    public function chunkSize(): int
+    {
+        $sizes = array_map(function ($importer) {
+            return method_exists($importer, 'chunkSize') ? $importer->chunkSize() : 500;
+        }, $this->importers);
+
+        return min($sizes); // Usamos el tamaño de chunk más pequeño
+    }
+
+    public function onError(Throwable $e)
+    {
+        Log::error('MultiImport global error: ' . $e->getMessage(), [
+            'row' => $this->currentRow ?? null,
+            'error' => $e
+        ]);
+
+        foreach ($this->importers as $importer) {
+            if (method_exists($importer, 'onError')) {
+                try {
+                    $importer->onError($e);
+                } catch (\Exception $innerException) {
+                    Log::error("Error in importer's onError handler: " . $innerException->getMessage());
+                }
+            }
+        }
+
+        // $this->tracker->incrementFailed();
     }
 }
