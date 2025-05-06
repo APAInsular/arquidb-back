@@ -19,6 +19,10 @@ class Phase extends Model
     protected $fillable = [
         'phase',
         'title',
+        'observations',
+        'state',
+        'start_date',
+        'record_date',
         'expedient_id',
     ];
 
