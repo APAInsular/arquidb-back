@@ -104,10 +104,10 @@ class PhasesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
             'phase' => $phaseType,
             'title' => $phaseTitle,
             'observations' => null,
+            'objections' => null,
+            'record_date' => $row['fecharegistro'],
             'state' => 'unsigned',
             'sign_date' => null,
-            'start_date' => $row['fechainicio'],
-            'record_date' => $row['fecharegistro'],
             'expedient_id' => $this->currentExpedientId
         ];
     }
@@ -170,9 +170,8 @@ class PhasesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
                 ],
                 'title' => 'nullable|string|max:255',
                 'expedient_id' => 'required|exists:expedients,id',
-                'sign_date' => 'required|date',
-                'start_date' => 'required|date',
                 'record_date' => 'required|date',
+                'sign_date' => 'required|date',
             ]);
 
             if ($validator->fails()) {

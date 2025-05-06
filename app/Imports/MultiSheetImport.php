@@ -43,7 +43,6 @@ class MultiSheetImport implements WithMultipleSheets, WithEvents, WithChunkReadi
             // ], $this),
             'TBLEXPEDIENTES' => new ExpedientsImport($this),
             'TBLEXPEDIENTES_FASES' => new PhasesImport($this),
-            // '' => new DocumentsImport(),
         ];
 
         // Orden
