@@ -24,7 +24,7 @@ class PhasesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
 
     public function batchSize(): int
     {
-        return 1000;
+        return 100;
     }
 
     public function model(array $row)

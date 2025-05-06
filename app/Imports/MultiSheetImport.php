@@ -18,7 +18,7 @@ class MultiSheetImport implements WithMultipleSheets, WithEvents, WithChunkReadi
 
     public function chunkSize(): int
     {
-        return 500; // Procesar 500 filas a la vez
+        return 250; // Reducir el tamaño del chunk para archivos muy grandes
     }
 
     public function sheets(): array
@@ -41,8 +41,8 @@ class MultiSheetImport implements WithMultipleSheets, WithEvents, WithChunkReadi
             //     new AddressesImport($this),
             //     new EmailsImport($this),
             // ], $this),
-            // 'TBLEXPEDIENTES' => new ExpedientsImport($this),
-            // 'TBLEXPEDIENTES_FASES' => new PhasesImport($this),
+            'TBLEXPEDIENTES' => new ExpedientsImport($this),
+            'TBLEXPEDIENTES_FASES' => new PhasesImport($this),
             // '' => new DocumentsImport(),
         ];
 
@@ -61,6 +61,21 @@ class MultiSheetImport implements WithMultipleSheets, WithEvents, WithChunkReadi
         // 0 => new ClientsImport(),
         // 1 => new ProductsImport(),
         // 2 => new OrdersImport(),
+    }
+
+    protected function makeChunkedImport(array $importers)
+    {
+        return new class($importers, $this) extends MultiImport {
+            public function chunkSize(): int
+            {
+                return 100; // Chunk más pequeño para hojas grandes
+            }
+
+            public function batchSize(): int
+            {
+                return 50; // Batch más pequeño para hojas grandes
+            }
+        };
     }
 
     public function registerEvents(): array

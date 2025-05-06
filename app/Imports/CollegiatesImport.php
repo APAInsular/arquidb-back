@@ -24,7 +24,7 @@ class CollegiatesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBa
 
     public function batchSize(): int
     {
-        return 1000;
+        return 100;
     }
 
     public function model(array $row)

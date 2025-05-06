@@ -7,11 +7,10 @@ use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\SkipsOnError;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
-use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchInserts, WithChunkReading
+class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchInserts
 {
     protected $tracker;
 
@@ -22,12 +21,7 @@ class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
 
     public function batchSize(): int
     {
-        return 1000;
-    }
-
-    public function chunkSize(): int
-    {
-        return 500; // Procesar 500 filas a la vez
+        return 100;
     }
 
     public function model(array $row)

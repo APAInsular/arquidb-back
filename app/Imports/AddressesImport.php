@@ -24,7 +24,7 @@ class AddressesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatc
 
     public function batchSize(): int
     {
-        return 1000;
+        return 100;
     }
 
     public function model(array $row)

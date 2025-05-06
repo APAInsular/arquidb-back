@@ -10,6 +10,8 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\SkipsOnError;
 use Maatwebsite\Excel\Events\BeforeSheet;
 use Maatwebsite\Excel\Events\AfterSheet;
+use Maatwebsite\Excel\Events\BeforeImport;
+use Maatwebsite\Excel\Events\AfterImport;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -63,7 +65,19 @@ class MultiImport implements ToModel, WithEvents, WithHeadingRow, WithBatchInser
                 foreach ($this->importers as $importer) {
                     $this->forwardEvent($importer, $event, AfterSheet::class);
                 }
-            }
+            },
+            BeforeImport::class => function (BeforeImport $event) {
+                // Limpiar memoria antes de empezar
+                if (function_exists('gc_collect_cycles')) {
+                    gc_collect_cycles();
+                }
+            },
+            AfterImport::class => function (AfterImport $event) {
+                // Limpiar memoria al finalizar
+                if (function_exists('gc_collect_cycles')) {
+                    gc_collect_cycles();
+                }
+            },
         ];
 
         return $events;
