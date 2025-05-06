@@ -21,6 +21,7 @@ class Phase extends Model
         'title',
         'observations',
         'state',
+        'sign_date',
         'start_date',
         'record_date',
         'expedient_id',
