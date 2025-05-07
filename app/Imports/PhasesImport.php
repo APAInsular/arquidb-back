@@ -99,6 +99,12 @@ class PhasesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
     {
         $phaseType = $this->findPhaseTypeColumn($row);
         $phaseTitle = $this->findPhaseTitleColumn($row);
+        $signState = 'unsigned';
+        $signDate = $row['fechavisado'];
+
+        if (isset($signDate) && !empty(trim($signDate))) {
+            $signState = 'signed';
+        }
 
         return [
             'phase' => $phaseType,
@@ -106,8 +112,8 @@ class PhasesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
             'observations' => null,
             'objections' => null,
             'record_date' => $row['fecharegistro'],
-            'state' => 'unsigned',
-            'sign_date' => null,
+            'state' => $signState,
+            'sign_date' => $signDate,
             'expedient_id' => $this->currentExpedientId
         ];
     }
