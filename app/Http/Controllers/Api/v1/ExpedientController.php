@@ -36,7 +36,7 @@ class ExpedientController extends Controller
             ->dateFrom($dateFrom)
             ->dateTo($dateTo);
 
-        $query->with('people.clients', 'people.collegiates', 'phases.documents');
+        $query->with('people.client', 'people.collegiates', 'phases.documents');
         $all ? $expedients = $query->get() : $expedients = $query->paginate($page ? $page : 5);
 
         return response()->json($expedients);
