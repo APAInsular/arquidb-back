@@ -97,10 +97,17 @@ class Expedient extends Model
         }
     }
 
-    public function scopeDateCreated($query, $date)
+    public function scopeDateFrom($query, $date)
     {
         if ($date) {
-            $query->whereDate('created_at', '==', $date);
+            $query->whereDate('created_at', '>=', $date);
+        }
+    }
+
+    public function scopeDateTo($query, $date)
+    {
+        if ($date) {
+            $query->whereDate('created_at', '<=', $date);
         }
     }
 }

@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CollegiateRequest;
+use App\Http\Requests\PersonRequest;
 use App\Models\Address;
 use App\Models\Collegiate;
 use App\Models\Email;
 use App\Models\Person;
 use App\Models\Phone;
+use App\Models\Record;
 use DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Log;
 use Orion\Concerns\DisableAuthorization;
@@ -27,6 +31,12 @@ class PersonCollegiatesController extends RelationController
 
     protected $relation = 'collegiates';
 
+    protected function storeRequest(): string
+    {
+        return PersonRequest::class;
+        //  CollegiateRequest::class;
+    }
+
     public function store(OrionRequest $request, ...$args)
     {
         try {
@@ -41,7 +51,7 @@ class PersonCollegiatesController extends RelationController
             ]);
 
             if (!empty($request->collegiate)) {
-                
+
                 $data = $request->get('collegiate');
 
                 $data['birth_date'] = isset($data['birth_date']) ? substr($data['birth_date'], 0, 10) : null;
@@ -63,9 +73,18 @@ class PersonCollegiatesController extends RelationController
                 $person->phones()->create($request->get('phone'));
             }
 
+            $record = Record::create([
+                'user_id' => Auth::user() ? Auth::user() : 1,
+                'name' => Auth::user() ? Auth::user()->name : "Alejandro",
+                'action' => "sign",
+                'affected_table' => "Collegiates",
+                'affected_record_id' => $person->id,
+            ]);
+
             return response()->json([
                 'message' => 'Persona creada correctamente',
-                'person' => $person->load(['collegiate', 'email', 'address', 'phone']),
+                'person' => $person->load(['collegiates', 'emails', 'addresses', 'phones']),
+                'record' => $record
             ], 201);
 
         } catch (\Exception $e) {
@@ -120,9 +139,18 @@ class PersonCollegiatesController extends RelationController
                 );
             }
 
+            $record = Record::create([
+                'user_id' => Auth::user() ? Auth::user() : 1,
+                'name' => Auth::user() ? Auth::user()->name : "Alejandro",
+                'action' => "update",
+                'affected_table' => "Collegiates",
+                'affected_record_id' => $person->id,
+            ]);
+
             return response()->json([
                 'message' => 'Persona actualizada correctamente',
                 'person' => $person->load(['collegiates', 'emails', 'addresses', 'phones']),
+                'record' => $record
             ], 200);
 
         } catch (\Exception $e) {
@@ -139,6 +167,45 @@ class PersonCollegiatesController extends RelationController
 
     }
 
+
+    public function destroy(OrionRequest $request, ...$args)
+    {
+        $id = $args[0];
+
+        try {
+            $person = Person::findOrFail($id);
+
+            $person->collegiates()->delete();
+            $person->emails()->delete();
+            $person->addresses()->delete();
+            $person->phones()->delete();
+
+            $person->delete();
+
+            $record = Record::create([
+                'user_id' => Auth::user() ? Auth::user()->id : 1,
+                'name' => Auth::user() ? Auth::user()->name : "Alejandro",
+                'action' => "delete",
+                'affected_table' => "Person, Collegiates, Emails, Addresses, Phones",
+                'affected_record_id' => $person->id,
+            ]);
+
+            return response()->json([
+                'message' => 'colegiado eliminado correctamente',
+                'record' => $record
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Error al eliminar al colegiado', [
+                'exception' => $e,
+            ]);
+
+            return response()->json([
+                'message' => 'Error al eliminar al colegiado',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 
     public function Personcollegiate($id)
     {

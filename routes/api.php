@@ -37,9 +37,12 @@ Route::post('logout', [AuthenticatedSessionController::class, 'destroy']);
 Route::get('/personCollegiate/{id}', [PersonCollegiatesController::class, 'Personcollegiate']);
 Route::post('/personCollegiate', [PersonCollegiatesController::class, 'store']);
 Route::put('/personCollegiate/{id}', [PersonCollegiatesController::class, 'update']);
+Route::delete('/personCollegiate/{id}', [PersonCollegiatesController::class, 'destroy']);
+
 Route::get('/personClient/{id}', [PersonClientsController::class, 'Personclient']);
 Route::post('/personClient', [PersonClientsController::class, 'store']);
 Route::put('/personClient/{id}', [PersonClientsController::class, 'update']);
+Route::delete('/personClient/{id}', [PersonClientsController::class, 'destroy']);
 
 
 Route::group(['as' => 'api.'], function () {

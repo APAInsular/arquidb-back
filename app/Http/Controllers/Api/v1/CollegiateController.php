@@ -14,5 +14,5 @@ class CollegiateController extends Controller
     use DisableAuthorization, DisablePagination;
     protected $model = Collegiate::class;
 
-    protected $request = CollegiateRequest::class;
+    // protected $request = CollegiateRequest::class;
 }

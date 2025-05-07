@@ -8,6 +8,8 @@ use App\Models\Client;
 use App\Models\Email;
 use App\Models\Person;
 use App\Models\Phone;
+use App\Models\Record;
+use Auth;
 use Illuminate\Http\Request;
 use Log;
 use Orion\Concerns\DisableAuthorization;
@@ -23,7 +25,7 @@ class PersonClientsController extends RelationController
 
     protected $model = Person::class;
 
-    protected $relation = 'clients';
+    protected $relation = 'client';
 
     public function store(OrionRequest $request, ...$args)
     {
@@ -39,7 +41,7 @@ class PersonClientsController extends RelationController
             ]);
 
             if (!empty($request->client)) {
-                $person->clients()->create($request->get('client'));
+                $person->client()->create($request->get('client'));
             }
 
             if (!empty($request->email)) {
@@ -54,9 +56,18 @@ class PersonClientsController extends RelationController
                 $person->phones()->create($request->get('phone'));
             }
 
+            $record = Record::create([
+                'user_id' => Auth::user() ? Auth::user() : 1,
+                'name' => Auth::user() ? Auth::user()->name : "Alejandro",
+                'action' => "sign",
+                'affected_table' => "Client",
+                'affected_record_id' => $person->id,
+            ]);
+
             return response()->json([
                 'message' => 'Persona creada correctamente',
-                'person' => $person->load(['client', 'email', 'address', 'phone']),
+                'person' => $person->load(['client', 'emails', 'addresses', 'phones']),
+                'record' => $record
             ], 201);
 
         } catch (\Exception $e) {
@@ -85,7 +96,7 @@ class PersonClientsController extends RelationController
             ]);
 
             if ($request->has('client')) {
-                $person->clients()->first()->update(
+                $person->client()->first()->update(
                     $request->get('client')
                 );
             }
@@ -108,9 +119,19 @@ class PersonClientsController extends RelationController
                 );
             }
 
+            $record = Record::create([
+                'user_id' => Auth::user() ? Auth::user() : 1,
+                'name' => Auth::user() ? Auth::user()->name : "Alejandro",
+                'action' => "update",
+                'affected_table' => "Client",
+                'affected_record_id' => $person->id,
+            ]);
+
+
             return response()->json([
                 'message' => 'Persona actualizada correctamente',
-                'person' => $person->load(['clients', 'emails', 'addresses', 'phones']),
+                'person' => $person->load(['client', 'emails', 'addresses', 'phones']),
+                'record' => $record
             ], 200);
 
         } catch (\Exception $e) {
@@ -125,6 +146,45 @@ class PersonClientsController extends RelationController
             ], 500);
         }
 
+    }
+
+    public function destroy(OrionRequest $request, ...$args)
+    {
+        $id = $args[0];
+
+        try {
+            $person = Person::findOrFail($id);
+
+            $person->client()->delete();
+            $person->emails()->delete();
+            $person->addresses()->delete();
+            $person->phones()->delete();
+
+            $person->delete();
+
+            $record = Record::create([
+                'user_id' => Auth::user() ? Auth::user()->id : 1,
+                'name' => Auth::user() ? Auth::user()->name : "Alejandro",
+                'action' => "delete",
+                'affected_table' => "Person, Client, Email, Address, Phone",
+                'affected_record_id' => $person->id,
+            ]);
+
+            return response()->json([
+                'message' => 'Cliente eliminado correctamente',
+                'record' => $record
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Error al eliminar cliente', [
+                'exception' => $e,
+            ]);
+
+            return response()->json([
+                'message' => 'Error al eliminar cliente',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function Personclient($id)

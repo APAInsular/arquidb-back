@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 
 class ExpedientController extends Controller
 {
-    // prueba
     use DisableAuthorization;
     protected $model = Expedient::class;
 
@@ -23,7 +22,9 @@ class ExpedientController extends Controller
         $phase = $request->get('phase');
         $client = $request->get('client');
         $collegiate = $request->get('collegiate');
-        $dateCreated = $request->get('date');
+        $dateFrom = $request->get('dateFrom');
+        $dateTo = $request->get('dateTo');
+        $page = $request->get('per_page');
         $all = $request->boolean('all', false);
 
         $query = Expedient::orderBy('id', 'Asc')
@@ -32,16 +33,11 @@ class ExpedientController extends Controller
             ->phase($phase)
             ->client($client)
             ->collegiate($collegiate)
-            ->dateCreated($dateCreated);
+            ->dateFrom($dateFrom)
+            ->dateTo($dateTo);
 
         $query->with('people.clients', 'people.collegiates', 'phases.documents');
-
-        $all ?
-            $expedients = $query->get()
-            :
-            $expedients = $query->paginate(5);
-
-        // dd();
+        $all ? $expedients = $query->get() : $expedients = $query->paginate($page ? $page : 5);
 
         return response()->json($expedients);
 

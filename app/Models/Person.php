@@ -45,7 +45,7 @@ class Person extends Model
         return $this->hasOne(Collegiate::class);
     }
     
-    public function clients(): HasOne
+    public function client(): HasOne
     {
         return $this->hasOne(Client::class);
     }
