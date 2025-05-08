@@ -77,7 +77,9 @@ return [
             'connection' => 'database',
             'table' => 'jobs',
             'queue' => 'imports',
-            'retry_after' => 1800,
+            'retry_after' => 3600,
+            'block_for' => 5,
+            'memory' => 2048,
         ],
 
     ],

@@ -38,9 +38,14 @@ class ProcessImportChunk implements ShouldQueue
         try {
             // Determinar qué importadores usar según la hoja
             $importers = $this->getImportersForSheet();
+            $this->freeMemory();
 
-            foreach ($this->chunk as $row) {
+            foreach ($this->chunk as $index => $row) {
                 $this->processRow($row, $importers);
+
+                if ($index % 20 === 0) {
+                    $this->freeMemory();
+                }
             }
 
             Log::info("Chunk processed successfully", [
@@ -50,6 +55,15 @@ class ProcessImportChunk implements ShouldQueue
         } catch (\Exception $e) {
             Log::error("Error processing chunk: " . $e->getMessage());
             $this->fail($e);
+        }
+    }
+
+    protected function freeMemory()
+    {
+        $memory = memory_get_usage(true);
+        if ($memory > 500 * 1024 * 1024) {
+            gc_collect_cycles();
+            Log::warning("Memoria alta: " . round($memory / 1024 / 1024) . "MB - Limpiando");
         }
     }
 

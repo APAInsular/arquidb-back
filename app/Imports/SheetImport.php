@@ -8,60 +8,38 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Events\BeforeSheet;
 use Maatwebsite\Excel\Events\AfterSheet;
-use Illuminate\Support\Facades\Log;
 
-class MultiImport implements ToModel, WithEvents, WithHeadingRow
+class SheetImport implements ToModel, WithEvents, WithHeadingRow
 {
     protected $importers;
     protected $tracker;
     protected $currentSheetName;
+    protected $chunkSize;
 
-    public function __construct(array $importers, $tracker)
+    public function __construct(array $importers, $tracker, $chunkSize = 100)
     {
         $this->importers = $importers;
         $this->tracker = $tracker;
+        $this->chunkSize = $chunkSize;
     }
 
     public function model(array $row)
     {
-        // Solo se ejecutará para pequeños chunks en memoria
         foreach ($this->importers as $key => $importer) {
             try {
                 $importer->model($row);
                 $this->tracker->incrementProcessed();
                 $this->tracker->incrementSuccessful();
             } catch (\Exception $e) {
-                Log::error("Error processing row in {$key}: " . $e->getMessage());
                 $this->tracker->incrementFailed();
             }
         }
         return null;
     }
 
-    public function dispatchChunkToQueue($chunk)
+    public function chunkSize(): int
     {
-        // Configuración de importadores (debe coincidir con MultiSheetImport)
-        $importersConfig = [
-            'people' => PeopleImport::class,
-            'collegiates' => CollegiatesImport::class,
-            'clients' => ClientsImport::class,
-            'phones' => PhonesImport::class,
-            'addresses' => AddressesImport::class,
-            'emails' => EmailsImport::class,
-            'expedients' => ExpedientsImport::class,
-            'phases' => PhasesImport::class
-        ];
-
-        ProcessImportChunk::dispatch(
-            $chunk->toArray(),
-            $this->currentSheetName,
-            [
-                'processed' => $this->tracker->processed,
-                'successful' => $this->tracker->successful,
-                'failed' => $this->tracker->failed
-            ],
-            $importersConfig
-        )->onQueue('imports');
+        return $this->chunkSize;
     }
 
     public function registerEvents(): array
@@ -89,5 +67,31 @@ class MultiImport implements ToModel, WithEvents, WithHeadingRow
                 }
             }
         ];
+    }
+
+    public function dispatchChunkToQueue($chunk)
+    {
+        // Configuración de importadores (debe coincidir con MultiSheetImport)
+        $importersConfig = [
+            'people' => PeopleImport::class,
+            'collegiates' => CollegiatesImport::class,
+            'clients' => ClientsImport::class,
+            'phones' => PhonesImport::class,
+            'addresses' => AddressesImport::class,
+            'emails' => EmailsImport::class,
+            'expedients' => ExpedientsImport::class,
+            'phases' => PhasesImport::class
+        ];
+
+        ProcessImportChunk::dispatch(
+            $chunk->toArray(),
+            $this->currentSheetName,
+            [
+                'processed' => $this->tracker->processed,
+                'successful' => $this->tracker->successful,
+                'failed' => $this->tracker->failed
+            ],
+            $importersConfig
+        )->onQueue('imports');
     }
 }

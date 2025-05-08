@@ -10,14 +10,15 @@ use Maatwebsite\Excel\Events\BeforeImport;
 use Maatwebsite\Excel\Events\AfterImport;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\ProcessImportChunk;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class MultiSheetImport implements WithMultipleSheets, WithEvents, WithChunkReading
+class MultiSheetImport implements WithMultipleSheets, WithEvents, WithChunkReading, ShouldQueue
 {
     use ImportTracker;
 
     public function chunkSize(): int
     {
-        return 250; // Tamaño de chunk para procesamiento en memoria
+        return 50; // Tamaño de chunk para procesamiento en memoria
     }
 
     public function sheets(): array
@@ -25,61 +26,42 @@ class MultiSheetImport implements WithMultipleSheets, WithEvents, WithChunkReadi
         $this->resetCounters();
 
         return [
-            'TBLEXPEDIENTES_COLEGIADOS' => $this->createImportForSheet([
+            'TBLEXPEDIENTES_COLEGIADOS' => new SheetImport([
                 'people' => new PeopleImport($this),
                 'collegiates' => new CollegiatesImport($this)
-            ]),
+            ], $this, 100),
 
-            'TBLEXPEDIENTES_CLIENTES' => $this->createImportForSheet([
+            'TBLEXPEDIENTES_CLIENTES' => new SheetImport([
                 'people' => new PeopleImport($this),
                 'clients' => new ClientsImport($this),
                 'phones' => new PhonesImport($this)
-            ]),
+            ], $this, 100),
 
-            'tblclientes' => $this->createImportForSheet([
+            'tblclientes' => new SheetImport([
                 'addresses' => new AddressesImport($this),
                 'emails' => new EmailsImport($this)
-            ]),
+            ], $this, 100),
 
-            'TBLEXPEDIENTES' => $this->createImportForSheet([
+            'TBLEXPEDIENTES' => new SheetImport([
                 'expedients' => new ExpedientsImport($this)
-            ]),
+            ], $this, 100),
 
-            'TBLEXPEDIENTES_FASES' => $this->createImportForSheet([
+            'TBLEXPEDIENTES_FASES' => new SheetImport([
                 'phases' => new PhasesImport($this)
-            ])
+            ], $this, 100)
         ];
-    }
-
-    protected function createImportForSheet(array $importers)
-    {
-        return new class($importers, $this) extends \App\Imports\MultiImport {
-            public function chunkSize(): int
-            {
-                return 100; // Chunk más pequeño para procesamiento en jobs
-            }
-
-            public function registerEvents(): array
-            {
-                return [
-                    'sheet' => function ($sheet) {
-                        $sheet->on('chunk', function ($chunk) {
-                            $this->dispatchChunkToQueue($chunk);
-                        });
-                    }
-                ];
-            }
-        };
     }
 
     public function registerEvents(): array
     {
         return [
             BeforeImport::class => function (BeforeImport $event) {
+                gc_enable();
                 $this->resetCounters();
-                Log::info('Starting import process');
+                Log::info('Starting import process '.memory_get_usage(true));
             },
             AfterImport::class => function (AfterImport $event) {
+                gc_collect_cycles();
                 Log::info("Import completed. Stats: ", [
                     'processed' => $this->processed,
                     'successful' => $this->successful,
