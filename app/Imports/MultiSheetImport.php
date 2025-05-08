@@ -9,70 +9,65 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Events\BeforeImport;
 use Maatwebsite\Excel\Events\AfterImport;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\ProcessImportChunk;
 
 class MultiSheetImport implements WithMultipleSheets, WithEvents, WithChunkReading
 {
     use ImportTracker;
 
-    private $peopleCache = [];
-
     public function chunkSize(): int
     {
-        return 250; // Reducir el tamaño del chunk para archivos muy grandes
+        return 250; // Tamaño de chunk para procesamiento en memoria
     }
 
     public function sheets(): array
     {
         $this->resetCounters();
-        $peopleImport = new PeopleImport($this);
 
         return [
-            // Aquí defines qué importador corresponde a cada hoja
-            'TBLEXPEDIENTES_COLEGIADOS' => new MultiImport([
-                $peopleImport,
-                new CollegiatesImport($this),
-            ], $this),
-            'TBLEXPEDIENTES_CLIENTES' => new MultiImport([
-                $peopleImport,
-                new ClientsImport($this),
-                new PhonesImport($this),
-            ], $this),
-            'tblclientes' => new MultiImport([
-                new AddressesImport($this),
-                new EmailsImport($this),
-            ], $this),
-            'TBLEXPEDIENTES' => new ExpedientsImport($this),
-            'TBLEXPEDIENTES_FASES' => new PhasesImport($this),
+            'TBLEXPEDIENTES_COLEGIADOS' => $this->createImportForSheet([
+                'people' => new PeopleImport($this),
+                'collegiates' => new CollegiatesImport($this)
+            ]),
+
+            'TBLEXPEDIENTES_CLIENTES' => $this->createImportForSheet([
+                'people' => new PeopleImport($this),
+                'clients' => new ClientsImport($this),
+                'phones' => new PhonesImport($this)
+            ]),
+
+            'tblclientes' => $this->createImportForSheet([
+                'addresses' => new AddressesImport($this),
+                'emails' => new EmailsImport($this)
+            ]),
+
+            'TBLEXPEDIENTES' => $this->createImportForSheet([
+                'expedients' => new ExpedientsImport($this)
+            ]),
+
+            'TBLEXPEDIENTES_FASES' => $this->createImportForSheet([
+                'phases' => new PhasesImport($this)
+            ])
         ];
-
-        // Orden
-        // PersonSeeder::class,
-        // CollegiateSeeder::class,
-        // ClientSeeder::class,
-        // ExpedientSeeder::class,
-        // PhaseSeeder::class,
-        // DocumentSeeder::class,
-        // PhoneSeeder::class,
-        // AddressSeeder::class,
-        // EmailSeeder::class,
-
-        // Alternativa si las hojas tienen índices numéricos:
-        // 0 => new ClientsImport(),
-        // 1 => new ProductsImport(),
-        // 2 => new OrdersImport(),
     }
 
-    protected function makeChunkedImport(array $importers)
+    protected function createImportForSheet(array $importers)
     {
-        return new class($importers, $this) extends MultiImport {
+        return new class($importers, $this) extends \App\Imports\MultiImport {
             public function chunkSize(): int
             {
-                return 100; // Chunk más pequeño para hojas grandes
+                return 100; // Chunk más pequeño para procesamiento en jobs
             }
 
-            public function batchSize(): int
+            public function registerEvents(): array
             {
-                return 50; // Batch más pequeño para hojas grandes
+                return [
+                    'sheet' => function ($sheet) {
+                        $sheet->on('chunk', function ($chunk) {
+                            $this->dispatchChunkToQueue($chunk);
+                        });
+                    }
+                ];
             }
         };
     }

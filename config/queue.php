@@ -72,6 +72,14 @@ return [
             'after_commit' => false,
         ],
 
+        'imports' => [
+            'driver' => 'database',
+            'connection' => 'database',
+            'table' => 'jobs',
+            'queue' => 'imports',
+            'retry_after' => 1800,
+        ],
+
     ],
 
     /*
