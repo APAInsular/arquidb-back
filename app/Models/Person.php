@@ -44,7 +44,7 @@ class Person extends Model
     {
         return $this->hasOne(Collegiate::class);
     }
-    
+
     public function client(): HasOne
     {
         return $this->hasOne(Client::class);
@@ -63,5 +63,12 @@ class Person extends Model
     public function emails(): HasMany
     {
         return $this->hasMany(Email::class);
+    }
+
+    public function scopeName($query, $name)
+    {
+        if ($name) {
+            $query->where('name', 'LIKE', "%$name%");
+        }
     }
 }

@@ -32,13 +32,16 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 });
 
 Route::post('login', [AuthenticatedSessionController::class, 'store']);
-Route::post('logout', [AuthenticatedSessionController::class, 'destroy']);
+Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth:sanctum');
+;
 
+Route::get('/personCollegiate', [PersonCollegiatesController::class, 'index']);
 Route::get('/personCollegiate/{id}', [PersonCollegiatesController::class, 'Personcollegiate']);
 Route::post('/personCollegiate', [PersonCollegiatesController::class, 'store']);
 Route::put('/personCollegiate/{id}', [PersonCollegiatesController::class, 'update']);
 Route::delete('/personCollegiate/{id}', [PersonCollegiatesController::class, 'destroy']);
 
+Route::get('/personClient', [PersonClientsController::class, 'index']);
 Route::get('/personClient/{id}', [PersonClientsController::class, 'Personclient']);
 Route::post('/personClient', [PersonClientsController::class, 'store']);
 Route::put('/personClient/{id}', [PersonClientsController::class, 'update']);

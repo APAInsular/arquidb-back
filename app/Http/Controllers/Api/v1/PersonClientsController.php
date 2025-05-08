@@ -27,6 +27,23 @@ class PersonClientsController extends RelationController
 
     protected $relation = 'client';
 
+    public function index(OrionRequest $request, ...$args)
+    {
+        $name = $request->get('name');
+        $page = $request->get('per_page');
+        $all = $request->boolean('all', false);
+
+        $query = Person::orderBy('id', 'Asc')
+            ->name($name)
+            ->whereHas('client')
+            ->with('client');
+
+        $all ? $clients = $query->get() : $clients = $query->paginate($page ? $page : 5);
+
+        return response()->json($clients);
+
+    }
+
     public function store(OrionRequest $request, ...$args)
     {
         try {

@@ -24,12 +24,28 @@ use View;
 class PersonCollegiatesController extends RelationController
 {
     //
-    use DisablePagination;
     use DisableAuthorization;
 
     protected $model = Person::class;
 
     protected $relation = 'collegiates';
+
+    public function index(OrionRequest $request, ...$args)
+    {
+        $name = $request->get('name');
+        $page = $request->get('per_page');
+        $all = $request->boolean('all', false);
+
+        $query = Person::orderBy('id', 'Asc')
+            ->name($name)
+            ->whereHas('collegiates')
+            ->with('collegiates');
+
+        $all ? $collegiates = $query->get() : $collegiates = $query->paginate($page ? $page : 5);
+
+        return response()->json($collegiates);
+
+    }
 
     protected function storeRequest(): string
     {
