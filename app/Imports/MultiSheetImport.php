@@ -9,7 +9,6 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Events\BeforeImport;
 use Maatwebsite\Excel\Events\AfterImport;
 use Illuminate\Support\Facades\Log;
-use App\Jobs\ProcessImportChunk;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class MultiSheetImport implements WithMultipleSheets, WithEvents, WithChunkReading, ShouldQueue

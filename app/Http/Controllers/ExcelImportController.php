@@ -16,7 +16,7 @@ class ExcelImportController extends Controller
 
         try {
             ini_set('memory_limit', '2048M');
-            $filePath = storage_path('app\private\Prueba.XLS');
+            $filePath = storage_path('app\private\Prueba.xlsx');
 
             if (!file_exists($filePath)) {
                 throw new \Exception("Archivo no encontrado: $filePath");
@@ -25,7 +25,7 @@ class ExcelImportController extends Controller
             Log::info("Starting import from file: $filePath");
 
             $import = new MultiSheetImport();
-            Excel::import($import, $filePath);
+            Excel::queueImport($import, $filePath)->onQueue('imports');
 
             DB::commit();
 

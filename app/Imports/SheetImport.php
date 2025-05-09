@@ -8,8 +8,10 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Events\BeforeSheet;
 use Maatwebsite\Excel\Events\AfterSheet;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class SheetImport implements ToModel, WithEvents, WithHeadingRow
+class SheetImport implements ToModel, WithEvents, WithHeadingRow, WithChunkReading, ShouldQueue
 {
     protected $importers;
     protected $tracker;
@@ -67,31 +69,5 @@ class SheetImport implements ToModel, WithEvents, WithHeadingRow
                 }
             }
         ];
-    }
-
-    public function dispatchChunkToQueue($chunk)
-    {
-        // Configuración de importadores (debe coincidir con MultiSheetImport)
-        $importersConfig = [
-            'people' => PeopleImport::class,
-            'collegiates' => CollegiatesImport::class,
-            'clients' => ClientsImport::class,
-            'phones' => PhonesImport::class,
-            'addresses' => AddressesImport::class,
-            'emails' => EmailsImport::class,
-            'expedients' => ExpedientsImport::class,
-            'phases' => PhasesImport::class
-        ];
-
-        ProcessImportChunk::dispatch(
-            $chunk->toArray(),
-            $this->currentSheetName,
-            [
-                'processed' => $this->tracker->processed,
-                'successful' => $this->tracker->successful,
-                'failed' => $this->tracker->failed
-            ],
-            $importersConfig
-        )->onQueue('imports');
     }
 }
