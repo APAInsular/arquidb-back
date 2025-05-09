@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\v1\AddressController;
+use App\Http\Controllers\Api\v1\CenterController;
 use App\Http\Controllers\Api\v1\ClientController;
 use App\Http\Controllers\Api\v1\CollegiateController;
 use App\Http\Controllers\Api\v1\DocumentController;
@@ -35,13 +36,13 @@ Route::post('login', [AuthenticatedSessionController::class, 'store']);
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth:sanctum');
 ;
 
-Route::get('/personCollegiate', [PersonCollegiatesController::class, 'index']);
+Route::get('/personCollegiate', [PersonCollegiatesController::class, 'index'])->middleware('auth:sanctum');
 Route::get('/personCollegiate/{id}', [PersonCollegiatesController::class, 'Personcollegiate']);
 Route::post('/personCollegiate', [PersonCollegiatesController::class, 'store']);
 Route::put('/personCollegiate/{id}', [PersonCollegiatesController::class, 'update']);
 Route::delete('/personCollegiate/{id}', [PersonCollegiatesController::class, 'destroy']);
 
-Route::get('/personClient', [PersonClientsController::class, 'index']);
+Route::get('/personClient', [PersonClientsController::class, 'index'])->middleware('auth:sanctum');
 Route::get('/personClient/{id}', [PersonClientsController::class, 'Personclient']);
 Route::post('/personClient', [PersonClientsController::class, 'store']);
 Route::put('/personClient/{id}', [PersonClientsController::class, 'update']);
@@ -53,15 +54,16 @@ Route::group(['as' => 'api.'], function () {
     // Tablas Generales
     Orion::resource('users', UserController::class);
     Orion::resource('address', AddressController::class);
-    Orion::resource('client', ClientController::class);
-    Orion::resource('collegiate', CollegiateController::class);
+    Orion::resource('client', ClientController::class)->middleware('auth:sanctum');
+    Orion::resource('collegiate', CollegiateController::class)->middleware('auth:sanctum');
     Orion::resource('document', DocumentController::class);
     Orion::resource('email', EmailController::class);
-    Orion::resource('expedient', ExpedientController::class);
-    Orion::resource('person', PersonController::class);
-    Orion::resource('phase', PhaseController::class);
+    Orion::resource('expedient', ExpedientController::class)->middleware('auth:sanctum');
+    Orion::resource('person', PersonController::class)->middleware('auth:sanctum');
+    Orion::resource('phase', PhaseController::class)->middleware('auth:sanctum');
     Orion::resource('phone', PhoneController::class);
     Orion::resource('record', RecordController::class);
+    Orion::resource('centers', CenterController::class);
 
     // Tablas relacionadas
     //Relaciones para los expedientes (ademas de optener las personas etc...)

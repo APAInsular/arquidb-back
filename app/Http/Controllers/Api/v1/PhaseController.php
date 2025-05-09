@@ -17,14 +17,19 @@ class PhaseController extends Controller
     public function index(OrionRequest $request)
     {
 
-        $phase = Phase::with('documents')->get();
+        $user = $request->user();
+
+        $phase = Phase::with('documents')
+            ->centers($user->center_id)
+            ->get();
+
         return response()->json($phase);
     }
 
     public function show(OrionRequest $request, ...$args)
     {
         $id = $args[0];
-        
+
         $phase = Phase::with('documents')->findOrFail($id);
         return response()->json($phase);
     }

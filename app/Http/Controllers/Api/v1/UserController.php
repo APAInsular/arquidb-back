@@ -25,11 +25,20 @@ class UserController extends Controller
         $all = $request->boolean('all', false);
 
         $query = User::orderBy('id', 'Asc')
-            ->name($name);
-
+            ->name($name)
+            ->with('center');
 
         $all ? $users = $query->get() : $users = $query->paginate($page ? $page : 5);
 
+        return response()->json($users);
+
+    }
+
+    public function show(OrionRequest $request, ...$args)
+    {
+        $id = $args[0];
+
+        $users = User::with('center')->findOrFail($id);
         return response()->json($users);
 
     }

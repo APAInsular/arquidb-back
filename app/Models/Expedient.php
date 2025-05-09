@@ -56,6 +56,11 @@ class Expedient extends Model
         return $this->belongsTo(Center::class);
     }
 
+    public function scopeCenters($query, $centerId)
+    {
+        return $query->where('center_id', $centerId);
+    }
+
     public function scopeNumber($query, $number)
     {
         if ($number) {

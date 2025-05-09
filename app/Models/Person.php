@@ -65,6 +65,13 @@ class Person extends Model
         return $this->hasMany(Email::class);
     }
 
+    public function scopeCenters($query, $centerId)
+    {
+        return $query->whereHas('expedients', function ($q) use ($centerId) {
+            $q->where('center_id', $centerId);
+        });
+    }
+
     public function scopeName($query, $name)
     {
         if ($name) {

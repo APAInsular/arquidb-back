@@ -17,6 +17,7 @@ class ExpedientController extends Controller
 
     public function index(OrionRequest $request)
     {
+        $user = $request->user();
         $number = $request->get('number');
         $title = $request->get('title');
         $phase = $request->get('phase');
@@ -34,7 +35,8 @@ class ExpedientController extends Controller
             ->client($client)
             ->collegiate($collegiate)
             ->dateFrom($dateFrom)
-            ->dateTo($dateTo);
+            ->dateTo($dateTo)
+            ->centers($user->center_id);
 
         $query->with('people.client', 'people.collegiates', 'phases.documents');
         $all ? $expedients = $query->get() : $expedients = $query->paginate($page ? $page : 5);

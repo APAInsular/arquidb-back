@@ -29,12 +29,14 @@ class PersonClientsController extends RelationController
 
     public function index(OrionRequest $request, ...$args)
     {
+        $user = $request->user();
         $name = $request->get('name');
         $page = $request->get('per_page');
         $all = $request->boolean('all', false);
 
         $query = Person::orderBy('id', 'Asc')
             ->name($name)
+            ->centers($user->center_id)
             ->whereHas('client')
             ->with('client');
 

@@ -30,7 +30,7 @@ class ExpedientFactory extends Factory
             'site' => fake()->word(),
             'postal_code' => fake()->randomLetter(),
             'budget' => fake()->randomFloat(2, 0, 9999999.99),
-            'center_id' => Center::factory(),
+            'center_id' => Center::inRandomOrder()->first()->id,
         ];
     }
 }
