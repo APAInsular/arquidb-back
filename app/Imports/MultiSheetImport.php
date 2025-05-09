@@ -23,6 +23,7 @@ class MultiSheetImport implements WithMultipleSheets, WithEvents, WithChunkReadi
     public function sheets(): array
     {
         $this->resetCounters();
+        Log::info("Iniciando importación de hojas");
 
         return [
             'TBLEXPEDIENTES_COLEGIADOS' => new SheetImport([
@@ -57,7 +58,7 @@ class MultiSheetImport implements WithMultipleSheets, WithEvents, WithChunkReadi
             BeforeImport::class => function (BeforeImport $event) {
                 gc_enable();
                 $this->resetCounters();
-                Log::info('Starting import process '.memory_get_usage(true));
+                Log::info('Starting import process ' . memory_get_usage(true));
             },
             AfterImport::class => function (AfterImport $event) {
                 gc_collect_cycles();

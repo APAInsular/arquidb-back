@@ -2,7 +2,6 @@
 
 namespace App\Imports;
 
-use App\Jobs\ProcessImportChunk;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -10,6 +9,7 @@ use Maatwebsite\Excel\Events\BeforeSheet;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Log;
 
 class SheetImport implements ToModel, WithEvents, WithHeadingRow, WithChunkReading, ShouldQueue
 {
@@ -27,6 +27,9 @@ class SheetImport implements ToModel, WithEvents, WithHeadingRow, WithChunkReadi
 
     public function model(array $row)
     {
+        Log::info("Procesando fila: " . json_encode($row));
+        Log::info("Memoria usada: " . memory_get_usage(true));
+
         foreach ($this->importers as $key => $importer) {
             try {
                 $importer->model($row);
