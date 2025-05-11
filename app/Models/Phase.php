@@ -52,4 +52,11 @@ class Phase extends Model
     {
         return $this->belongsTo(Expedient::class);
     }
+
+    public function scopeCenters($query, $centerId)
+    {
+        return $query->whereHas('expedient', function ($q) use ($centerId) {
+            $q->where('center_id', $centerId);
+        });
+    }
 }

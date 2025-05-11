@@ -15,7 +15,7 @@ return new class extends Migration
 
         Schema::create('phones', function (Blueprint $table) {
             $table->foreignId('person_id')->constrained()->cascadeOnDelete();
-            $table->char('phone', 9);
+            $table->char('phone', 9)->unique();
             $table->primary(['person_id', 'phone']);
             $table->timestamps();
         });
