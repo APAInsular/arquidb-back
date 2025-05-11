@@ -56,12 +56,23 @@ class Expedient extends Model
         return $this->belongsTo(Center::class);
     }
 
+    public function scopeCenters($query, $centerId)
+    {
+        return $query->where('center_id', $centerId);
+    }
+
+    public function scopeNumber($query, $number)
+    {
+        if ($number) {
+            $query->where('number', 'LIKE', "%$number%");
+        }
+    }
+
     public function scopeTitle($query, $name)
     {
         if ($name) {
             $query->where('title', 'LIKE', "%$name%");
         }
-        // return $query;
     }
 
     public function scopePhase($query, $phase)
@@ -71,7 +82,6 @@ class Expedient extends Model
                 $q->where('phase', 'LIKE', "%$phase%");
             });
         }
-        // return $query;
     }
 
     public function scopeClient($query, $client)
@@ -81,7 +91,6 @@ class Expedient extends Model
                 $q->where('name', 'LIKE', "%$client%");
             });
         }
-        // return $query;
     }
 
     public function scopeCollegiate($query, $collegiate)
@@ -91,14 +100,19 @@ class Expedient extends Model
                 $q->where('name', 'LIKE', "%$collegiate%");
             });
         }
-        // return $query;
     }
 
-    public function scopeDateCreated($query, $date)
+    public function scopeDateFrom($query, $date)
     {
         if ($date) {
-            $query->whereDate('created_at', '==', $date);
+            $query->whereDate('created_at', '>=', $date);
         }
-        // return $query;
+    }
+
+    public function scopeDateTo($query, $date)
+    {
+        if ($date) {
+            $query->whereDate('created_at', '<=', $date);
+        }
     }
 }

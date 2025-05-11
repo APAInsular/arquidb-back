@@ -23,14 +23,14 @@ class ExpedientFactory extends Factory
     {
         return [
             'title' => fake()->sentence(4),
-            'number' => fake()->randomLetter(),
+            'number' => fake()->unique()->regexify('[0-9]{2}/[0-9]{6}'),
             'start_date' => fake()->dateTime(),
             'end_date' => fake()->dateTime(),
             'description' => fake()->text(),
             'site' => fake()->word(),
             'postal_code' => fake()->randomLetter(),
             'budget' => fake()->randomFloat(2, 0, 9999999.99),
-            'center_id' => Center::factory(),
+            'center_id' => Center::inRandomOrder()->first()->id,
         ];
     }
 }

@@ -17,10 +17,10 @@ class Record extends Model
      */
     protected $fillable = [
         'user_id',
+        'name',
         'action',
         'affected_table',
         'affected_record_id',
-        'date',
     ];
 
     /**
@@ -31,7 +31,6 @@ class Record extends Model
     protected $casts = [
         'id' => 'integer',
         'user_id' => 'integer',
-        'date' => 'timestamp',
     ];
 
     public function user(): BelongsTo

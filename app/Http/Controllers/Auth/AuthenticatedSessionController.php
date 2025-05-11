@@ -16,18 +16,15 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): JsonResponse
     {
 
-    // Autenticar al usuario
-    $request->authenticate();
+        $request->authenticate();
 
-    // Crear el token de autenticación
-    $user = Auth::user();
-    $token = $user->createToken('auth_token')->plainTextToken;
+        $user = Auth::user();
+        $token = $user->createToken('auth_token')->plainTextToken;
 
-    // Retornar el token como respuesta JSON
-    return response()->json([
-        'token' => $token,
-        'user' => $user
-    ]);
+        return response()->json([
+            'token' => $token,
+            'user' => $user
+        ]);
     }
 
     /**
@@ -35,13 +32,13 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): JsonResponse
     {
+        $user = $request->user();
 
-        $user = Auth::user();
-        $user->tokens()->delete();
-        Auth::guard('web')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
 
+        $user->currentAccessToken()->delete();
         return response()->json(['message' => 'Successfully logged out']);
     }
 }

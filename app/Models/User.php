@@ -63,4 +63,11 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Center::class);
     }
+
+    public function scopeName($query, $name)
+    {
+        if ($name) {
+            $query->where('name', 'LIKE', "%$name%");
+        }
+    }
 }
