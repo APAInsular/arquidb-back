@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('college')->nullable();
             $table->string('origin_college')->nullable();
             $table->string('origin_college_number')->nullable();
-            $table->enum('degree', ["Technical Architect"]);
+            $table->enum('degree', ["Technical Architect"])->nullable();
             $table->string('collegiate_number')->nullable();
             $table->string('specialty')->nullable();
             $table->date('termination_date')->nullable();

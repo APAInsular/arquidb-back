@@ -7,39 +7,51 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Events\BeforeSheet;
 use Maatwebsite\Excel\Events\AfterSheet;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 
-class MultiImport implements ToModel, WithEvents, WithHeadingRow
+class SheetImport implements ToModel, WithEvents, WithHeadingRow, WithChunkReading, ShouldQueue
 {
     protected $importers;
     protected $tracker;
+    protected $currentSheetName;
+    protected $chunkSize;
 
-    public function __construct(array $importers, $tracker)
+    public function __construct(array $importers, $tracker, $chunkSize = 100)
     {
         $this->importers = $importers;
         $this->tracker = $tracker;
+        $this->chunkSize = $chunkSize;
     }
 
     public function model(array $row)
     {
-        Log::debug("Processing row in MultiImporter", $row);
-        foreach ($this->importers as $importer) {
-            Log::debug("Executing " . get_class($importer));
+        Log::info("Procesando fila: " . json_encode($row));
+        Log::info("Memoria usada: " . memory_get_usage(true));
+
+        foreach ($this->importers as $key => $importer) {
             try {
                 $importer->model($row);
+                $this->tracker->incrementProcessed();
+                $this->tracker->incrementSuccessful();
             } catch (\Exception $e) {
-                // Manejar error individual del importador
-                continue;
+                $this->tracker->incrementFailed();
             }
         }
+        return null;
+    }
 
-        return null; // No retornamos modelo directamente
+    public function chunkSize(): int
+    {
+        return $this->chunkSize;
     }
 
     public function registerEvents(): array
     {
         return [
             BeforeSheet::class => function (BeforeSheet $event) {
+                $this->currentSheetName = $event->getSheet()->getTitle();
                 foreach ($this->importers as $importer) {
                     if (method_exists($importer, 'registerEvents')) {
                         $events = $importer->registerEvents();

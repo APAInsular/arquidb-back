@@ -19,6 +19,11 @@ class Phase extends Model
     protected $fillable = [
         'phase',
         'title',
+        'observations',
+        'objections',
+        'record_date',
+        'state',
+        'sign_date',
         'expedient_id',
     ];
 
@@ -30,6 +35,7 @@ class Phase extends Model
     protected $casts = [
         'id' => 'integer',
         'expedient_id' => 'integer',
+        'phase' => 'string' // Añadir esto para consistencia
     ];
 
     public static function boot()
@@ -37,8 +43,8 @@ class Phase extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            if (!preg_match('/^\d{4}$/', $model->phase) || $model->phase < '0000' || $model->phase > '9999') {
-                throw new \InvalidArgumentException('El campo phase debe ser un número entre 0000 y 9999.');
+            if (!preg_match('/^\d{3,4}$/', $model->phase) || $model->phase < '000' || $model->phase > '9999') {
+                throw new \InvalidArgumentException('El campo phase debe ser un número entre 000 y 9999 (3 o 4 dígitos).');
             }
         });
     }
