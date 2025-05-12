@@ -9,13 +9,21 @@ class FileController extends Controller
     public function upload(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|max:10240', // Máximo 10MB
+            'file' => 'required|file|max:10240',
         ]);
 
-        // Almacenar el archivo en la carpeta 'public/documents'
-        $path = $request->file('file')->store('documents', 'public');
+        $file = $request->file('file');
 
-        // Devolver la ruta del archivo
+        if (!$file->isValid()) {
+            return response()->json(['message' => 'El archivo no es válido'], 400);
+        }
+
+        $filename = time() . '_' . $file->getClientOriginalName(); // o solo getClientOriginalName()
+        $path = 'documents/' . $filename;
+
+        // Usa el disco 'public' pero manualmente mueve el archivo
+        $file->move(storage_path('app/public/documents'), $filename);
+
         return response()->json([
             'success' => true,
             'path' => $path,
