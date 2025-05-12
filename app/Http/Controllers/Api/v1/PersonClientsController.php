@@ -36,11 +36,11 @@ class PersonClientsController extends RelationController
 
         $query = Person::orderBy('id', 'Asc')
             ->name($name)
-            ->centers($user->center_id)
+            // ->centers($user->center_id)
             ->whereHas('client')
             ->with('client');
 
-        $all ? $clients = $query->get() : $clients = $query->paginate($page ? $page : 5);
+        $all ? $clients = $query->get() : $clients = $query->paginate($page ? $page : 10);
 
         return response()->json($clients);
 
@@ -76,8 +76,8 @@ class PersonClientsController extends RelationController
             }
 
             $record = Record::create([
-                'user_id' => Auth::user() ? Auth::user() : 1,
-                'name' => Auth::user() ? Auth::user()->name : "Alejandro",
+                'user_id' => $request->user()->id,
+                'name' => $request->user()->name,
                 'action' => "sign",
                 'affected_table' => "Client",
                 'affected_record_id' => $person->id,
@@ -139,8 +139,8 @@ class PersonClientsController extends RelationController
             }
 
             $record = Record::create([
-                'user_id' => Auth::user() ? Auth::user() : 1,
-                'name' => Auth::user() ? Auth::user()->name : "Alejandro",
+                'user_id' => $request->user()->id,
+                'name' => $request->user()->name,
                 'action' => "update",
                 'affected_table' => "Client",
                 'affected_record_id' => $person->id,
@@ -182,8 +182,8 @@ class PersonClientsController extends RelationController
             $person->delete();
 
             $record = Record::create([
-                'user_id' => Auth::user() ? Auth::user()->id : 1,
-                'name' => Auth::user() ? Auth::user()->name : "Alejandro",
+                'user_id' => $request->user()->id,
+                'name' => $request->user()->name,
                 'action' => "delete",
                 'affected_table' => "Person, Client, Email, Address, Phone",
                 'affected_record_id' => $person->id,

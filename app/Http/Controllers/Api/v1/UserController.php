@@ -26,9 +26,9 @@ class UserController extends Controller
 
         $query = User::orderBy('id', 'Asc')
             ->name($name)
-            ->with('center');
+            ->with('center', 'roles', 'roles.permissions');
 
-        $all ? $users = $query->get() : $users = $query->paginate($page ? $page : 5);
+        $all ? $users = $query->get() : $users = $query->paginate($page ? $page : 10);
 
         return response()->json($users);
 
@@ -38,7 +38,7 @@ class UserController extends Controller
     {
         $id = $args[0];
 
-        $users = User::with('center')->findOrFail($id);
+        $users = User::with('center', 'roles', 'roles.permissions')->findOrFail($id);
         return response()->json($users);
 
     }
