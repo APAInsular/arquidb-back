@@ -27,7 +27,8 @@ class FileController extends Controller
         return response()->json([
             'success' => true,
             'path' => $path,
-            'url' => asset('storage/' . $path)
+            'url' => asset('storage/' . $path),
+            'filename' => $filename,
         ]);
     }
 }
