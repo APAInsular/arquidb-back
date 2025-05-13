@@ -8,6 +8,7 @@ use Orion\Concerns\DisablePagination;
 use Orion\Http\Controllers\Controller;
 use Orion\Http\Requests\Request as OrionRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Date;
 
 class PhaseController extends Controller
 {
@@ -80,7 +81,9 @@ class PhaseController extends Controller
 
             return array_merge($phase, [
                 'title' => $title,
-                'expedient_id' => $expedientId
+                'record_date' => Date::now(),
+                'state' => 'unsigned',
+                'expedient_id' => $expedientId,
             ]);
         });
 
