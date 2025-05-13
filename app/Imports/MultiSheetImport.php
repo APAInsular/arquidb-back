@@ -29,26 +29,26 @@ class MultiSheetImport implements WithMultipleSheets, WithEvents, WithChunkReadi
             'TBLEXPEDIENTES_COLEGIADOS' => new SheetImport([
                 'people' => new PeopleImport($this),
                 'collegiates' => new CollegiatesImport($this)
-            ], $this, 200),
+            ], $this, 100),
 
             'TBLEXPEDIENTES_CLIENTES' => new SheetImport([
                 'people' => new PeopleImport($this),
                 'clients' => new ClientsImport($this),
                 'phones' => new PhonesImport($this)
-            ], $this, 200),
+            ], $this, 100),
 
             'tblclientes' => new SheetImport([
                 'addresses' => new AddressesImport($this),
                 'emails' => new EmailsImport($this)
-            ], $this, 200),
+            ], $this, 100),
 
             'TBLEXPEDIENTES' => new SheetImport([
                 'expedients' => new ExpedientsImport($this)
-            ], $this, 200),
+            ], $this, 100),
 
             'TBLEXPEDIENTES_FASES' => new SheetImport([
                 'phases' => new PhasesImport($this)
-            ], $this, 200)
+            ], $this, 100)
         ];
     }
 
