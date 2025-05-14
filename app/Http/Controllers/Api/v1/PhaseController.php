@@ -12,17 +12,21 @@ use Illuminate\Support\Facades\Date;
 
 class PhaseController extends Controller
 {
-    use DisableAuthorization, DisablePagination;
+    use DisableAuthorization;
     protected $model = Phase::class;
 
-    public function index(OrionRequest $request)
+    public function index(OrionRequest $request, ...$args)
     {
 
         $user = $request->user();
+        $page = $request->get('per_page');
+        $all = $request->boolean('all', false);
 
-        $phase = Phase::with('documents')
-            ->centers($user->center_id)
-            ->get();
+        $query = Phase::orderBy('id', 'Asc')
+            ->with('documents')
+            ->centers($user->center_id);
+
+        $all ? $phase = $query->get() : $phase = $query->paginate($page ? $page : 10);
 
         return response()->json($phase);
     }

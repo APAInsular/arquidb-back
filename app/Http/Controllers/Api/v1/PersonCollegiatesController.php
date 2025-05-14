@@ -39,11 +39,11 @@ class PersonCollegiatesController extends RelationController
 
         $query = Person::orderBy('id', 'Asc')
             ->name($name)
-            ->centers($user->center_id)
+            // ->centers($user->center_id)
             ->whereHas('collegiates')
             ->with('collegiates');
 
-        $all ? $collegiates = $query->get() : $collegiates = $query->paginate($page ? $page : 5);
+        $all ? $collegiates = $query->get() : $collegiates = $query->paginate($page ? $page : 10);
 
         return response()->json($collegiates);
 
@@ -92,8 +92,8 @@ class PersonCollegiatesController extends RelationController
             }
 
             $record = Record::create([
-                'user_id' => Auth::user() ? Auth::user() : 1,
-                'name' => Auth::user() ? Auth::user()->name : "Alejandro",
+                'user_id' => $request->user()->id,
+                'name' => $request->user()->name,
                 'action' => "sign",
                 'affected_table' => "Collegiates",
                 'affected_record_id' => $person->id,
@@ -158,8 +158,8 @@ class PersonCollegiatesController extends RelationController
             }
 
             $record = Record::create([
-                'user_id' => Auth::user() ? Auth::user() : 1,
-                'name' => Auth::user() ? Auth::user()->name : "Alejandro",
+                'user_id' => $request->user()->id,
+                'name' => $request->user()->name,
                 'action' => "update",
                 'affected_table' => "Collegiates",
                 'affected_record_id' => $person->id,
@@ -201,8 +201,8 @@ class PersonCollegiatesController extends RelationController
             $person->delete();
 
             $record = Record::create([
-                'user_id' => Auth::user() ? Auth::user()->id : 1,
-                'name' => Auth::user() ? Auth::user()->name : "Alejandro",
+                'user_id' => $request->user()->id,
+                'name' => $request->user()->name,
                 'action' => "delete",
                 'affected_table' => "Person, Collegiates, Emails, Addresses, Phones",
                 'affected_record_id' => $person->id,
