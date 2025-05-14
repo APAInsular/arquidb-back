@@ -16,7 +16,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles, HasApiTokens, HasRoles;
+    use HasFactory, Notifiable, HasApiTokens, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -53,22 +53,6 @@ class User extends Authenticatable
         ];
     }
     protected $with = ['roles', 'roles.permissions', 'permissions'];
-
-    public function permissions()
-    {
-        return $this->morphToMany(
-            Permission::class,
-            'model',
-            'model_has_permissions',
-            'model_id',
-            'permission_id'
-        );
-    }
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class, 'model_has_roles', 'model_id', 'role_id')
-            ->withPivot('model_type');
-    }
 
     public function documents(): HasMany
     {
