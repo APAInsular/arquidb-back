@@ -26,7 +26,7 @@ class UserController extends Controller
 
         $query = User::orderBy('id', 'Asc')
             ->name($name)
-            ->with('center', 'roles', 'roles.permissions');
+            ->with('center', 'roles', 'permissions');
 
         $all ? $users = $query->get() : $users = $query->paginate($page ? $page : 10);
 
