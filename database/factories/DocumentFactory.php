@@ -24,7 +24,6 @@ class DocumentFactory extends Factory
     {
         return [
             'name' => fake()->name(),
-            'type' => fake()->randomElement(["1","2","3"]),
             'phase_id' => Phase::factory(),
             'user_id' => User::factory(),
         ];
