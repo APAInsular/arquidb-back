@@ -39,7 +39,7 @@ class ExpedientController extends Controller
             ->centers($user->center_id);
 
         $query->with('people.client', 'people.collegiates', 'phases.documents');
-        $all ? $expedients = $query->get() : $expedients = $query->paginate($page ? $page : 5);
+        $all ? $expedients = $query->get() : $expedients = $query->paginate($page ? $page : 10);
 
         return response()->json($expedients);
 
