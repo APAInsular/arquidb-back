@@ -18,7 +18,7 @@ class SheetImport implements ToModel, WithEvents, WithHeadingRow, WithChunkReadi
     protected $currentSheetName;
     protected $chunkSize;
 
-    public function __construct(array $importers, $tracker, $chunkSize = 100)
+    public function __construct(array $importers, $tracker, $chunkSize = 200)
     {
         $this->importers = $importers;
         $this->tracker = $tracker;
