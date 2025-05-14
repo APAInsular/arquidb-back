@@ -8,20 +8,25 @@ use Orion\Concerns\DisablePagination;
 use Orion\Http\Controllers\Controller;
 use Orion\Http\Requests\Request as OrionRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Date;
 
 class PhaseController extends Controller
 {
-    use DisableAuthorization, DisablePagination;
+    use DisableAuthorization;
     protected $model = Phase::class;
 
-    public function index(OrionRequest $request)
+    public function index(OrionRequest $request, ...$args)
     {
 
         $user = $request->user();
+        $page = $request->get('per_page');
+        $all = $request->boolean('all', false);
 
-        $phase = Phase::with('documents')
-            ->centers($user->center_id)
-            ->get();
+        $query = Phase::orderBy('id', 'Asc')
+            ->with('documents')
+            ->centers($user->center_id);
+
+        $all ? $phase = $query->get() : $phase = $query->paginate($page ? $page : 10);
 
         return response()->json($phase);
     }
@@ -80,7 +85,9 @@ class PhaseController extends Controller
 
             return array_merge($phase, [
                 'title' => $title,
-                'expedient_id' => $expedientId
+                'record_date' => Date::now(),
+                'state' => 'unsigned',
+                'expedient_id' => $expedientId,
             ]);
         });
 

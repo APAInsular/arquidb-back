@@ -27,6 +27,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Orion\Facades\Orion;
 use App\Http\Controllers\ExcelImportController;
+use App\Http\Controllers\FileController;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
@@ -34,20 +35,26 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 
 Route::post('login', [AuthenticatedSessionController::class, 'store']);
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth:sanctum');
-;
+Route::post('/upload', [FileController::class, 'upload'])->middleware('auth:sanctum');
 
-Route::get('/personCollegiate', [PersonCollegiatesController::class, 'index'])->middleware('auth:sanctum');
-Route::get('/personCollegiate/{id}', [PersonCollegiatesController::class, 'Personcollegiate']);
-Route::post('/personCollegiate', [PersonCollegiatesController::class, 'store']);
-Route::put('/personCollegiate/{id}', [PersonCollegiatesController::class, 'update']);
-Route::delete('/personCollegiate/{id}', [PersonCollegiatesController::class, 'destroy']);
+Route::middleware('auth:sanctum')->group(function () {
 
-Route::get('/personClient', [PersonClientsController::class, 'index'])->middleware('auth:sanctum');
-Route::get('/personClient/{id}', [PersonClientsController::class, 'Personclient']);
-Route::post('/personClient', [PersonClientsController::class, 'store']);
-Route::put('/personClient/{id}', [PersonClientsController::class, 'update']);
-Route::delete('/personClient/{id}', [PersonClientsController::class, 'destroy']);
+    Route::prefix('personCollegiate')->group(function () {
+        Route::get('/', [PersonCollegiatesController::class, 'index']);
+        Route::get('/{id}', [PersonCollegiatesController::class, 'Personcollegiate']);
+        Route::post('/', [PersonCollegiatesController::class, 'store']);
+        Route::put('/{id}', [PersonCollegiatesController::class, 'update']);
+        Route::delete('/{id}', [PersonCollegiatesController::class, 'destroy']);
+    });
 
+    Route::prefix('personClient')->group(function () {
+        Route::get('/', [PersonClientsController::class, 'index']);
+        Route::get('/{id}', [PersonClientsController::class, 'Personclient']);
+        Route::post('/', [PersonClientsController::class, 'store']);
+        Route::put('/{id}', [PersonClientsController::class, 'update']);
+        Route::delete('/{id}', [PersonClientsController::class, 'destroy']);
+    });
+});
 
 Route::group(['as' => 'api.'], function () {
 

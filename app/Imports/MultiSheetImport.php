@@ -17,7 +17,7 @@ class MultiSheetImport implements WithMultipleSheets, WithEvents, WithChunkReadi
 
     public function chunkSize(): int
     {
-        return 50; // Tamaño de chunk para procesamiento en memoria
+        return 200; // Tamaño de chunk para procesamiento en memoria
     }
 
     public function sheets(): array
