@@ -23,11 +23,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ]);
 
-        $middleware->statefulApi();
-        $middleware->validateCsrfTokens(except: [
-            'login',
-            'logout',
-        ]);
+        // $middleware->statefulApi();
+        // $middleware->validateCsrfTokens(except: [
+        //     'login',
+        //     'logout',
+        // ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
