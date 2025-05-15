@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PersonRequest;
 use App\Models\Address;
 use App\Models\Client;
 use App\Models\Email;
@@ -27,6 +28,8 @@ class PersonClientsController extends RelationController
 
     protected $relation = 'client';
 
+    // protected $request = PersonRequest::class;
+
     public function index(OrionRequest $request, ...$args)
     {
         $user = $request->user();
@@ -36,7 +39,7 @@ class PersonClientsController extends RelationController
 
         $query = Person::orderBy('id', 'Asc')
             ->name($name)
-            // ->centers($user->center_id)
+            ->centers($user->center_id)
             ->whereHas('client')
             ->with('client');
 
@@ -48,8 +51,8 @@ class PersonClientsController extends RelationController
 
     public function store(OrionRequest $request, ...$args)
     {
+        $user = $request->user();
         try {
-            // 1. Crear la persona
             $person = Person::create([
                 'identification_type' => $request->identification_type,
                 'identification_number' => $request->identification_number,
@@ -57,6 +60,7 @@ class PersonClientsController extends RelationController
                 'first_surname' => $request->first_surname,
                 'second_surname' => $request->second_surname,
                 'observations' => $request->observations,
+                'center_id' => $user->center_id,
             ]);
 
             if (!empty($request->client)) {
@@ -64,15 +68,15 @@ class PersonClientsController extends RelationController
             }
 
             if (!empty($request->email)) {
-                $person->emails()->create($request->get('email'));
+                $person->emails()->createMany($request->get('email'));
             }
 
             if (!empty($request->address)) {
-                $person->addresses()->create($request->get('address'));
+                $person->addresses()->createMany($request->get('address'));
             }
 
             if (!empty($request->phone)) {
-                $person->phones()->create($request->get('phone'));
+                $person->phones()->createMany($request->get('phone'));
             }
 
             $record = Record::create([
@@ -83,6 +87,8 @@ class PersonClientsController extends RelationController
                 'affected_record_id' => $person->id,
             ]);
 
+            // dd($user);
+
             return response()->json([
                 'message' => 'Persona creada correctamente',
                 'person' => $person->load(['client', 'emails', 'addresses', 'phones']),
@@ -90,6 +96,7 @@ class PersonClientsController extends RelationController
             ], 201);
 
         } catch (\Exception $e) {
+            // dd($user->center_id);
             return response()->json([
                 'message' => 'Error al crear la persona',
                 'error' => $e->getMessage(),
