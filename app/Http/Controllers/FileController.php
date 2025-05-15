@@ -28,7 +28,45 @@ class FileController extends Controller
             'success' => true,
             'path' => $path,
             'url' => asset('storage/' . $path),
-            'filename' => $filename,
+        ]);
+    }
+
+    public function erase(Request $request)
+    {
+        $request->validate([
+            'path' => 'required|string',
+        ]);
+
+        // Extrae solo el nombre del archivo de la ruta completa
+        $filename = basename($request->path);
+        $relativePath = 'documents/' . $filename;
+        $fullPath = storage_path('app/public/' . $relativePath);
+
+        // Verificación adicional de seguridad
+        if (strpos($relativePath, '..') !== false) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ruta inválida'
+            ], 400);
+        }
+
+        if (!file_exists($fullPath)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El archivo no existe en: ' . $fullPath
+            ], 404);
+        }
+
+        if (!unlink($fullPath)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se pudo eliminar el archivo. Verifica los permisos.'
+            ], 500);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Archivo eliminado correctamente'
         ]);
     }
 }

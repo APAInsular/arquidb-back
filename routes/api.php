@@ -35,7 +35,8 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 
 Route::post('login', [AuthenticatedSessionController::class, 'store']);
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth:sanctum');
-Route::post('/upload', [FileController::class, 'upload'])->middleware('auth:sanctum');
+Route::post('/upload', [FileController::class, 'upload']);
+Route::post('/erase', [FileController::class, 'erase']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
