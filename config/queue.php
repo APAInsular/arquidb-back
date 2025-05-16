@@ -72,6 +72,16 @@ return [
             'after_commit' => false,
         ],
 
+        'imports' => [
+            'driver' => 'database',
+            'connection' => env('DB_QUEUE_CONNECTION'),
+            'table' => 'jobs',
+            'queue' => 'imports',
+            'retry_after' => 1800,
+            'block_for' => 5,
+            'memory' => 2048,
+        ],
+
     ],
 
     /*

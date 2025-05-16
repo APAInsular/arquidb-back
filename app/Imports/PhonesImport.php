@@ -23,7 +23,7 @@ class PhonesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
 
     public function batchSize(): int
     {
-        return 1000;
+        return 100;
     }
 
     public function model(array $row)
@@ -87,7 +87,7 @@ class PhonesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
 
     protected function findNifColumn(array $row): ?string
     {
-        $possibleColumns = ['nif', 'Nif', 'NIF', 'identification_number'];
+        $possibleColumns = ['nif', 'Nif', 'NIF', 'nifcliente'];
 
         foreach ($possibleColumns as $column) {
             if (isset($row[$column]) && !empty(trim($row[$column]))) {
@@ -101,7 +101,7 @@ class PhonesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
     protected function findPhoneColumn(array $row): string
     {
         // (Mantener la misma implementación que ya tenías)
-        $possibleColumns = ['Telefonos', 'telefonos', 'Teléfonos', 'teléfonos', 18];
+        $possibleColumns = ['Telefonos', 'telefonos', 'telefonoscliente', 'Teléfonos', 'teléfonos', 18];
 
         foreach ($possibleColumns as $column) {
             if (isset($row[$column]) && !empty(trim($row[$column]))) {

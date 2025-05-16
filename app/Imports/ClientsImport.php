@@ -24,7 +24,7 @@ class ClientsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchI
 
     public function batchSize(): int
     {
-        return 1000;
+        return 100;
     }
 
     public function model(array $row)
@@ -76,7 +76,7 @@ class ClientsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchI
 
     protected function findNifColumn(array $row): ?string
     {
-        $possibleColumns = ['nif', 'Nif', 'NIF', 'identification_number', 'dni'];
+        $possibleColumns = ['nif', 'Nif', 'NIF', 'nifcliente', 'dni'];
 
         foreach ($possibleColumns as $column) {
             if (isset($row[$column]) && !empty(trim($row[$column]))) {

@@ -27,7 +27,7 @@ class ExpedientsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBat
 
     public function batchSize(): int
     {
-        return 1000;
+        return 100;
     }
 
     public function model(array $row)
@@ -67,7 +67,7 @@ class ExpedientsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBat
         // Validar campos obligatorios
         $requiredFields = [
             'title' => $row['descripcion'] ?? $row['title'] ?? $row['titulo'] ?? null,
-            'number' => $row['nexpediente'] ?? $row['number'] ?? $row['numero'] ?? null,
+            'number' => $row['idexpedientefue'] ?? $row['nexpediente'] ?? $row['numero'] ?? null,
             'start_date' => $row['fecha_inicio'] ?? $row['start_date'] ?? null,
             'site' => $row['emplazamiento'] ?? $row['site'] ?? null,
         ];
@@ -84,7 +84,7 @@ class ExpedientsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBat
         // 'postal_code' => trim($row['codigopostal'] ?? $row['postal_code'] ?? ''),
         return [
             'title' => trim($row['descripcion'] ?? $row['title'] ?? $row['titulo'] ?? ''),
-            'number' => trim($row['nexpediente'] ?? $row['number'] ?? $row['numero']),
+            'number' => trim($row['idexpedientefue'] ?? $row['nexpediente'] ?? $row['numero']),
             'start_date' => $this->parseDate($row['fecha_inicio'] ?? $row['start_date']),
             'end_date' => isset($row['fecha_fin']) ? $this->parseDate($row['fecha_fin']) : null,
             'description' => trim($row['descripcion'] ?? $row['description'] ?? ''),

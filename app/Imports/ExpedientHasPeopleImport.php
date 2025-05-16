@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchInserts
+class ExpedientHasPeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchInserts
 {
     protected $tracker;
 

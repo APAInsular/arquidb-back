@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('people', function (Blueprint $table) {
             $table->id();
             $table->enum('identification_type', ["NIF", "DNI", "NIE", "OTRO"]);
-            $table->char('identification_number', 9)->unique();
+            $table->string('identification_number', 10)->unique();
             $table->string('name');
             $table->string('first_surname')->nullable();
             $table->string('second_surname')->nullable();

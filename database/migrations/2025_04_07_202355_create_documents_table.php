@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->enum('type', ["1","2","3"]);
             $table->foreignId('phase_id')->constrained()->onDelete('restrict');
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('restrict');
             $table->timestamps();
