@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -24,6 +25,7 @@ class Person extends Model
         'first_surname',
         'second_surname',
         'observations',
+        'center_id'
     ];
 
     /**
@@ -65,9 +67,14 @@ class Person extends Model
         return $this->hasMany(Email::class);
     }
 
+    public function center(): BelongsTo
+    {
+        return $this->belongsTo(Center::class);
+    }
+
     public function scopeCenters($query, $centerId)
     {
-        return $query->whereHas('expedients', function ($q) use ($centerId) {
+        return $query->whereHas('client', function ($q) use ($centerId) {
             $q->where('center_id', $centerId);
         });
     }
