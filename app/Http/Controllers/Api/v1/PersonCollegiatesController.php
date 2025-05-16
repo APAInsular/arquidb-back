@@ -39,7 +39,7 @@ class PersonCollegiatesController extends RelationController
 
         $query = Person::orderBy('id', 'Asc')
             ->name($name)
-            // ->centers($user->center_id)
+            ->centers($user->center_id)
             ->whereHas('collegiates')
             ->with('collegiates');
 
@@ -58,7 +58,7 @@ class PersonCollegiatesController extends RelationController
     public function store(OrionRequest $request, ...$args)
     {
         try {
-
+            $user = $request->user();
             $person = Person::create([
                 'identification_type' => $request->identification_type,
                 'identification_number' => $request->identification_number,
@@ -66,6 +66,7 @@ class PersonCollegiatesController extends RelationController
                 'first_surname' => $request->first_surname,
                 'second_surname' => $request->second_surname,
                 'observations' => $request->observations,
+                'center_id' => $user->center_id,
             ]);
 
             if (!empty($request->collegiate)) {
@@ -80,15 +81,15 @@ class PersonCollegiatesController extends RelationController
             }
 
             if (!empty($request->email)) {
-                $person->emails()->create($request->get('email'));
+                $person->emails()->createMany($request->get('email'));
             }
 
             if (!empty($request->address)) {
-                $person->addresses()->create($request->get('address'));
+                $person->addresses()->createMany($request->get('address'));
             }
 
             if (!empty($request->phone)) {
-                $person->phones()->create($request->get('phone'));
+                $person->phones()->createMany($request->get('phone'));
             }
 
             $record = Record::create([
