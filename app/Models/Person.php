@@ -79,6 +79,13 @@ class Person extends Model
         });
     }
 
+    public function scopeCentersCollegiate($query, $centerId)
+    {
+        return $query->whereHas('collegiates', function ($q) use ($centerId) {
+            $q->where('center_id', $centerId);
+        });
+    }
+
     public function scopeName($query, $name)
     {
         if ($name) {

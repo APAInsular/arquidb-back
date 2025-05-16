@@ -39,7 +39,7 @@ class PersonCollegiatesController extends RelationController
 
         $query = Person::orderBy('id', 'Asc')
             ->name($name)
-            ->centers($user->center_id)
+            ->centersCollegiate($user->center_id)
             ->whereHas('collegiates')
             ->with('collegiates');
 
@@ -49,11 +49,11 @@ class PersonCollegiatesController extends RelationController
 
     }
 
-    protected function storeRequest(): string
-    {
-        return PersonRequest::class;
-        //  CollegiateRequest::class;
-    }
+    // protected function storeRequest(): string
+    // {
+    //     return PersonRequest::class;
+    //     //  CollegiateRequest::class;
+    // }
 
     public function store(OrionRequest $request, ...$args)
     {
