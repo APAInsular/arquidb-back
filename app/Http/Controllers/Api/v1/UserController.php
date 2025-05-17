@@ -16,7 +16,7 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    // use DisableAuthorization;
+    use DisableAuthorization;   
 
     protected $model = User::class;
 
