@@ -54,27 +54,31 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}', [PersonClientsController::class, 'update']);
         Route::delete('/{id}', [PersonClientsController::class, 'destroy']);
     });
+
+    Route::prefix('users')->group(function () {
+        Route::get('/', [UserController::class, 'index']);
+        Route::get('/{id}', [UserController::class, 'show']);
+        Route::post('/', [UserController::class, 'store']);
+        Route::put('/{id}', [UserController::class, 'update']);
+    });
 });
 
-Route::group(['as' => 'api.'], function () {
-
+Route::middleware('auth:sanctum')->as('api.')->group(function () {
     // Tablas Generales
     Orion::resource('users', UserController::class);
     Orion::resource('address', AddressController::class);
-    Orion::resource('client', ClientController::class)->middleware('auth:sanctum');
-    Orion::resource('collegiate', CollegiateController::class)->middleware('auth:sanctum');
+    Orion::resource('client', ClientController::class);
+    Orion::resource('collegiate', CollegiateController::class);
     Orion::resource('document', DocumentController::class);
     Orion::resource('email', EmailController::class);
-    Orion::resource('expedient', ExpedientController::class)->middleware('auth:sanctum');
-    Orion::resource('person', PersonController::class)->middleware('auth:sanctum');
-    Orion::resource('phase', PhaseController::class)->middleware('auth:sanctum');
+    Orion::resource('expedient', ExpedientController::class);
+    Orion::resource('person', PersonController::class);
+    Orion::resource('phase', PhaseController::class);
     Orion::resource('phone', PhoneController::class);
     Orion::resource('record', RecordController::class);
     Orion::resource('centers', CenterController::class);
 
     // Tablas relacionadas
-    //Relaciones para los expedientes (ademas de optener las personas etc...)
-
     Orion::hasManyResource('expedient', 'phases', ExpedientPhasesController::class);
     Orion::hasManyResource('phase', 'documents', PhaseDocumentsController::class);
 
@@ -82,11 +86,9 @@ Route::group(['as' => 'api.'], function () {
     Orion::hasManyResource('person', 'address', PersonAddressController::class);
     Orion::hasManyResource('person', 'emails', PersonEmailsController::class);
     Orion::hasManyResource('person', 'phones', PersonPhonesController::class);
-
     Orion::hasManyResource('person', 'clients', PersonClientsController::class);
     Orion::hasManyResource('person', 'collegiates', PersonCollegiatesController::class);
 
-    // relaciones del usuario 
     Orion::hasManyResource('user', 'documents', UserDocumentsController::class);
     Orion::hasManyResource('user', 'records', UserRecordsController::class);
 

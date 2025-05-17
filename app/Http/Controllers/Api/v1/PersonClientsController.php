@@ -20,15 +20,13 @@ use Orion\Http\Requests\Request as OrionRequest;
 
 class PersonClientsController extends RelationController
 {
-    //
-    use DisablePagination;
-    use DisableAuthorization;
+
+    // use DisablePagination;
+    // use DisableAuthorization;
 
     protected $model = Person::class;
 
     protected $relation = 'client';
-
-    // protected $request = PersonRequest::class;
 
     public function index(OrionRequest $request, ...$args)
     {
@@ -106,7 +104,6 @@ class PersonClientsController extends RelationController
 
     public function update(OrionRequest $request, ...$args)
     {
-
         $id = $args[0];
 
         try {
@@ -122,27 +119,31 @@ class PersonClientsController extends RelationController
             ]);
 
             if ($request->has('client')) {
-                $person->client()->first()->update(
+                $person->client()->update(
+                    ['person_id' => $person->id],
                     $request->get('client')
                 );
             }
 
             if ($request->has('email')) {
-                $person->emails()->update(
-                    $request->get('email')
-                );
+                $person->emails()->delete();
+                foreach ($request->get('email') as $email) {
+                    $person->emails()->create($email);
+                }
             }
 
             if ($request->has('address')) {
-                $person->addresses()->update(
-                    $request->get('address')
-                );
+                $person->addresses()->delete();
+                foreach ($request->get('address') as $address) {
+                    $person->addresses()->create($address);
+                }
             }
 
             if ($request->has('phone')) {
-                $person->phones()->update(
-                    $request->get('phone')
-                );
+                $person->phones()->delete();
+                foreach ($request->get('phone') as $phone) {
+                    $person->phones()->create($phone);
+                }
             }
 
             $record = Record::create([
@@ -152,7 +153,6 @@ class PersonClientsController extends RelationController
                 'affected_table' => "Client",
                 'affected_record_id' => $person->id,
             ]);
-
 
             return response()->json([
                 'message' => 'Persona actualizada correctamente',
@@ -171,8 +171,8 @@ class PersonClientsController extends RelationController
                 'error' => $e->getMessage(),
             ], 500);
         }
-
     }
+
 
     public function destroy(OrionRequest $request, ...$args)
     {

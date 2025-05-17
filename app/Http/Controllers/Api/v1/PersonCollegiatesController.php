@@ -23,8 +23,8 @@ use View;
 
 class PersonCollegiatesController extends RelationController
 {
-    //
-    use DisableAuthorization;
+
+    // use DisableAuthorization;
 
     protected $model = Person::class;
 
@@ -48,12 +48,6 @@ class PersonCollegiatesController extends RelationController
         return response()->json($collegiates);
 
     }
-
-    // protected function storeRequest(): string
-    // {
-    //     return PersonRequest::class;
-    //     //  CollegiateRequest::class;
-    // }
 
     public function store(OrionRequest $request, ...$args)
     {
@@ -141,21 +135,24 @@ class PersonCollegiatesController extends RelationController
             }
 
             if ($request->has('email')) {
-                $person->emails()->update(
-                    $request->get('email')
-                );
+                $person->emails()->delete();
+                foreach ($request->get('email') as $email) {
+                    $person->emails()->create($email);
+                }
             }
 
             if ($request->has('address')) {
-                $person->addresses()->update(
-                    $request->get('address')
-                );
+                $person->addresses()->delete();
+                foreach ($request->get('address') as $address) {
+                    $person->addresses()->create($address);
+                }
             }
 
             if ($request->has('phone')) {
-                $person->phones()->update(
-                    $request->get('phone')
-                );
+                $person->phones()->delete();
+                foreach ($request->get('phone') as $phone) {
+                    $person->phones()->create($phone);
+                }
             }
 
             $record = Record::create([
