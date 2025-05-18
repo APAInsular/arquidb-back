@@ -131,29 +131,10 @@ class PersonCollegiatesController extends RelationController
                 $data['graduation_date'] = isset($data['graduation_date']) ? substr($data['graduation_date'], 0, 10) : null;
                 $data['termination_date'] = isset($data['termination_date']) ? substr($data['termination_date'], 0, 10) : null;
 
-                $person->collegiates()->first()->update($data);
+                $person->collegiates()->update($data);
             }
-
-            if ($request->has('email')) {
-                $person->emails()->delete();
-                foreach ($request->get('email') as $email) {
-                    $person->emails()->create($email);
-                }
-            }
-
-            if ($request->has('address')) {
-                $person->addresses()->delete();
-                foreach ($request->get('address') as $address) {
-                    $person->addresses()->create($address);
-                }
-            }
-
-            if ($request->has('phone')) {
-                $person->phones()->delete();
-                foreach ($request->get('phone') as $phone) {
-                    $person->phones()->create($phone);
-                }
-            }
+            
+            $person->updateRelations($request->all());
 
             $record = Record::create([
                 'user_id' => $request->user()->id,

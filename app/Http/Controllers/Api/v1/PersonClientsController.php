@@ -51,6 +51,7 @@ class PersonClientsController extends RelationController
     {
         $user = $request->user();
         try {
+
             $person = Person::create([
                 'identification_type' => $request->identification_type,
                 'identification_number' => $request->identification_number,
@@ -64,15 +65,12 @@ class PersonClientsController extends RelationController
             if (!empty($request->client)) {
                 $person->client()->create($request->get('client'));
             }
-
             if (!empty($request->email)) {
                 $person->emails()->createMany($request->get('email'));
             }
-
             if (!empty($request->address)) {
                 $person->addresses()->createMany($request->get('address'));
             }
-
             if (!empty($request->phone)) {
                 $person->phones()->createMany($request->get('phone'));
             }
@@ -85,8 +83,6 @@ class PersonClientsController extends RelationController
                 'affected_record_id' => $person->id,
             ]);
 
-            // dd($user);
-
             return response()->json([
                 'message' => 'Persona creada correctamente',
                 'person' => $person->load(['client', 'emails', 'addresses', 'phones']),
@@ -94,7 +90,6 @@ class PersonClientsController extends RelationController
             ], 201);
 
         } catch (\Exception $e) {
-            // dd($user->center_id);
             return response()->json([
                 'message' => 'Error al crear la persona',
                 'error' => $e->getMessage(),
@@ -118,33 +113,7 @@ class PersonClientsController extends RelationController
                 'observations' => $request->input('observations', $person->observations),
             ]);
 
-            if ($request->has('client')) {
-                $person->client()->update(
-                    ['person_id' => $person->id],
-                    $request->get('client')
-                );
-            }
-
-            if ($request->has('email')) {
-                $person->emails()->delete();
-                foreach ($request->get('email') as $email) {
-                    $person->emails()->create($email);
-                }
-            }
-
-            if ($request->has('address')) {
-                $person->addresses()->delete();
-                foreach ($request->get('address') as $address) {
-                    $person->addresses()->create($address);
-                }
-            }
-
-            if ($request->has('phone')) {
-                $person->phones()->delete();
-                foreach ($request->get('phone') as $phone) {
-                    $person->phones()->create($phone);
-                }
-            }
+            $person->updateRelations($request->all());
 
             $record = Record::create([
                 'user_id' => $request->user()->id,
