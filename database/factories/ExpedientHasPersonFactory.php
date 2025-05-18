@@ -20,8 +20,8 @@ class ExpedientHasPersonFactory extends Factory
     {
         return [
             //
-            'expedient_id' => Expedient::factory(),
-            'person_id' => Person::factory(),
+            'expedient_id' => Expedient::inRandomOrder()->first()->id,
+            'person_id' => Person::inRandomOrder()->first()->id,
         ];
     }
 }

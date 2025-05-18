@@ -30,7 +30,7 @@ class PhaseFactory extends Factory
             'record_date' => Date::now(),
             'state' => 'unsigned',
             'sign_date' => null,
-            'expedient_id' => Expedient::factory(),
+            'expedient_id' => Expedient::inRandomOrder()->first()->id,
         ];
     }
 }
