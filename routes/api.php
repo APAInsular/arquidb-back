@@ -27,16 +27,18 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
 use Orion\Facades\Orion;
 use App\Http\Controllers\ExcelImportController;
 use App\Http\Controllers\FileController;
+
+use App\Http\Controllers\Auth\GoogleAuthController;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthUserController::class, 'show']);
     Route::put('/user', [AuthUserController::class, 'update']);
     Route::delete('/user', [AuthUserController::class, 'destroy']);
 });
-
 
 Route::post('login', [AuthenticatedSessionController::class, 'store']);
 Route::post('/forgot-password', [PasswordResetLinkController::class, 'store']);
@@ -102,3 +104,8 @@ Route::middleware('auth:sanctum')->as('api.')->group(function () {
     Route::post('phase/titles', [PhaseController::class, 'titles']);
     Route::post('/import-excel', [ExcelImportController::class, 'import']);
 });
+
+
+Route::get('auth/google', [GoogleAuthController::class, 'redirectToAuth']);
+Route::get('auth/google/callback', [GoogleAuthController::class, 'handleAuthCallback']);
+Route::post('auth/google/token', [GoogleAuthController::class, 'handleAuthWithToken']);

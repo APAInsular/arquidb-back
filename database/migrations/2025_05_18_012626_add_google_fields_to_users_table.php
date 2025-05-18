@@ -8,20 +8,18 @@ return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('center_id')->default(1)->constrained()->onDelete('restrict');
+            $table->string('google_id')->nullable()->unique();
+            $table->string('avatar')->nullable();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('center_id');
+            $table->dropColumn(['google_id', 'avatar']);
         });
     }
 };
