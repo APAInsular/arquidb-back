@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Models\Record;
+use App\Policies\UserPolicy;
 use Auth;
-use Orion\Concerns\DisableAuthorization;
+use Gate;
 use Orion\Concerns\DisablePagination;
+use Orion\Concerns\HandlesAuthorization;
 use Orion\Http\Controllers\Controller;
 use App\Models\User;
 use Orion\Http\Requests\Request as OrionRequest;
@@ -16,12 +18,15 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    // use DisableAuthorization;   
+
+    use HandlesAuthorization;
 
     protected $model = User::class;
 
-    public function store(OrionRequest $request, ...$args)
+    public function store(OrionRequest $request)
     {
+
+        Gate::authorize('create', User::class);
 
         $auth = $request->user();
 
@@ -59,6 +64,8 @@ class UserController extends Controller
 
     public function update(OrionRequest $request, ...$args)
     {
+        Gate::authorize('update', User::class);
+
         $id = $args[0];
 
         $data = $request->validate([
@@ -96,6 +103,9 @@ class UserController extends Controller
 
     public function index(OrionRequest $request)
     {
+
+        Gate::authorize('view', User::class);
+
         $name = $request->get('name');
         $page = $request->get('per_page');
         $all = $request->boolean('all', false);
@@ -112,6 +122,9 @@ class UserController extends Controller
 
     public function show(OrionRequest $request, ...$args)
     {
+
+        Gate::authorize('viewAny', User::class);
+
         $id = $args[0];
 
         $users = User::with('center', 'roles', 'roles.permissions')->findOrFail($id);
