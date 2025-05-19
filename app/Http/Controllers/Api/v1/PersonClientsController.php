@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PersonRequest;
 use App\Models\Address;
 use App\Models\Client;
 use App\Models\Email;
@@ -19,9 +20,9 @@ use Orion\Http\Requests\Request as OrionRequest;
 
 class PersonClientsController extends RelationController
 {
-    //
-    use DisablePagination;
-    use DisableAuthorization;
+
+    // use DisablePagination;
+    // use DisableAuthorization;
 
     protected $model = Person::class;
 
@@ -36,7 +37,7 @@ class PersonClientsController extends RelationController
 
         $query = Person::orderBy('id', 'Asc')
             ->name($name)
-            // ->centers($user->center_id)
+            ->centers($user->center_id)
             ->whereHas('client')
             ->with('client');
 
@@ -48,8 +49,9 @@ class PersonClientsController extends RelationController
 
     public function store(OrionRequest $request, ...$args)
     {
+        $user = $request->user();
         try {
-            // 1. Crear la persona
+
             $person = Person::create([
                 'identification_type' => $request->identification_type,
                 'identification_number' => $request->identification_number,
@@ -57,22 +59,20 @@ class PersonClientsController extends RelationController
                 'first_surname' => $request->first_surname,
                 'second_surname' => $request->second_surname,
                 'observations' => $request->observations,
+                'center_id' => $user->center_id,
             ]);
 
             if (!empty($request->client)) {
                 $person->client()->create($request->get('client'));
             }
-
             if (!empty($request->email)) {
-                $person->emails()->create($request->get('email'));
+                $person->emails()->createMany($request->get('email'));
             }
-
             if (!empty($request->address)) {
-                $person->addresses()->create($request->get('address'));
+                $person->addresses()->createMany($request->get('address'));
             }
-
             if (!empty($request->phone)) {
-                $person->phones()->create($request->get('phone'));
+                $person->phones()->createMany($request->get('phone'));
             }
 
             $record = Record::create([
@@ -99,7 +99,6 @@ class PersonClientsController extends RelationController
 
     public function update(OrionRequest $request, ...$args)
     {
-
         $id = $args[0];
 
         try {
@@ -114,29 +113,7 @@ class PersonClientsController extends RelationController
                 'observations' => $request->input('observations', $person->observations),
             ]);
 
-            if ($request->has('client')) {
-                $person->client()->first()->update(
-                    $request->get('client')
-                );
-            }
-
-            if ($request->has('email')) {
-                $person->emails()->update(
-                    $request->get('email')
-                );
-            }
-
-            if ($request->has('address')) {
-                $person->addresses()->update(
-                    $request->get('address')
-                );
-            }
-
-            if ($request->has('phone')) {
-                $person->phones()->update(
-                    $request->get('phone')
-                );
-            }
+            $person->updateRelations($request->all());
 
             $record = Record::create([
                 'user_id' => $request->user()->id,
@@ -145,7 +122,6 @@ class PersonClientsController extends RelationController
                 'affected_table' => "Client",
                 'affected_record_id' => $person->id,
             ]);
-
 
             return response()->json([
                 'message' => 'Persona actualizada correctamente',
@@ -164,8 +140,8 @@ class PersonClientsController extends RelationController
                 'error' => $e->getMessage(),
             ], 500);
         }
-
     }
+
 
     public function destroy(OrionRequest $request, ...$args)
     {

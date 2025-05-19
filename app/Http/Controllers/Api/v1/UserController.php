@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Api\v1;
 
-use Orion\Concerns\DisableAuthorization;
+use App\Models\Record;
+use App\Policies\UserPolicy;
+use Auth;
+use Gate;
 use Orion\Concerns\DisablePagination;
+use Orion\Concerns\HandlesAuthorization;
 use Orion\Http\Controllers\Controller;
 use App\Models\User;
 use Orion\Http\Requests\Request as OrionRequest;
@@ -14,12 +18,94 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    use DisableAuthorization;
+
+    use HandlesAuthorization;
 
     protected $model = User::class;
 
+    public function store(OrionRequest $request)
+    {
+
+        Gate::authorize('create', User::class);
+
+        $auth = $request->user();
+
+        $data = $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:6',
+            'role' => 'required|string|exists:roles,name',
+        ]);
+
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => bcrypt($data['password']),
+            'center_id' => $auth->center_id,
+        ]);
+
+        $record = Record::create([
+            'user_id' => $request->user()->id,
+            'name' => $request->user()->name,
+            'action' => "sign",
+            'affected_table' => "users",
+            'affected_record_id' => $user->id,
+        ]);
+
+
+        $user->assignRole($data['role']);
+
+        return response()->json([
+            'message' => 'Persona creada correctamente',
+            'user' => $user,
+            'record' => $record
+        ]);
+    }
+
+    public function update(OrionRequest $request, ...$args)
+    {
+        Gate::authorize('update', User::class);
+
+        $id = $args[0];
+
+        $data = $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users,email,',
+            'password' => 'nullable|string|min:6',
+            'role' => 'required|string|exists:roles,name',
+        ]);
+
+        $user = User::findOrFail($id);
+
+        $user->name = $data['name'];
+        $user->email = $data['email'];
+        if (!empty($data['password'])) {
+            $user->password = bcrypt($data['password']);
+        }
+        $user->save();
+
+        $record = Record::create([
+            'user_id' => $request->user()->id,
+            'name' => $request->user()->name,
+            'action' => "update",
+            'affected_table' => "users",
+            'affected_record_id' => $user->id,
+        ]);
+
+        $user->syncRoles([$data['role']]);
+
+        return response()->json([
+            'message' => 'Usuario actualizado correctamente',
+            'user' => $user,
+            'record' => $record
+        ]);
+    }
+
     public function index(OrionRequest $request)
     {
+
+        Gate::authorize('view', User::class);
+
         $name = $request->get('name');
         $page = $request->get('per_page');
         $all = $request->boolean('all', false);
@@ -36,6 +122,9 @@ class UserController extends Controller
 
     public function show(OrionRequest $request, ...$args)
     {
+
+        Gate::authorize('viewAny', User::class);
+
         $id = $args[0];
 
         $users = User::with('center', 'roles', 'roles.permissions')->findOrFail($id);
