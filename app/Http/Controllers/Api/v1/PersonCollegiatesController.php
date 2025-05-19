@@ -23,8 +23,8 @@ use View;
 
 class PersonCollegiatesController extends RelationController
 {
-    //
-    use DisableAuthorization;
+
+    // use DisableAuthorization;
 
     protected $model = Person::class;
 
@@ -39,7 +39,7 @@ class PersonCollegiatesController extends RelationController
 
         $query = Person::orderBy('id', 'Asc')
             ->name($name)
-            ->centers($user->center_id)
+            ->centersCollegiate($user->center_id)
             ->whereHas('collegiates')
             ->with('collegiates');
 
@@ -47,12 +47,6 @@ class PersonCollegiatesController extends RelationController
 
         return response()->json($collegiates);
 
-    }
-
-    protected function storeRequest(): string
-    {
-        return PersonRequest::class;
-        //  CollegiateRequest::class;
     }
 
     public function store(OrionRequest $request, ...$args)
@@ -137,26 +131,10 @@ class PersonCollegiatesController extends RelationController
                 $data['graduation_date'] = isset($data['graduation_date']) ? substr($data['graduation_date'], 0, 10) : null;
                 $data['termination_date'] = isset($data['termination_date']) ? substr($data['termination_date'], 0, 10) : null;
 
-                $person->collegiates()->first()->update($data);
+                $person->collegiates()->update($data);
             }
-
-            if ($request->has('email')) {
-                $person->emails()->update(
-                    $request->get('email')
-                );
-            }
-
-            if ($request->has('address')) {
-                $person->addresses()->update(
-                    $request->get('address')
-                );
-            }
-
-            if ($request->has('phone')) {
-                $person->phones()->update(
-                    $request->get('phone')
-                );
-            }
+            
+            $person->updateRelations($request->all());
 
             $record = Record::create([
                 'user_id' => $request->user()->id,

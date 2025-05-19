@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 
 class ExpedientController extends Controller
 {
-    use DisableAuthorization;
+    // use DisableAuthorization;
     protected $model = Expedient::class;
 
     public function index(OrionRequest $request)

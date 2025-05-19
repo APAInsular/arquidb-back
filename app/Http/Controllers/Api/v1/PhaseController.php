@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Date;
 
 class PhaseController extends Controller
 {
-    use DisableAuthorization;
+    // use DisableAuthorization;
     protected $model = Phase::class;
 
     public function index(OrionRequest $request, ...$args)
