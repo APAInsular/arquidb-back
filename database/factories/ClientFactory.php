@@ -21,8 +21,14 @@ class ClientFactory extends Factory
      */
     public function definition(): array
     {
+        $person = Person::doesntHave('client')->inRandomOrder()->first();
+
+        if (!$person) {
+            $person = Person::factory()->create();
+        }
+
         return [
-            'person_id' => Person::factory(),
+            'person_id' => $person->id,
             'agent' => fake()->word(),
         ];
     }
