@@ -22,7 +22,7 @@ class EmailFactory extends Factory
     public function definition(): array
     {
         return [
-            'person_id' => Person::factory(),
+            'person_id' => Person::inRandomOrder()->first()->id,
             'email' => fake()->safeEmail(),
         ];
     }

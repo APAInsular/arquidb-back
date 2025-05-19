@@ -42,7 +42,8 @@ Route::post('login', [AuthenticatedSessionController::class, 'store']);
 Route::post('/forgot-password', [PasswordResetLinkController::class, 'store']);
 Route::post('/reset-password', [NewPasswordController::class, 'store']);
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth:sanctum');
-Route::post('/upload', [FileController::class, 'upload'])->middleware('auth:sanctum');
+Route::post('/upload', [FileController::class, 'upload']);
+Route::post('/erase', [FileController::class, 'erase']);
 
 Route::middleware('auth:sanctum')->group(function () {
 

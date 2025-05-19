@@ -21,8 +21,14 @@ class CollegiateFactory extends Factory
      */
     public function definition(): array
     {
+        $person = Person::doesntHave('collegiates')->inRandomOrder()->first();
+
+        if (!$person) {
+            $person = Person::factory()->create();
+        }
+
         return [
-            'person_id' => Person::factory(),
+            'person_id' => $person->id,
             'birth_date' => fake()->date(),
             'nationality' => fake()->word(),
             'banking_entity' => fake()->word(),

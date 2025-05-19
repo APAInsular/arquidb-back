@@ -19,9 +19,8 @@ class ExpedientHasPersonFactory extends Factory
     public function definition(): array
     {
         return [
-            //
-            'expedient_id' => Expedient::factory(),
-            'person_id' => Person::factory(),
+            'expedient_id' => Expedient::inRandomOrder()->first()->id,
+            'person_id' => Person::inRandomOrder()->first()->id,
         ];
     }
 }
