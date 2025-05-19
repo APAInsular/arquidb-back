@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use \Illuminate\Support\Facades\DB;
+use App\Models\Phase;
+use App\Models\Document;
 
 class FileController extends Controller
 {
@@ -29,6 +32,55 @@ class FileController extends Controller
             'path' => $path,
             'url' => asset('storage/' . $path),
         ]);
+    }
+
+    public function addPhaseDocuments(Request $request, $phaseId)
+    {
+        // Validar que se envíe un array de archivos
+        $request->validate([
+            'files' => ['required', 'array'],
+            'files.*' => ['file', 'mimes:pdf', 'max:10240'], // Máximo 10 MB por archivo, solo PDF
+        ]);
+
+        // Buscar la fase
+        $phase = Phase::findOrFail($phaseId);
+
+        // Opcional: define una carpeta usando el ID de la fase o el slug, por ejemplo:
+        $folderPath = "documents/{$phase->id}/files";
+
+        $storedDocuments = [];
+
+        DB::beginTransaction();
+
+        try {
+            foreach ($request->file('files') as $file) {
+                if ($file->isValid()) {
+                    // Almacenar el archivo en el disco S3 en la carpeta designada
+                    $filePath = $file->store($folderPath, 's3');
+
+                    // Guardar la ruta en la base de datos (se recomienda guardar solo la ruta relativa)
+                    $document = Document::create([
+                        'name' => $filePath,
+                        'phase_id' => $phase->id,
+                    ]);
+
+                    $storedDocuments[] = $document;
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Imágenes añadidas correctamente.',
+                'images' => $storedDocuments,
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Error al añadir las imágenes.',
+                'details' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function erase(Request $request)
