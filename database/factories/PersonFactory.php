@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Center;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use App\Models\Person;
@@ -27,6 +28,7 @@ class PersonFactory extends Factory
             'first_surname' => fake()->word(),
             'second_surname' => fake()->word(),
             'observations' => fake()->word(),
+            'center_id' => Center::inRandomOrder()->first()->id,
         ];
     }
 }

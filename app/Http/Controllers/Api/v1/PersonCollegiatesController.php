@@ -23,8 +23,8 @@ use View;
 
 class PersonCollegiatesController extends RelationController
 {
-    //
-    use DisableAuthorization;
+
+    // use DisableAuthorization;
 
     protected $model = Person::class;
 
@@ -39,7 +39,7 @@ class PersonCollegiatesController extends RelationController
 
         $query = Person::orderBy('id', 'Asc')
             ->name($name)
-            // ->centers($user->center_id)
+            ->centersCollegiate($user->center_id)
             ->whereHas('collegiates')
             ->with('collegiates');
 
@@ -49,16 +49,10 @@ class PersonCollegiatesController extends RelationController
 
     }
 
-    protected function storeRequest(): string
-    {
-        return PersonRequest::class;
-        //  CollegiateRequest::class;
-    }
-
     public function store(OrionRequest $request, ...$args)
     {
         try {
-
+            $user = $request->user();
             $person = Person::create([
                 'identification_type' => $request->identification_type,
                 'identification_number' => $request->identification_number,
@@ -66,6 +60,7 @@ class PersonCollegiatesController extends RelationController
                 'first_surname' => $request->first_surname,
                 'second_surname' => $request->second_surname,
                 'observations' => $request->observations,
+                'center_id' => $user->center_id,
             ]);
 
             if (!empty($request->collegiate)) {
@@ -80,15 +75,15 @@ class PersonCollegiatesController extends RelationController
             }
 
             if (!empty($request->email)) {
-                $person->emails()->create($request->get('email'));
+                $person->emails()->createMany($request->get('email'));
             }
 
             if (!empty($request->address)) {
-                $person->addresses()->create($request->get('address'));
+                $person->addresses()->createMany($request->get('address'));
             }
 
             if (!empty($request->phone)) {
-                $person->phones()->create($request->get('phone'));
+                $person->phones()->createMany($request->get('phone'));
             }
 
             $record = Record::create([
@@ -136,26 +131,10 @@ class PersonCollegiatesController extends RelationController
                 $data['graduation_date'] = isset($data['graduation_date']) ? substr($data['graduation_date'], 0, 10) : null;
                 $data['termination_date'] = isset($data['termination_date']) ? substr($data['termination_date'], 0, 10) : null;
 
-                $person->collegiates()->first()->update($data);
+                $person->collegiates()->update($data);
             }
-
-            if ($request->has('email')) {
-                $person->emails()->update(
-                    $request->get('email')
-                );
-            }
-
-            if ($request->has('address')) {
-                $person->addresses()->update(
-                    $request->get('address')
-                );
-            }
-
-            if ($request->has('phone')) {
-                $person->phones()->update(
-                    $request->get('phone')
-                );
-            }
+            
+            $person->updateRelations($request->all());
 
             $record = Record::create([
                 'user_id' => $request->user()->id,
