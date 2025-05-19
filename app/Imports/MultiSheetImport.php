@@ -30,27 +30,27 @@ class MultiSheetImport implements WithMultipleSheets, WithEvents, WithChunkReadi
                 'expedients' => new ExpedientsImport($this)
             ], $this, 100),
 
-            // 'TBLEXPEDIENTES_FASES' => new SheetImport([
-            //     'phases' => new PhasesImport($this)
-            // ], $this, 100),
+            'TBLEXPEDIENTES_FASES' => new SheetImport([
+                'phases' => new PhasesImport($this)
+            ], $this, 100),
 
             'TBLEXPEDIENTES_COLEGIADOS' => new SheetImport([
                 'people' => new PeopleImport($this),
-                // 'collegiates' => new CollegiatesImport($this),
-                'expedient_person'=>new ExpedientHasPeopleImport($this)
+                'collegiates' => new CollegiatesImport($this),
+                'expedient_person' => new ExpedientHasPeopleImport($this)
             ], $this, 100),
 
             'TBLEXPEDIENTES_CLIENTES' => new SheetImport([
                 'people' => new PeopleImport($this),
-                // 'clients' => new ClientsImport($this),
-                // 'phones' => new PhonesImport($this),
-                'expedient_person'=>new ExpedientHasPeopleImport($this)
+                'clients' => new ClientsImport($this),
+                'phones' => new PhonesImport($this),
+                'expedient_person' => new ExpedientHasPeopleImport($this)
             ], $this, 100),
 
-            // 'tblclientes' => new SheetImport([
-            //     'addresses' => new AddressesImport($this),
-            //     'emails' => new EmailsImport($this)
-            // ], $this, 100),
+            'tblclientes' => new SheetImport([
+                'addresses' => new AddressesImport($this),
+                'emails' => new EmailsImport($this)
+            ], $this, 100),
 
         ];
     }
