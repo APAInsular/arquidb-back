@@ -34,16 +34,17 @@ class FileController extends Controller
         ]);
     }
 
-    public function addPhaseDocuments(Request $request, $phaseId)
+    public function addPhaseDocuments(Request $request)
     {
         // Validar que se envíe un array de archivos
         $request->validate([
+            'phase_id' => ['required', 'exists:phases,id'],
             'files' => ['required', 'array'],
-            'files.*' => ['file', 'mimes:pdf', 'max:10240'], // Máximo 10 MB por archivo, solo PDF
+            'files.*' => ['file', 'mimes:pdf', 'max:10240'],
         ]);
 
         // Buscar la fase
-        $phase = Phase::findOrFail($phaseId);
+        $phase = Phase::findOrFail($request->phase_id);
 
         // Opcional: define una carpeta usando el ID de la fase o el slug, por ejemplo:
         $folderPath = "documents/{$phase->id}/files";
