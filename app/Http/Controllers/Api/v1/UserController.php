@@ -34,7 +34,8 @@ class UserController extends Controller
             'name' => 'required|string',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:6',
-            'role' => 'required|string|exists:roles,name',
+            'role' => 'required|array',
+            'role.*' => 'string|exists:roles,name',
         ]);
 
         $user = User::create([
@@ -71,8 +72,8 @@ class UserController extends Controller
         $data = $request->validate([
             'name' => 'required|string',
             'email' => 'required|email|unique:users,email,',
-            'password' => 'nullable|string|min:6',
-            'role' => 'required|string|exists:roles,name',
+            'role' => 'required|array',
+            'role.*' => 'string|exists:roles,name',
         ]);
 
         $user = User::findOrFail($id);
@@ -106,13 +107,13 @@ class UserController extends Controller
 
         Gate::authorize('view', User::class);
 
-        $name = $request->get('name');
+        $search = $request->get('name') ?? $request->get('email');
         $page = $request->get('per_page');
         $all = $request->boolean('all', false);
 
         $query = User::orderBy('id', 'Asc')
             ->where('id', '!=', auth()->id())
-            ->name($name)
+            ->nameOrEmail($search)
             ->with('center', 'roles', 'permissions');
 
         $all ? $users = $query->get() : $users = $query->paginate($page ? $page : 10);
