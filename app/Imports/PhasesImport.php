@@ -100,7 +100,9 @@ class PhasesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
         $phaseType = $this->findPhaseTypeColumn($row);
         $phaseTitle = $this->findPhaseTitleColumn($row);
         $signState = 'unsigned';
-        $signDate = $row['fechavisado'];
+
+        $recordDate = $this->transformDate($row['fecharegistro'] ?? null);
+        $signDate = $this->transformDate($row['fechavisado'] ?? null);
 
         if (isset($signDate) && !empty(trim($signDate))) {
             $signState = 'signed';
@@ -111,7 +113,7 @@ class PhasesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
             'title' => $phaseTitle,
             'observations' => null,
             'objections' => null,
-            'record_date' => $row['fecharegistro'],
+            'record_date' => $recordDate,
             'state' => $signState,
             'sign_date' => $signDate,
             'expedient_id' => $this->currentExpedientId
@@ -157,6 +159,36 @@ class PhasesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
         }
 
         return null;
+    }
+
+    protected function transformDate($date): ?string
+    {
+        if (!$date) return null;
+
+        try {
+            // Si es numérico, probablemente es un serial de Excel
+            if (is_numeric($date)) {
+                // Excel base date is 1899-12-30
+                $excelBaseDate = \DateTime::createFromFormat('Y-m-d', '1899-12-30');
+                if ($excelBaseDate) {
+                    $excelBaseDate->modify("+{$date} days");
+                    $excelBaseDate->setTime(0, 0, 0);
+                    return $excelBaseDate->format('Y-m-d H:i:s');
+                }
+            }
+
+            // Si es una cadena tipo '5/12/1972'
+            $parsedDate = \DateTime::createFromFormat('d/m/Y', trim($date));
+            if ($parsedDate) {
+                $parsedDate->setTime(0, 0, 0);
+                return $parsedDate->format('Y-m-d H:i:s');
+            }
+
+            return null;
+        } catch (\Exception $e) {
+            Log::warning("No se pudo transformar la fecha: {$date}");
+            return null;
+        }
     }
 
     protected function savePhase(array $phaseData): void

@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use \Illuminate\Support\Facades\DB;
+use App\Models\Phase;
+use App\Models\Document;
 
 class FileController extends Controller
 {
     public function upload(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|max:10240',
+            'file' => 'required|file|max:102400',
         ]);
 
         $file = $request->file('file');
@@ -28,7 +31,94 @@ class FileController extends Controller
             'success' => true,
             'path' => $path,
             'url' => asset('storage/' . $path),
-            'filename' => $filename,
+        ]);
+    }
+
+    public function addPhaseDocuments(Request $request, $phaseId)
+    {
+        // Validar que se envíe un array de archivos
+        $request->validate([
+            'files' => ['required', 'array'],
+            'files.*' => ['file', 'mimes:pdf', 'max:10240'], // Máximo 10 MB por archivo, solo PDF
+        ]);
+
+        // Buscar la fase
+        $phase = Phase::findOrFail($phaseId);
+
+        // Opcional: define una carpeta usando el ID de la fase o el slug, por ejemplo:
+        $folderPath = "documents/{$phase->id}/files";
+
+        $storedDocuments = [];
+
+        DB::beginTransaction();
+
+        try {
+            foreach ($request->file('files') as $file) {
+                if ($file->isValid()) {
+                    // Almacenar el archivo en el disco S3 en la carpeta designada
+                    $filePath = $file->store($folderPath, 's3');
+
+                    // Guardar la ruta en la base de datos (se recomienda guardar solo la ruta relativa)
+                    $document = Document::create([
+                        'name' => $filePath,
+                        'phase_id' => $phase->id,
+                    ]);
+
+                    $storedDocuments[] = $document;
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Imágenes añadidas correctamente.',
+                'images' => $storedDocuments,
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Error al añadir las imágenes.',
+                'details' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function erase(Request $request)
+    {
+        $request->validate([
+            'path' => 'required|string',
+        ]);
+
+        // Extrae solo el nombre del archivo de la ruta completa
+        $filename = basename($request->path);
+        $relativePath = 'documents/' . $filename;
+        $fullPath = storage_path('app/public/' . $relativePath);
+
+        // Verificación adicional de seguridad
+        if (strpos($relativePath, '..') !== false) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ruta inválida'
+            ], 400);
+        }
+
+        if (!file_exists($fullPath)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El archivo no existe en: ' . $fullPath
+            ], 404);
+        }
+
+        if (!unlink($fullPath)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No se pudo eliminar el archivo. Verifica los permisos.'
+            ], 500);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Archivo eliminado correctamente'
         ]);
     }
 }
