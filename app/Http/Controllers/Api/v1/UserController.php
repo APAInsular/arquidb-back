@@ -111,6 +111,7 @@ class UserController extends Controller
         $all = $request->boolean('all', false);
 
         $query = User::orderBy('id', 'Asc')
+            ->where('id', '!=', auth()->id())
             ->name($name)
             ->with('center', 'roles', 'permissions');
 
@@ -127,7 +128,9 @@ class UserController extends Controller
 
         $id = $args[0];
 
-        $users = User::with('center', 'roles', 'roles.permissions')->findOrFail($id);
+        $users = User::with('center', 'roles', 'roles.permissions')
+            ->where('id', '!=', auth()->id())
+            ->findOrFail($id);
         return response()->json($users);
 
     }
