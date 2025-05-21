@@ -57,7 +57,11 @@ class FileController extends Controller
             foreach ($request->file('files') as $file) {
                 if ($file->isValid()) {
                     // Almacenar el archivo en el disco S3 en la carpeta designada
-                    $filePath = $file->store($folderPath, 's3');
+                    $filePath = $file->store($folderPath, 'public');
+
+                    if (!$filePath) {
+                        throw new \Exception('Error al almacenar el archivo');
+                    }
 
                     // Guardar la ruta en la base de datos (se recomienda guardar solo la ruta relativa)
                     $document = Document::create([
