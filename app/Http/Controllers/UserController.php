@@ -8,11 +8,23 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
+
+    /**
+     * VER USUARIO --
+     * DEVOLVEMOS AL USUARIO 
+     */
 {
     public function show(Request $request)
     {
         return $request->user();
     }
+
+    /**
+     * ACTUAIZA EL USUARIO --
+     * LLAMAMOS AL USUARIO AUTH 
+     * VALIDAMOS CAMPOS, HACEMOS EL UPDATE DEL USER Y LE PASAMOS LOS ATRIBUTOS DEL REQUEST 
+     * Y UN RETURN CON EL USUARIO ACTUALIZADO
+     */
 
     public function update(Request $request)
     {
@@ -30,6 +42,13 @@ class UserController extends Controller
             'user' => $user
         ]);
     }
+
+    /**
+     * BORRAR EL USUARIO --
+     * LLAMAMOS AL USUARIO AUTH 
+     * TENEMOS UNA VALIDACION DE LA CONTRASEÑA Y COMPROBAMOS SI ES LA MISMA QUE LA DEL USER 
+     * BORRAMOS EL TOKEN DEL USUARIO Y EL USUARIO Y LA RESPUESTA 
+     */
 
     public function destroy(Request $request)
     {
@@ -52,6 +71,14 @@ class UserController extends Controller
             'message' => 'Cuenta eliminada correctamente.'
         ]);
     }
+
+    /**
+     * CAMBIAR LA CONTRASEÑA DEL USUARIO --
+     * LLAMAMOS AL USUARIO AUTH 
+     * TENEMOS UNA VALIDACION DE LA CONTRASEÑA ANTERIOR DE LA NUEVA Y LA CONFIRMACION
+     * Y COMPROBAMOS QUE EL PASSWORD BEFORE SEA LA MISMA QUE LA DEL USER 
+     * LA PASSWORD DEL USER LE METEMOS EL NUEVO PASSWORD ENCRIPADO, GUARDAMOS EL USUARIO Y LA RESPUESTA
+     */
 
     public function changePassword(Request $request)
     {
