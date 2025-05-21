@@ -52,4 +52,34 @@ class UserController extends Controller
             'message' => 'Cuenta eliminada correctamente.'
         ]);
     }
+
+    public function changePassword(Request $request)
+    {
+
+        $user = auth()->user();
+        $data = $request->validate(
+            [
+                'passwordBefore' => 'required|min:8',
+                'password' => 'required|min:8',
+                'password_confirmation' => 'required|same:password',
+            ],
+            [
+                'passwordBefore.required' => 'Debes ingresar la contraseña anterior.',
+                'password.required' => 'Debes ingresar la nueva contraseña.',
+                'password.min' => 'Debes ingresar una contraseña de más de 8 caracteres.',
+                'password_confirmation.required' => 'Debes ingresar la confirmación de la contraseña.',
+                'password_confirmation.same' => 'La contraseña y la confirmación deben ser iguales.',
+            ]
+        );
+
+        if (!Hash::check($request->passwordBefore, $user->password)) {
+            throw ValidationException::withMessages([
+                'passwordBefore' => ['La contraseña es incorrecta.'],
+            ]);
+        }
+
+        $user->password = bcrypt($data['password']);
+        $user->save();
+        return response()->json(['message' => 'Contraseña actualizada correctamente.']);
+    }
 }

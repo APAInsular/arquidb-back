@@ -34,6 +34,7 @@ use App\Http\Controllers\FileController;
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthUserController::class, 'show']);
     Route::put('/user', [AuthUserController::class, 'update']);
+    Route::put('/change-password', [AuthUserController::class, 'changePassword']);
     Route::delete('/user', [AuthUserController::class, 'destroy']);
 });
 
