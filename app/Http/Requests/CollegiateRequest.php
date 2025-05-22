@@ -3,13 +3,26 @@
 namespace App\Http\Requests;
 
 use Orion\Http\Requests\Request;
+use Illuminate\Foundation\Http\FormRequest;
 
-class CollegiateRequest extends Request
+class CollegiateRequest extends FormRequest
 {
-    public function generalRules(): array
+
+    public function authorize()
+    {
+        $user = $this->user();
+
+        if (!$user) {
+            return false;
+        }
+        return $user->hasRole('superAdmin') || $user->hasRole('visor');
+    }
+
+
+    public function rules(): array
     {
         return [
-            'birth_date' => 'nullable|date',
+            'birth_date' => 'required|date',
             'nationality' => 'nullable|string|max:255',
             'banking_entity' => 'nullable|string|max:255',
             'account_number' => 'nullable|string|max:24',
