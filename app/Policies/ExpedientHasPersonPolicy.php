@@ -13,7 +13,7 @@ class ExpedientHasPersonPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,7 +21,7 @@ class ExpedientHasPersonPolicy
      */
     public function view(User $user, ExpedientHasPerson $expedientHasPerson): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -29,7 +29,7 @@ class ExpedientHasPersonPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasRole('superAdmin') || $user->hasRole('visor');
     }
 
     /**
@@ -37,7 +37,7 @@ class ExpedientHasPersonPolicy
      */
     public function update(User $user, ExpedientHasPerson $expedientHasPerson): bool
     {
-        return false;
+        return $user->hasRole('superAdmin') || $user->hasRole('visor');
     }
 
     /**
@@ -45,7 +45,7 @@ class ExpedientHasPersonPolicy
      */
     public function delete(User $user, ExpedientHasPerson $expedientHasPerson): bool
     {
-        return false;
+        return $user->hasRole('superAdmin') || $user->hasRole('visor');
     }
 
     /**

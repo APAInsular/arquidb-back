@@ -13,7 +13,7 @@ class PhasePolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,7 +21,7 @@ class PhasePolicy
      */
     public function view(User $user, Phase $phase): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -29,7 +29,7 @@ class PhasePolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasRole('superAdmin') || $user->hasRole('visor');
     }
 
     /**
@@ -37,7 +37,7 @@ class PhasePolicy
      */
     public function update(User $user, Phase $phase): bool
     {
-        return false;
+        return $user->hasRole('superAdmin') || $user->hasRole('visor');
     }
 
     /**
@@ -45,7 +45,7 @@ class PhasePolicy
      */
     public function delete(User $user, Phase $phase): bool
     {
-        return false;
+        return $user->hasRole('superAdmin') || $user->hasRole('visor');
     }
 
     /**
