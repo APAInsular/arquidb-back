@@ -86,10 +86,39 @@ class Person extends Model
         });
     }
 
-    public function scopeName($query, $name)
+    public function scopeSearchPerson($query, $search)
     {
-        if ($name) {
-            $query->where('name', 'LIKE', "%$name%");
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%$search%")
+                    ->orWhere('first_surname', 'LIKE', "%$search%")
+                    ->orWhere('second_surname', 'LIKE', "%$search%")
+                    ->orWhere('identification_number', 'LIKE', "%$search%")
+                    ->orWhere('observations', 'LIKE', "%$search%");
+            });
+        }
+    }
+
+    public function scopeSearchCollegiate($query, $search)
+    {
+        if ($search) {
+            $query->where('collegiates', function ($q) use ($search) {
+
+                $q->orWhere('birth_date', 'LIKE', "%$search%")
+                    ->orWhere('nationality', 'LIKE', "%$search%")
+                    ->orWhere('banking_entity', 'LIKE', "%$search%")
+                    ->orWhere('account_number', 'LIKE', "%$search%")
+                    ->orWhere('college', 'LIKE', "%$search%")
+                    ->orWhere('degree', 'LIKE', "%$search%")
+                    ->orWhere('collegiate_number', 'LIKE', "%$search%")
+                    ->orWhere('termination_date', 'LIKE', "%$search%")
+                    ->orWhere('graduation_date', 'LIKE', "%$search%")
+                    ->orWhere('career_end_et', 'LIKE', "%$search%")
+                    ->orWhere('web_page', 'LIKE', "%$search%")
+                    ->orWhere('council_reg_number', 'LIKE', "%$search%")
+                    ->orWhere('situation', 'LIKE', "%$search%");
+            });
         }
     }
 
@@ -108,7 +137,7 @@ class Person extends Model
 
     // protected function collegiateDates(array $data): array
     // {
-        
+
     //     return [
     //         'birth_date' => isset($data['birth_date']) ? substr($data['birth_date'], 0, 10) : null,
     //         'graduation_date' => isset($data['graduation_date']) ? substr($data['graduation_date'], 0, 10) : null,
