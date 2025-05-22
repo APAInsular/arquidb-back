@@ -89,7 +89,7 @@ class ExpedientsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBat
             'end_date' => isset($row['fecha_fin']) ? $this->parseDate($row['fecha_fin']) : null,
             'description' => trim($row['descripcion'] ?? $row['description'] ?? ''),
             'site' => trim($row['emplazamiento'] ?? $row['site'] ?? $row['lugar'] ?? ''),
-            'postal_code' => trim(''),
+            'postal_code' => trim('35600'),
             'budget' => $this->parseBudget($row['presupuesto'] ?? $row['budget'] ?? 0),
             'center_id' => $centerId,
         ];
