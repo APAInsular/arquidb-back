@@ -11,7 +11,9 @@ use Illuminate\Support\Facades\Auth;
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Handle an incoming authentication request.
+     * LOGIN DEL USUARIO --
+     * LLAMAMOS AL LOGIN REQUEST PARA LA VALIDACION Y AL USUARIO AUTH
+     * CREAMOS UN TOKEN PARA EL USUARIO AUTH_TOKEN Y DEVOLVEMOS LA RESPUESTA
      */
     public function store(LoginRequest $request): JsonResponse
     {

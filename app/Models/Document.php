@@ -17,7 +17,6 @@ class Document extends Model
      */
     protected $fillable = [
         'name',
-        'type',
         'phase_id',
         'user_id',
     ];

@@ -67,10 +67,13 @@ class User extends Authenticatable
         return $this->belongsTo(Center::class);
     }
 
-    public function scopeName($query, $name)
+    public function scopeNameOrEmail($query, $search)
     {
-        if ($name) {
-            $query->where('name', 'LIKE', "%$name%");
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%$search%")
+                    ->orWhere('email', 'LIKE', "%$search%");
+            });
         }
     }
 }
