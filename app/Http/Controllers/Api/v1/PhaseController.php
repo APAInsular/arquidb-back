@@ -85,7 +85,7 @@ class PhaseController extends Controller
 
             return array_merge($phase, [
                 'title' => $title,
-                'record_date' => Date::now(),
+                'record_date' => (new \DateTime())->format('Y-m-d\TH:i'),
                 'state' => 'unsigned',
                 'expedient_id' => $expedientId,
             ]);
