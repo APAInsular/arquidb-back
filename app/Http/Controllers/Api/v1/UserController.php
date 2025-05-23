@@ -81,9 +81,6 @@ class UserController extends Controller
         $user->name = $data['name'];
         $user->email = $data['email'];
         $user->password; 
-        // if (!empty($data['password'])) {
-        //     $user->password = bcrypt($data['password']);
-        // }
         $user->save();
 
         $record = Record::create([

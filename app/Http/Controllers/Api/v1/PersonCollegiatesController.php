@@ -54,7 +54,7 @@ class PersonCollegiatesController extends Controller
 
     }
 
-    public function store(PersonRequest $request, ...$args)
+    public function store(PersonRequest $request)
     {
         try {
             $user = $request->user();
