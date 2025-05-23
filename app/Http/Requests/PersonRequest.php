@@ -1,9 +1,6 @@
 <?php
 
 namespace App\Http\Requests;
-
-// use Illuminate\Validation\Rule;
-// use Orion\Http\Requests\Request;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -25,12 +22,7 @@ class PersonRequest extends FormRequest
 
         return [
             'identification_type' => 'required|in:DNI,NIF',
-            'identification_number' => [
-                'required',
-                'string',
-                'size:9',
-                Rule::unique('people')->ignore($Id)
-            ],
+            'identification_number' => 'required|string|size:9|unique:people' . ($Id ? ',id,' . $Id : ''),
             'name' => 'required|string|max:255',
             'first_surname' => 'required|string|max:255',
             'second_surname' => 'nullable|string|max:255',
