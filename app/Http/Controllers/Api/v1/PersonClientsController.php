@@ -84,7 +84,7 @@ class PersonClientsController extends Controller
             $record = Record::create([
                 'user_id' => $request->user()->id,
                 'name' => $request->user()->name,
-                'action' => "sign",
+                'action' => "create",
                 'affected_table' => "Client",
                 'affected_record_id' => $person->id,
             ]);

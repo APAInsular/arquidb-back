@@ -48,7 +48,7 @@ class UserController extends Controller
         $record = Record::create([
             'user_id' => $request->user()->id,
             'name' => $request->user()->name,
-            'action' => "sign",
+            'action' => "create",
             'affected_table' => "users",
             'affected_record_id' => $user->id,
         ]);
@@ -80,7 +80,7 @@ class UserController extends Controller
 
         $user->name = $data['name'];
         $user->email = $data['email'];
-        $user->password; 
+        $user->password;
         $user->save();
 
         $record = Record::create([
@@ -132,6 +132,16 @@ class UserController extends Controller
             ->findOrFail($id);
         return response()->json($users);
 
+    }
+
+    public function destroy(OrionRequest $request, ...$args)
+    {
+        Gate::authorize('delete', User::class);
+
+        $ids = is_array($args[0]) ? $args[0] : [$args[0]];
+        $ids = array_diff($ids, [auth()->id()]);
+
+        User::whereIn('id', $ids)->delete();
     }
 
 }

@@ -94,7 +94,7 @@ class PersonCollegiatesController extends Controller
             $record = Record::create([
                 'user_id' => $request->user()->id,
                 'name' => $request->user()->name,
-                'action' => "sign",
+                'action' => "create",
                 'affected_table' => "Collegiates",
                 'affected_record_id' => $person->id,
             ]);
