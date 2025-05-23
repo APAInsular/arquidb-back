@@ -17,7 +17,7 @@ class ExpedientHasPeopleImport implements ToModel, WithHeadingRow, SkipsOnError,
     protected $tracker;
     protected $currentExpedientId = null;
     protected $currentPersonId = null;
-    protected $currentRole;
+    protected $currentRole = null;
 
     public function __construct(MultiSheetImport $tracker, $currentRole)
     {
