@@ -48,7 +48,7 @@ class Expedient extends Model
 
     public function people(): BelongsToMany
     {
-        return $this->belongsToMany(Person::class, 'expedient_person');
+        return $this->belongsToMany(Person::class, 'expedient_person')->withPivot('role');
     }
 
     public function center(): BelongsTo
