@@ -32,8 +32,8 @@ class ExpedientHasPeopleController extends RelationController
             ];
         })->toArray();
 
-        // Agrega sin eliminar relaciones anteriores
-        $expedient->people()->syncWithoutDetaching($dataToSync);
+        // Reemplaza todas las relaciones anteriores por las nuevas
+        $expedient->people()->sync($dataToSync);
 
         return response()->json(['message' => 'Personas asignadas al expediente correctamente.']);
     }
