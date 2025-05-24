@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -21,7 +20,7 @@ return new class extends Migration
             $table->string('municipality')->nullable();
             $table->string('locality')->nullable();
             $table->string('street')->nullable();
-            $table->tinyInteger('number')->nullable();
+            $table->char('number', 3)->nullable();
             $table->char('postal_code', 5)->nullable();
             $table->primary(['id', 'person_id']);
             $table->timestamps();

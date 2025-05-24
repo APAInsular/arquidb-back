@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CollegiateRequest;
 use App\Http\Requests\PersonRequest;
 use App\Models\Address;
 use App\Models\Client;
@@ -18,14 +19,13 @@ use Orion\Concerns\DisablePagination;
 use Orion\Http\Controllers\RelationController;
 use Orion\Http\Requests\Request as OrionRequest;
 
-class PersonClientsController extends RelationController
+class PersonClientsController extends Controller
 {
 
     // use DisablePagination;
     // use DisableAuthorization;
 
     protected $model = Person::class;
-
     protected $relation = 'client';
 
     public function index(OrionRequest $request, ...$args)
@@ -53,7 +53,7 @@ class PersonClientsController extends RelationController
 
     }
 
-    public function store(OrionRequest $request, ...$args)
+    public function store(PersonRequest $request)
     {
         $user = $request->user();
         try {
@@ -103,7 +103,7 @@ class PersonClientsController extends RelationController
         }
     }
 
-    public function update(OrionRequest $request, ...$args)
+    public function update(PersonRequest $request, ...$args)
     {
         $id = $args[0];
 

@@ -177,6 +177,10 @@ class Person extends Model
             $this->updateAddresses($request['address']);
         }
 
+        if (isset($request['phone'])) {
+            $this->updatePhones($request['phone']);
+        }
+
         // if (isset($request['collegiate'])) {
         //     $this->updateCollegiate($request['collegiate']);
         // }
