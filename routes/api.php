@@ -104,4 +104,5 @@ Route::middleware('auth:sanctum')->as('api.')->group(function () {
 
     Route::post('phase/titles', [PhaseController::class, 'titles']);
     Route::post('/import-excel', [ExcelImportController::class, 'import']);
+    Route::post('/expedients/{expedient}/people', [ExpedientHasPeopleController::class, 'assignPeople']);
 });
