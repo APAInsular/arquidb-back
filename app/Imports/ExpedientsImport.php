@@ -12,6 +12,7 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\Importable;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Carbon;
 use Throwable;
 
 class ExpedientsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchInserts
@@ -89,7 +90,7 @@ class ExpedientsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBat
             'end_date' => isset($row['fecha_fin']) ? $this->parseDate($row['fecha_fin']) : null,
             'description' => trim($row['descripcion'] ?? $row['description'] ?? ''),
             'site' => trim($row['emplazamiento'] ?? $row['site'] ?? $row['lugar'] ?? ''),
-            'postal_code' => trim(''),
+            'postal_code' => trim($row['codigopostal'] ?? '35600'),
             'budget' => $this->parseBudget($row['presupuesto'] ?? $row['budget'] ?? 0),
             'center_id' => $centerId,
         ];
@@ -128,9 +129,12 @@ class ExpedientsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBat
         try {
             if (is_numeric($date)) {
                 // Para fechas en formato Excel (días desde 1900)
-                return \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($date);
+                $dateTime = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($date);
+                return Carbon::instance($dateTime);
             }
-            return new \DateTime($date);
+
+            // Si es texto en formato como 5/12/1972
+            return Carbon::createFromFormat('d/m/Y', $date);
         } catch (\Exception $e) {
             Log::warning("Fecha no válida: {$date}");
             return null;

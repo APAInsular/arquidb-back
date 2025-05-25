@@ -7,6 +7,7 @@ use App\Models\Expedient;
 use App\Models\Person;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Arr;
 
 class ExpedientHasPersonSeeder extends Seeder
 {
@@ -22,8 +23,9 @@ class ExpedientHasPersonSeeder extends Seeder
             $randomPeople = $people->random(2); // o cualquier número
             foreach ($randomPeople as $person) {
                 ExpedientHasPerson::factory()->create([
-                    'expedient_id' => $person->id,
-                    'person_id' => $expedient->id,
+                    'expedient_id' => $expedient->id,
+                    'person_id' => $person->id,
+                    'role' => Arr::random(['collegiate', 'client']),
                 ]);
                 // $expedient->people()->syncWithoutDetaching($person->id);
             }

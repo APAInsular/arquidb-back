@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Auth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -39,7 +40,7 @@ class Person extends Model
 
     public function expedients(): BelongsToMany
     {
-        return $this->belongsToMany(Expedient::class, 'expedient_person');
+        return $this->belongsToMany(Expedient::class, 'expedient_person')->withPivot('role');
     }
 
     public function collegiates(): HasOne
@@ -74,16 +75,25 @@ class Person extends Model
 
     public function scopeCenters($query, $centerId)
     {
-        return $query->whereHas('client', function ($q) use ($centerId) {
-            $q->where('center_id', $centerId);
-        });
+        if (Auth::user()->hasRole('superAdmin')) {
+            return $query;
+        } else {
+            return $query->whereHas('client', function ($q) use ($centerId) {
+                $q->where('center_id', $centerId);
+            });
+        }
     }
 
     public function scopeCentersCollegiate($query, $centerId)
     {
-        return $query->whereHas('collegiates', function ($q) use ($centerId) {
-            $q->where('center_id', $centerId);
-        });
+
+        if (Auth::user()->hasRole('superAdmin')) {
+            return $query;
+        } else {
+            return $query->whereHas('collegiates', function ($q) use ($centerId) {
+                $q->where('center_id', $centerId);
+            });
+        }
     }
 
     public function scopeSearchPerson($query, $search)
@@ -175,6 +185,10 @@ class Person extends Model
 
         if (isset($request['address'])) {
             $this->updateAddresses($request['address']);
+        }
+
+        if (isset($request['phone'])) {
+            $this->updatePhones($request['phone']);
         }
 
         // if (isset($request['collegiate'])) {

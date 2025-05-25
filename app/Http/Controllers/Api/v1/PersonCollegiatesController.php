@@ -21,7 +21,7 @@ use Orion\Http\Controllers\RelationController;
 use Orion\Http\Requests\Request as OrionRequest;
 use View;
 
-class PersonCollegiatesController extends RelationController
+class PersonCollegiatesController extends Controller
 {
 
     // use DisableAuthorization;
@@ -54,7 +54,7 @@ class PersonCollegiatesController extends RelationController
 
     }
 
-    public function store(OrionRequest $request, ...$args)
+    public function store(PersonRequest $request)
     {
         try {
             $user = $request->user();
@@ -94,7 +94,7 @@ class PersonCollegiatesController extends RelationController
             $record = Record::create([
                 'user_id' => $request->user()->id,
                 'name' => $request->user()->name,
-                'action' => "sign",
+                'action' => "create",
                 'affected_table' => "Collegiates",
                 'affected_record_id' => $person->id,
             ]);
@@ -113,7 +113,7 @@ class PersonCollegiatesController extends RelationController
         }
     }
 
-    public function update(OrionRequest $request, ...$args)
+    public function update(PersonRequest $request, ...$args)
     {
 
         $id = $args[0];
@@ -188,7 +188,7 @@ class PersonCollegiatesController extends RelationController
                 'user_id' => $request->user()->id,
                 'name' => $request->user()->name,
                 'action' => "delete",
-                'affected_table' => "Person, Collegiates, Emails, Addresses, Phones",
+                'affected_table' => "collegiates",
                 'affected_record_id' => $person->id,
             ]);
 

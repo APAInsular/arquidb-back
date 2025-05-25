@@ -24,8 +24,8 @@ class ExpedientFactory extends Factory
         return [
             'title' => fake()->sentence(4),
             'number' => fake()->unique()->regexify('[0-9]{10}'),
-            'start_date' => fake()->dateTime(),
-            'end_date' => fake()->dateTime(),
+            'start_date' => fake()->date(),
+            'end_date' => fake()->date(),
             'description' => fake()->text(),
             'site' => fake()->word(),
             'postal_code' => fake()->regexify('[0-9]{5}'),

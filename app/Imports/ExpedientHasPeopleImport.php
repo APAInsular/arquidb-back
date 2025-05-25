@@ -17,10 +17,12 @@ class ExpedientHasPeopleImport implements ToModel, WithHeadingRow, SkipsOnError,
     protected $tracker;
     protected $currentExpedientId = null;
     protected $currentPersonId = null;
+    protected $currentRole = null;
 
-    public function __construct(MultiSheetImport $tracker)
+    public function __construct(MultiSheetImport $tracker, $currentRole)
     {
         $this->tracker = $tracker;
+        $this->currentRole = $currentRole;
     }
 
     public function batchSize(): int
@@ -75,6 +77,7 @@ class ExpedientHasPeopleImport implements ToModel, WithHeadingRow, SkipsOnError,
             $this->saveExpedientPerson([
                 'expedient_id' => $this->currentExpedientId,
                 'person_id' => $this->currentPersonId,
+                'role' => $this->currentRole,
             ]);
 
             $this->tracker->incrementProcessed();

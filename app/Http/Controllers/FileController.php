@@ -95,8 +95,7 @@ class FileController extends Controller
         ]);
 
         // Extrae solo el nombre del archivo de la ruta completa
-        $filename = basename($request->path);
-        $relativePath = 'documents/' . $filename;
+        $relativePath = $request->path;
         $fullPath = storage_path('app/public/' . $relativePath);
 
         // Verificación adicional de seguridad
