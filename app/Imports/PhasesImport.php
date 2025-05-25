@@ -9,8 +9,9 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\SkipsOnError;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Illuminate\Support\Facades\Log;
-use Throwable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
+use Throwable;
 
 class PhasesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchInserts
 {
@@ -163,28 +164,20 @@ class PhasesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
 
     protected function transformDate($date): ?string
     {
-        if (!$date) return null;
+        if (empty($date)) return null;
 
         try {
             // Si es numérico, probablemente es un serial de Excel
             if (is_numeric($date)) {
-                // Excel base date is 1899-12-30
-                $excelBaseDate = \DateTime::createFromFormat('Y-m-d', '1899-12-30');
-                if ($excelBaseDate) {
-                    $excelBaseDate->modify("+{$date} days");
-                    $excelBaseDate->setTime(0, 0, 0);
-                    return $excelBaseDate->format('Y-m-d H:i:s');
-                }
+                $carbonDate = Carbon::instance(
+                    \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($date)
+                );
+                return $carbonDate->format('Y-m-d');
             }
 
             // Si es una cadena tipo '5/12/1972'
-            $parsedDate = \DateTime::createFromFormat('d/m/Y', trim($date));
-            if ($parsedDate) {
-                $parsedDate->setTime(0, 0, 0);
-                return $parsedDate->format('Y-m-d H:i:s');
-            }
-
-            return null;
+            $carbonDate = Carbon::createFromFormat('d/m/Y', trim($date));
+            return $carbonDate->format('Y-m-d');
         } catch (\Exception $e) {
             Log::warning("No se pudo transformar la fecha: {$date}");
             return null;
@@ -209,7 +202,6 @@ class PhasesImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
                 'title' => 'nullable|string|max:255',
                 'expedient_id' => 'required|exists:expedients,id',
                 'record_date' => 'required|date',
-                'sign_date' => 'required|date',
             ]);
 
             if ($validator->fails()) {

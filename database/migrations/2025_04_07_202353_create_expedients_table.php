@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->char('number', 10)->unique();
-            $table->dateTime('start_date');
-            $table->dateTime('end_date')->nullable();
+            $table->date('start_date');
+            $table->date('end_date')->nullable();
             $table->string('description')->nullable();
             $table->string('site');
             $table->char('postal_code', 5)->nullable();

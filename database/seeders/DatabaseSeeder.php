@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             ClientSeeder::class,
             ExpedientSeeder::class,
             PhaseSeeder::class,
-            DocumentSeeder::class,
+            // DocumentSeeder::class,
             // RecordSeeder::class,
             PhoneSeeder::class,
             AddressSeeder::class,
