@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Auth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -58,7 +59,11 @@ class Expedient extends Model
 
     public function scopeCenters($query, $centerId)
     {
-        return $query->where('center_id', $centerId);
+        if (Auth::user()->hasRole('superAdmin')) {
+            return $query;
+        } else {
+            return $query->where('center_id', $centerId);
+        }
     }
 
     public function scopeNumber($query, $number)
