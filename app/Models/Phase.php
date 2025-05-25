@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Auth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -61,8 +62,13 @@ class Phase extends Model
 
     public function scopeCenters($query, $centerId)
     {
-        return $query->whereHas('expedient', function ($q) use ($centerId) {
-            $q->where('center_id', $centerId);
-        });
+
+        if (Auth::user()->hasRole('superAdmin')) {
+            return $query;
+        } else {
+            return $query->whereHas('expedient', function ($q) use ($centerId) {
+                $q->where('center_id', $centerId);
+            });
+        }
     }
 }

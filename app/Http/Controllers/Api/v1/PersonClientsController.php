@@ -167,7 +167,7 @@ class PersonClientsController extends Controller
                 'user_id' => $request->user()->id,
                 'name' => $request->user()->name,
                 'action' => "delete",
-                'affected_table' => "Person, Client, Email, Address, Phone",
+                'affected_table' => "Client",
                 'affected_record_id' => $person->id,
             ]);
 
