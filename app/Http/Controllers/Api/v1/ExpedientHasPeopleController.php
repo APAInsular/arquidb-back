@@ -25,6 +25,12 @@ class ExpedientHasPeopleController extends RelationController
             'people.*.role' => 'required|string|max:255',
         ]);
 
+        // Si el array está vacío, borra todas las relaciones
+        if (empty($validated['people'])) {
+            $expedient->people()->sync([]);
+            return response()->json(['message' => 'Todas las personas han sido desvinculadas del expediente.']);
+        }
+
         // Preparamos los datos para sync
         $dataToSync = collect($validated['people'])->mapWithKeys(function ($person) {
             return [
