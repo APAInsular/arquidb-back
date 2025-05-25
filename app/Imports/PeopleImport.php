@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\Person;
+use App\Models\Center;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\SkipsOnError;
@@ -72,6 +73,7 @@ class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
 
         // Determinar el tipo de identificación basado en el NIF
         $identificationType = $this->determineIdentificationType($nif);
+        $centerId = $this->findCenterId($row);
 
         return [
             'identification_type' => $identificationType,
@@ -79,6 +81,7 @@ class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
             'name' => $nameData['name'],
             'first_surname' =>  $nameData['first_surname'],
             'second_surname' =>  $nameData['second_surname'],
+            'center_id' => $centerId,
         ];
     }
 
@@ -96,6 +99,30 @@ class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
         } else {
             return 'OTRO'; // Otro tipo de identificación
         }
+    }
+
+    protected function findCenterId(array $row): int
+    {
+        // Si viene directamente el ID del centro
+        if (isset($row['center_id']) && is_numeric($row['center_id'])) {
+            return (int)$row['center_id'];
+        }
+
+        // Buscar por código o nombre si no viene el ID
+        $centerIdentifier = $row['centro'] ?? $row['center'] ?? $row['codigo_centro'] ?? null;
+
+        if ($centerIdentifier) {
+            $center = Center::where('code', $centerIdentifier)
+                ->orWhere('name', $centerIdentifier)
+                ->first();
+
+            if ($center) {
+                return $center->id;
+            }
+        }
+
+        // Valor por defecto (1 como en tu ejemplo original)
+        return 1;
     }
 
     protected function savePerson(array $personData): ?Person

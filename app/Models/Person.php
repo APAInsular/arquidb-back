@@ -40,7 +40,7 @@ class Person extends Model
 
     public function expedients(): BelongsToMany
     {
-        return $this->belongsToMany(Expedient::class, 'expedient_person');
+        return $this->belongsToMany(Expedient::class, 'expedient_person')->withPivot('role');
     }
 
     public function collegiates(): HasOne

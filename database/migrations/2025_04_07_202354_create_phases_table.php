@@ -19,9 +19,9 @@ return new class extends Migration
             $table->string('title');
             $table->string('observations')->nullable();
             $table->string('objections')->nullable();
-            $table->dateTime('record_date');
+            $table->date('record_date');
             $table->enum('state', ['unsigned', 'signed']);
-            $table->dateTime('sign_date')->nullable();
+            $table->date('sign_date')->nullable();
             $table->foreignId('expedient_id')->constrained()->onDelete('restrict');
             $table->timestamps();
         });

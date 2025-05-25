@@ -16,6 +16,7 @@ class ExpedientHasPerson extends Model
     protected $fillable = [
         'expedient_id',
         'person_id',
+        'role',
     ];
 
     public function expedient(): BelongsTo
