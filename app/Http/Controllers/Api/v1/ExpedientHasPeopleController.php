@@ -20,9 +20,9 @@ class ExpedientHasPeopleController extends RelationController
     public function assignPeople(Request $request, Expedient $expedient)
     {
         $validated = $request->validate([
-            'people' => 'required|array',
-            'people.*.id' => 'required|integer|exists:people,id',
-            'people.*.role' => 'required|string|max:255',
+            'people' => 'array',
+            'people.*.id' => 'sometimes|integer|exists:people,id',
+            'people.*.role' => 'sometimes|string|max:255',
         ]);
 
         // Si el array está vacío, borra todas las relaciones
