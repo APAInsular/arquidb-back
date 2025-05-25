@@ -34,16 +34,17 @@ class FileController extends Controller
         ]);
     }
 
-    public function addPhaseDocuments(Request $request, $phaseId)
+    public function addPhaseDocuments(Request $request)
     {
         // Validar que se envíe un array de archivos
         $request->validate([
+            'phase_id' => ['required', 'exists:phases,id'],
             'files' => ['required', 'array'],
-            'files.*' => ['file', 'mimes:pdf', 'max:10240'], // Máximo 10 MB por archivo, solo PDF
+            'files.*' => ['file', 'mimes:pdf', 'max:10240'],
         ]);
 
         // Buscar la fase
-        $phase = Phase::findOrFail($phaseId);
+        $phase = Phase::findOrFail($request->phase_id);
 
         // Opcional: define una carpeta usando el ID de la fase o el slug, por ejemplo:
         $folderPath = "documents/{$phase->id}/files";
@@ -56,7 +57,11 @@ class FileController extends Controller
             foreach ($request->file('files') as $file) {
                 if ($file->isValid()) {
                     // Almacenar el archivo en el disco S3 en la carpeta designada
-                    $filePath = $file->store($folderPath, 's3');
+                    $filePath = $file->store($folderPath, 'public');
+
+                    if (!$filePath) {
+                        throw new \Exception('Error al almacenar el archivo');
+                    }
 
                     // Guardar la ruta en la base de datos (se recomienda guardar solo la ruta relativa)
                     $document = Document::create([
@@ -90,8 +95,7 @@ class FileController extends Controller
         ]);
 
         // Extrae solo el nombre del archivo de la ruta completa
-        $filename = basename($request->path);
-        $relativePath = 'documents/' . $filename;
+        $relativePath = $request->path;
         $fullPath = storage_path('app/public/' . $relativePath);
 
         // Verificación adicional de seguridad
