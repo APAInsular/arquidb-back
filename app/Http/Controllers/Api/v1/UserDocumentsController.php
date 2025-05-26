@@ -43,7 +43,7 @@ class UserDocumentsController extends RelationController
                 // Marcar la fase relacionada
                 if ($document->phase) {
                     $document->phase->state = 'signed';
-                    $document->phase->record_date = Date::now();
+                    $document->phase->sign_date = Date::now();
                     $document->phase->save();
                 }
 
