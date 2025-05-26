@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 class AddressController extends Controller
 {
     // prueba
-    use DisableAuthorization, DisablePagination;
+    // use DisableAuthorization, DisablePagination;
 
     protected $model = Address::class;
 }
