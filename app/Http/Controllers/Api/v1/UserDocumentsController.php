@@ -39,6 +39,8 @@ class UserDocumentsController extends RelationController
             foreach ($validated['documents'] as $docId) {
                 $document = Document::find($docId);
 
+                $this->authorize('sign', [$user, $document]);
+
                 // Marcar como firmado
                 $document->user_id = $user->id;
                 $document->save();
