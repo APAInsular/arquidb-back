@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Models\User;
 use App\Models\Document;
 use App\Models\Record;
+use Gate;
 use Illuminate\Http\Request;
 use Orion\Concerns\DisableAuthorization;
 use Orion\Concerns\DisablePagination;
@@ -14,9 +15,8 @@ use \Illuminate\Support\Facades\DB;
 
 class UserDocumentsController extends RelationController
 {
-    //
-    use DisablePagination;
-    use DisableAuthorization;
+    // use DisablePagination;
+    // use DisableAuthorization;
 
     protected $model = User::class;
 
@@ -24,6 +24,9 @@ class UserDocumentsController extends RelationController
 
     public function signDocuments(Request $request)
     {
+
+        Gate::authorize('sign', Document::class);
+
         $validated = $request->validate([
             'documents' => 'required|array',
             'documents.*' => 'required|integer|exists:documents,id',
@@ -35,6 +38,8 @@ class UserDocumentsController extends RelationController
         try {
             foreach ($validated['documents'] as $docId) {
                 $document = Document::find($docId);
+
+                $this->authorize('sign', [$user, $document]);
 
                 // Marcar como firmado
                 $document->user_id = $user->id;

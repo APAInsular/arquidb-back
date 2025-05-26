@@ -11,6 +11,6 @@ use Illuminate\Http\Request;
 class EmailController extends Controller
 {
     // prueba
-    use DisableAuthorization, DisablePagination;
+    // use DisableAuthorization, DisablePagination;
     protected $model = Email::class;
 }

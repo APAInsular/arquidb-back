@@ -37,8 +37,7 @@ class PersonCollegiatesController extends Controller
             $request->get('name')
             ?? $request->get('first_surname')
             ?? $request->get('second_surname')
-            ?? $request->get('identification_number')
-            ?? $request->get('observations');
+            ?? $request->get('identification_number');
         $page = $request->get('per_page');
         $all = $request->boolean('all', false);
 
