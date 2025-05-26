@@ -68,9 +68,4 @@ class DocumentPolicy
     {
         return false;
     }
-
-    public function sign(User $user, Document $document): bool
-    {
-        return $user->hasRole('visor');
-    }
 }
