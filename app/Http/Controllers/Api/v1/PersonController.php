@@ -10,7 +10,7 @@ use Orion\Http\Controllers\Controller;
 
 class PersonController extends Controller
 {
-    use DisableAuthorization, DisablePagination;
+    // use DisableAuthorization, DisablePagination;
     protected $model = Person::class;
     protected $request = PersonRequest::class;
 

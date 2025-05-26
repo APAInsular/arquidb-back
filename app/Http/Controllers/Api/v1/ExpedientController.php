@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\ExpedientRequest;
 use App\Models\Client;
 use App\Models\Expedient;
+use App\Models\Record;
+use Gate;
 use Orion\Concerns\DisableAuthorization;
 use Orion\Concerns\DisablePagination;
-use Orion\Http\Controllers\Controller;
+// use Orion\Http\Controllers\Controller;
 use Orion\Http\Requests\Request as OrionRequest;
 use Illuminate\Http\Request;
 
@@ -43,5 +47,69 @@ class ExpedientController extends Controller
 
         return response()->json($expedients);
 
+    }
+
+    public function store(ExpedientRequest $request)
+    {
+        Gate::authorize('create', Expedient::class);
+        $expedient = Expedient::create($request->validated());
+
+        $record = Record::create([
+            'user_id' => $request->user()->id,
+            'name' => $request->user()->name,
+            'action' => "create",
+            'affected_table' => "expedient",
+            'affected_record_id' => $expedient->id,
+        ]);
+
+        return response()->json([
+            'message' => 'Expediente creado correctamente.',
+            'data' => $expedient,
+            'record' => $record,
+        ]);
+    }
+
+    public function update(ExpedientRequest $request, $id)
+    {
+
+        $expedient = Expedient::findOrFail($id);
+        Gate::authorize('update', $expedient);
+        $validated = $request->validated();
+        $expedient->update($validated);
+
+        $record = Record::create([
+            'user_id' => $request->user()->id,
+            'name' => $request->user()->name,
+            'action' => "update",
+            'affected_table' => "centers",
+            'affected_record_id' => $expedient->id,
+        ]);
+
+        return response()->json([
+            'message' => 'Expediente actualizado correctamente.',
+            'data' => $expedient,
+            'record' => $record,
+        ]);
+    }
+    public function destroy($id)
+    {
+        $expedient = Expedient::findOrFail($id);
+
+        Gate::authorize('delete', $expedient);
+        $expedient->delete();
+
+        $record = Record::create([
+            'user_id' => auth()->user()->id,
+            'name' => auth()->user()->name,
+            'action' => "delete",
+            'affected_table' => "expedient",
+            'affected_record_id' => $expedient->id,
+        ]);
+
+        return response()->json([
+            'message' => 'Expediente eliminado correctamente.',
+            'data' => $expedient,
+            'record' => $record,
+        ]);
     }
 }

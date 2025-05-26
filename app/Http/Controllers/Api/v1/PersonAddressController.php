@@ -12,8 +12,8 @@ use Orion\Http\Controllers\RelationController;
 class PersonAddressController extends RelationController
 {
     //
-    use DisablePagination;
-    use DisableAuthorization;
+    // use DisablePagination;
+    // use DisableAuthorization;
 
     protected $model = Person::class;
 

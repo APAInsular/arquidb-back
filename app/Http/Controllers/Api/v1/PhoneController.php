@@ -10,6 +10,6 @@ use Illuminate\Http\Request;
 
 class PhoneController extends Controller
 {
-    use DisableAuthorization, DisablePagination;
+    // use DisableAuthorization, DisablePagination;
     protected $model = Phone::class;
 }
