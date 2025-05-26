@@ -48,4 +48,14 @@ class Center extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function scopeNameOrPhone($query, $search)
+    {
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%$search%")
+                    ->orWhere('phone', 'LIKE', "%$search%");
+            });
+        }
+    }
 }

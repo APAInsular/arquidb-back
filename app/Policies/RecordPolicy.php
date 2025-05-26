@@ -8,6 +8,15 @@ use Illuminate\Auth\Access\Response;
 
 class RecordPolicy
 {
+
+    public function before(?User $user, string $ability): ?bool
+    {
+        if ($user && $user->hasRole('superAdmin')) {
+            return true;
+        }
+
+        return false;
+    }
     /**
      * Determine whether the user can view any models.
      */
