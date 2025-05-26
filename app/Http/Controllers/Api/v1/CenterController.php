@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CenterRequest;
 use App\Models\Center;
+use App\Models\Record;
 use Gate;
 use Orion\Concerns\DisableAuthorization;
 use Orion\Concerns\DisablePagination;
@@ -15,7 +16,7 @@ use Illuminate\Http\Request;
 class CenterController extends Controller
 {
     // prueba
-    use DisableAuthorization, DisablePagination;
+    // use DisableAuthorization, DisablePagination;
 
     protected $model = Center::class;
 
@@ -49,13 +50,22 @@ class CenterController extends Controller
     public function store(CenterRequest $request)
     {
         Gate::authorize('create', Center::class);
-        
+
         $validated = $request->validated();
         $center = Center::create($validated);
 
+        $record = Record::create([
+            'user_id' => $request->user()->id,
+            'name' => $request->user()->name,
+            'action' => "create",
+            'affected_table' => "centers",
+            'affected_record_id' => $center->id,
+        ]);
+
         return response()->json([
             'message' => 'Centro creado correctamente.',
-            'data' => $center
+            'data' => $center,
+            'record' => $record,
         ], 201);
     }
 
@@ -66,9 +76,18 @@ class CenterController extends Controller
         $validated = $request->validated();
         $center->update($validated);
 
+        $record = Record::create([
+            'user_id' => $request->user()->id,
+            'name' => $request->user()->name,
+            'action' => "update",
+            'affected_table' => "centers",
+            'affected_record_id' => $center->id,
+        ]);
+
         return response()->json([
             'message' => 'Centro actualizado correctamente.',
-            'data' => $center
+            'data' => $center,
+            'record' => $record,
         ]);
     }
 
@@ -79,8 +98,17 @@ class CenterController extends Controller
 
         $center->delete();
 
+        $record = Record::create([
+            'user_id' => auth()->user()->id,
+            'name' => auth()->user()->name,
+            'action' => "delete",
+            'affected_table' => "centers",
+            'affected_record_id' => $center->id,
+        ]);
+
         return response()->json([
-            'message' => 'Centro eliminado correctamente.'
+            'message' => 'Centro eliminado correctamente.',
+            'record' => $record,
         ]);
     }
 }
