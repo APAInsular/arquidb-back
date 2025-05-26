@@ -104,8 +104,7 @@ class Person extends Model
                 $q->where('name', 'LIKE', "%$search%")
                     ->orWhere('first_surname', 'LIKE', "%$search%")
                     ->orWhere('second_surname', 'LIKE', "%$search%")
-                    ->orWhere('identification_number', 'LIKE', "%$search%")
-                    ->orWhere('observations', 'LIKE', "%$search%");
+                    ->orWhere('identification_number', 'LIKE', "%$search%");
             });
         }
     }

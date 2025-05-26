@@ -18,7 +18,7 @@ class CenterRequest extends FormRequest
             'municipality' => ['nullable', 'string', 'max:255'],
             'locality' => ['required', 'string', 'max:255'],
             'street' => ['required', 'string', 'max:255'],
-            'number' => ['required', 'integer', 'min:1'],
+            'number' => ['required', 'integer', 'min:1', 'max:100'],
             'phone' => ['required', 'digits:9'],
         ];
     }
@@ -44,6 +44,7 @@ class CenterRequest extends FormRequest
             'number.required' => 'El número es obligatorio.',
             'number.integer' => 'El número debe ser un número entero.',
             'number.min' => 'El número debe ser mayor que cero.',
+            'number.max' => 'El número no puede ser mayor que 100.',
 
             'phone.required' => 'El teléfono es obligatorio.',
             'phone.digits' => 'El teléfono debe tener exactamente 9 dígitos.',

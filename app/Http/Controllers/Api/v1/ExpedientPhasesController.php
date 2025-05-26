@@ -10,8 +10,8 @@ use Orion\Http\Controllers\RelationController;
 class ExpedientPhasesController extends RelationController
 {
     //
-    use DisablePagination;
-    use DisableAuthorization;
+    // use DisablePagination;
+    // use DisableAuthorization;
 
     protected $model = Expedient::class;
 
