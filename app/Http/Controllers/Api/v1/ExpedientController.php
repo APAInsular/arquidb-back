@@ -91,5 +91,25 @@ class ExpedientController extends Controller
             'record' => $record,
         ]);
     }
+    public function destroy($id)
+    {
+        $expedient = Expedient::findOrFail($id);
 
+        Gate::authorize('delete', $expedient);
+        $expedient->delete();
+
+        $record = Record::create([
+            'user_id' => auth()->user()->id,
+            'name' => auth()->user()->name,
+            'action' => "delete",
+            'affected_table' => "expedient",
+            'affected_record_id' => $expedient->id,
+        ]);
+
+        return response()->json([
+            'message' => 'Expediente eliminado correctamente.',
+            'data' => $expedient,
+            'record' => $record,
+        ]);
+    }
 }

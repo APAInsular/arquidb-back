@@ -22,6 +22,7 @@ class ExpedientRequest extends FormRequest
             'site' => 'required|string|max:255',
             'postal_code' => 'nullable|string|size:5',
             'budget' => 'nullable|numeric|between:0,9999999.99',
+            'center_id' => 'required|integer|exists:centers,id',
         ];
     }
 
