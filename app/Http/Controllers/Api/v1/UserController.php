@@ -136,12 +136,23 @@ class UserController extends Controller
 
     public function destroy(OrionRequest $request, ...$args)
     {
+
         Gate::authorize('delete', User::class);
 
-        $ids = is_array($args[0]) ? $args[0] : [$args[0]];
-        $ids = array_diff($ids, [auth()->id()]);
+        $id = $args[0];
 
-        User::whereIn('id', $ids)->delete();
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        $record = Record::create([
+            'user_id' => $request->user()->id,
+            'name' => $request->user()->name,
+            'action' => "delete",
+            'affected_table' => "users",
+            'affected_record_id' => $user->id,
+        ]);
+
+        return response()->json(['message' => 'Users deleted successfully', 'record' => $record]);
     }
 
 }
