@@ -40,6 +40,11 @@ class DocumentPolicy
         return $user->hasRole('superAdmin') || $user->hasRole('visor');
     }
 
+    public function sign(User $user, Document $document): bool
+    {
+        return $user->hasRole('visor');
+    }
+
     /**
      * Determine whether the user can delete the model.
      */
