@@ -18,17 +18,17 @@ class DatabaseSeeder extends Seeder
             RolesAndPermissionsSeeder::class,
             UserSeeder::class,
 
-            // PersonSeeder::class,
-            // CollegiateSeeder::class,
-            // ClientSeeder::class,
-            // ExpedientSeeder::class,
-            // PhaseSeeder::class,
+            PersonSeeder::class,
+            CollegiateSeeder::class,
+            ClientSeeder::class,
+            ExpedientSeeder::class,
+            PhaseSeeder::class,
             // DocumentSeeder::class,
             // RecordSeeder::class,
-            // PhoneSeeder::class,
-            // AddressSeeder::class,
-            // EmailSeeder::class,
-            // ExpedientHasPersonSeeder::class,
+            PhoneSeeder::class,
+            AddressSeeder::class,
+            EmailSeeder::class,
+            ExpedientHasPersonSeeder::class,
         ]);
     }
 }
