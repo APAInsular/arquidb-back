@@ -15,7 +15,7 @@ use \Illuminate\Support\Facades\DB;
 class UserDocumentsController extends RelationController
 {
     // use DisablePagination;
-    // use DisableAuthorization;
+    use DisableAuthorization;
 
     protected $model = User::class;
 
