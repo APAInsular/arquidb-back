@@ -11,7 +11,7 @@ use Orion\Http\Controllers\Controller;
 class CollegiateController extends Controller
 {
     // prueba
-    use DisableAuthorization, DisablePagination;
+    // use DisableAuthorization, DisablePagination;
     protected $model = Collegiate::class;
 
     // protected $request = CollegiateRequest::class;
