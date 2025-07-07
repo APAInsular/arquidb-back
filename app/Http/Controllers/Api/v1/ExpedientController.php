@@ -81,7 +81,7 @@ class ExpedientController extends Controller
             'user_id' => $request->user()->id,
             'name' => $request->user()->name,
             'action' => "update",
-            'affected_table' => "centers",
+            'affected_table' => "expedient",
             'affected_record_id' => $expedient->id,
         ]);
 

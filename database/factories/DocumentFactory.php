@@ -24,6 +24,7 @@ class DocumentFactory extends Factory
     {
         return [
             'name' => fake()->name(),
+            'path' => fake()->filePath(),
             'phase_id' => Phase::inRandomOrder()->first()->id,
             'user_id' => User::inRandomOrder()->first()->id,
         ];
