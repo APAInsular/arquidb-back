@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Record;
 
 class Phase extends Model
 {
@@ -48,6 +49,31 @@ class Phase extends Model
                 throw new \InvalidArgumentException('El campo phase debe ser un número entre 000 y 9999 (3 o 4 dígitos).');
             }
         });
+    }
+    protected static function booted()
+    {
+        static::created(function ($phase) {
+            self::logAction($phase, 'create');
+        });
+
+        static::updated(function ($phase) {
+            self::logAction($phase, 'update');
+        });
+
+        static::deleted(function ($phase) {
+            self::logAction($phase, 'delete');
+        });
+    }
+
+    protected static function logAction($phase, $action)
+    {
+        Record::create([
+            'user_id' => Auth::id(),
+            'name' => optional(Auth::user())->name,
+            'action' => $action,
+            'affected_table' => 'phases',
+            'affected_record_id' => $phase->id,
+        ]);
     }
 
     public function documents(): HasMany
