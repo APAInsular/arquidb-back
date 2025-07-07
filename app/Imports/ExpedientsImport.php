@@ -116,8 +116,8 @@ class ExpedientsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBat
             }
         }
 
-        // Valor por defecto (1 como en tu ejemplo original)
-        return 1;
+        // Valor por defecto (1)
+        return 7;
     }
 
     protected function parseDate($date)

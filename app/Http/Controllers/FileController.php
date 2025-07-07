@@ -46,7 +46,7 @@ class FileController extends Controller
         // Buscar la fase
         $phase = Phase::findOrFail($request->phase_id);
 
-        // Opcional: define una carpeta usando el ID de la fase o el slug, por ejemplo:
+        // Definir la carpeta de almacenamiento
         $folderPath = "documents/{$phase->id}/files";
 
         $storedDocuments = [];
@@ -56,16 +56,17 @@ class FileController extends Controller
         try {
             foreach ($request->file('files') as $file) {
                 if ($file->isValid()) {
-                    // Almacenar el archivo en el disco S3 en la carpeta designada
+                    // Almacenar el archivo
                     $filePath = $file->store($folderPath, 'public');
 
                     if (!$filePath) {
                         throw new \Exception('Error al almacenar el archivo');
                     }
 
-                    // Guardar la ruta en la base de datos (se recomienda guardar solo la ruta relativa)
+                    // Guardar el documento en la base de datos
                     $document = Document::create([
-                        'name' => $filePath,
+                        'name' => $file->getClientOriginalName(),
+                        'path' => $filePath,
                         'phase_id' => $phase->id,
                     ]);
 

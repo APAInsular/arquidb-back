@@ -121,8 +121,8 @@ class PeopleImport implements ToModel, WithHeadingRow, SkipsOnError, WithBatchIn
             }
         }
 
-        // Valor por defecto (1 como en tu ejemplo original)
-        return 1;
+        // Valor por defecto (1)
+        return 7;
     }
 
     protected function savePerson(array $personData): ?Person
