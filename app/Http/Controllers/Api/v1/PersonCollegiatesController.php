@@ -94,7 +94,7 @@ class PersonCollegiatesController extends Controller
                 'user_id' => $request->user()->id,
                 'name' => $request->user()->name,
                 'action' => "create",
-                'affected_table' => "Collegiates",
+                'affected_table' => "collegiates",
                 'affected_record_id' => $person->id,
             ]);
 
@@ -144,7 +144,7 @@ class PersonCollegiatesController extends Controller
                 'user_id' => $request->user()->id,
                 'name' => $request->user()->name,
                 'action' => "update",
-                'affected_table' => "Collegiates",
+                'affected_table' => "collegiates",
                 'affected_record_id' => $person->id,
             ]);
 

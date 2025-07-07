@@ -85,7 +85,7 @@ class PersonClientsController extends Controller
                 'user_id' => $request->user()->id,
                 'name' => $request->user()->name,
                 'action' => "create",
-                'affected_table' => "Client",
+                'affected_table' => "client",
                 'affected_record_id' => $person->id,
             ]);
 
@@ -125,7 +125,7 @@ class PersonClientsController extends Controller
                 'user_id' => $request->user()->id,
                 'name' => $request->user()->name,
                 'action' => "update",
-                'affected_table' => "Client",
+                'affected_table' => "client",
                 'affected_record_id' => $person->id,
             ]);
 
@@ -167,7 +167,7 @@ class PersonClientsController extends Controller
                 'user_id' => $request->user()->id,
                 'name' => $request->user()->name,
                 'action' => "delete",
-                'affected_table' => "Client",
+                'affected_table' => "client",
                 'affected_record_id' => $person->id,
             ]);
 
