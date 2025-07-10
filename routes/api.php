@@ -75,6 +75,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', [UserController::class, 'destroy']);
     });
 });
+Orion::resource('expedient', ExpedientController::class);
+Orion::hasManyResource('expedient', 'phases', ExpedientPhasesController::class);
+Orion::belongsToManyResource('expedient', 'people', ExpedientHasPeopleController::class);
 
 Route::middleware('auth:sanctum')->as('api.')->group(function () {
     // Tablas Generales
@@ -84,7 +87,6 @@ Route::middleware('auth:sanctum')->as('api.')->group(function () {
     Orion::resource('collegiate', CollegiateController::class);
     Orion::resource('document', DocumentController::class);
     Orion::resource('email', EmailController::class);
-    Orion::resource('expedient', ExpedientController::class);
     Orion::resource('person', PersonController::class);
     Orion::resource('phase', PhaseController::class);
     Orion::resource('phone', PhoneController::class);
@@ -92,10 +94,8 @@ Route::middleware('auth:sanctum')->as('api.')->group(function () {
     Orion::resource('centers', CenterController::class);
 
     // Tablas relacionadas
-    Orion::hasManyResource('expedient', 'phases', ExpedientPhasesController::class);
     Orion::hasManyResource('phase', 'documents', PhaseDocumentsController::class);
 
-    Orion::belongsToManyResource('expedient', 'people', ExpedientHasPeopleController::class);
     Orion::hasManyResource('person', 'address', PersonAddressController::class);
     Orion::hasManyResource('person', 'emails', PersonEmailsController::class);
     Orion::hasManyResource('person', 'phones', PersonPhonesController::class);
