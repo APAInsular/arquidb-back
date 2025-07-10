@@ -27,42 +27,30 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
 use Orion\Facades\Orion;
 use App\Http\Controllers\ExcelImportController;
 use App\Http\Controllers\FileController;
+
 use App\Http\Controllers\Auth\GoogleAuthController;
 
-// ✅ Auth endpoints (login, password reset, etc.)
-Route::post('login', [AuthenticatedSessionController::class, 'store']);
-Route::post('/forgot-password', [PasswordResetLinkController::class, 'store']);
-Route::post('/reset-password', [NewPasswordController::class, 'store']);
-Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth:sanctum');
-
-// ✅ File upload
-Route::post('/upload', [FileController::class, 'upload'])->middleware('auth:sanctum');
-Route::post('/multiupload', [FileController::class, 'addPhaseDocuments'])->middleware('auth:sanctum');
-Route::post('/erase', [FileController::class, 'erase'])->middleware('auth:sanctum');
-
-// ✅ Public Orion endpoints (NO auth:sanctum)
-Orion::resource('expedient', ExpedientController::class);
-Orion::hasManyResource('expedient', 'phases', ExpedientPhasesController::class);
-Orion::belongsToManyResource('expedient', 'people', ExpedientHasPeopleController::class);
-
-// ✅ Google OAuth
-Route::get('auth/google', [GoogleAuthController::class, 'redirectToAuth']);
-Route::get('auth/google/callback', [GoogleAuthController::class, 'handleAuthCallback']);
-Route::post('auth/google/token', [GoogleAuthController::class, 'handleAuthWithToken']);
-
-// ✅ Protected routes
 Route::middleware('auth:sanctum')->group(function () {
-
-    // User profile
     Route::get('/user', [AuthUserController::class, 'show']);
     Route::put('/user', [AuthUserController::class, 'update']);
     Route::put('/change-password', [AuthUserController::class, 'changePassword']);
     Route::delete('/user', [AuthUserController::class, 'destroy']);
+});
 
-    // Person Collegiate
+Route::post('login', [AuthenticatedSessionController::class, 'store']);
+Route::post('/forgot-password', [PasswordResetLinkController::class, 'store']);
+Route::post('/reset-password', [NewPasswordController::class, 'store']);
+Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth:sanctum');
+Route::post('/upload', [FileController::class, 'upload'])->middleware('auth:sanctum');
+Route::post('/multiupload', [FileController::class, 'addPhaseDocuments'])->middleware('auth:sanctum');
+Route::post('/erase', [FileController::class, 'erase'])->middleware('auth:sanctum');
+
+Route::middleware('auth:sanctum')->group(function () {
+
     Route::prefix('personCollegiate')->group(function () {
         Route::get('/', [PersonCollegiatesController::class, 'index']);
         Route::get('/{id}', [PersonCollegiatesController::class, 'Personcollegiate']);
@@ -71,7 +59,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', [PersonCollegiatesController::class, 'destroy']);
     });
 
-    // Person Client
     Route::prefix('personClient')->group(function () {
         Route::get('/', [PersonClientsController::class, 'index']);
         Route::get('/{id}', [PersonClientsController::class, 'Personclient']);
@@ -80,7 +67,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{id}', [PersonClientsController::class, 'destroy']);
     });
 
-    // Users
     Route::prefix('users')->group(function () {
         Route::get('/', [UserController::class, 'index']);
         Route::get('/{id}', [UserController::class, 'show']);
@@ -88,36 +74,44 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}', [UserController::class, 'update']);
         Route::delete('/{id}', [UserController::class, 'destroy']);
     });
-
-    // Orion protected resources
-    Route::as('api.')->group(function () {
-        // Tablas Generales
-        Orion::resource('users', UserController::class);
-        Orion::resource('address', AddressController::class);
-        Orion::resource('client', ClientController::class);
-        Orion::resource('collegiate', CollegiateController::class);
-        Orion::resource('document', DocumentController::class);
-        Orion::resource('email', EmailController::class);
-        Orion::resource('person', PersonController::class);
-        Orion::resource('phase', PhaseController::class);
-        Orion::resource('phone', PhoneController::class);
-        Orion::resource('record', RecordController::class);
-        Orion::resource('centers', CenterController::class);
-
-        // Tablas relacionadas
-        Orion::hasManyResource('phase', 'documents', PhaseDocumentsController::class);
-        Orion::hasManyResource('person', 'address', PersonAddressController::class);
-        Orion::hasManyResource('person', 'emails', PersonEmailsController::class);
-        Orion::hasManyResource('person', 'phones', PersonPhonesController::class);
-        Orion::hasManyResource('person', 'clients', PersonClientsController::class);
-        Orion::hasManyResource('person', 'collegiates', PersonCollegiatesController::class);
-        Orion::hasManyResource('user', 'documents', UserDocumentsController::class);
-        Orion::hasManyResource('user', 'records', UserRecordsController::class);
-
-        // Custom actions
-        Route::post('phase/titles', [PhaseController::class, 'titles']);
-        Route::post('/import-excel', [ExcelImportController::class, 'import']);
-        Route::post('/expedients/{expedient}/people', [ExpedientHasPeopleController::class, 'assignPeople']);
-        Route::post('user/documents/sign', [UserDocumentsController::class, 'signDocuments']);
-    });
 });
+
+Route::middleware('auth:sanctum')->as('api.')->group(function () {
+    // Tablas Generales
+    Orion::resource('users', UserController::class);
+    Orion::resource('address', AddressController::class);
+    Orion::resource('client', ClientController::class);
+    Orion::resource('collegiate', CollegiateController::class);
+    Orion::resource('document', DocumentController::class);
+    Orion::resource('email', EmailController::class);
+    Orion::resource('expedient', ExpedientController::class);
+    Orion::resource('person', PersonController::class);
+    Orion::resource('phase', PhaseController::class);
+    Orion::resource('phone', PhoneController::class);
+    Orion::resource('record', RecordController::class);
+    Orion::resource('centers', CenterController::class);
+
+    // Tablas relacionadas
+    Orion::hasManyResource('expedient', 'phases', ExpedientPhasesController::class);
+    Orion::hasManyResource('phase', 'documents', PhaseDocumentsController::class);
+
+    Orion::belongsToManyResource('expedient', 'people', ExpedientHasPeopleController::class);
+    Orion::hasManyResource('person', 'address', PersonAddressController::class);
+    Orion::hasManyResource('person', 'emails', PersonEmailsController::class);
+    Orion::hasManyResource('person', 'phones', PersonPhonesController::class);
+    Orion::hasManyResource('person', 'clients', PersonClientsController::class);
+    Orion::hasManyResource('person', 'collegiates', PersonCollegiatesController::class);
+
+    Orion::hasManyResource('user', 'documents', UserDocumentsController::class);
+    Orion::hasManyResource('user', 'records', UserRecordsController::class);
+
+    Route::post('phase/titles', [PhaseController::class, 'titles']);
+    Route::post('/import-excel', [ExcelImportController::class, 'import']);
+    Route::post('/expedients/{expedient}/people', [ExpedientHasPeopleController::class, 'assignPeople']);
+    Route::post('user/documents/sign', [UserDocumentsController::class, 'signDocuments']);
+});
+
+
+Route::get('auth/google', [GoogleAuthController::class, 'redirectToAuth']);
+Route::get('auth/google/callback', [GoogleAuthController::class, 'handleAuthCallback']);
+Route::post('auth/google/token', [GoogleAuthController::class, 'handleAuthWithToken']);
