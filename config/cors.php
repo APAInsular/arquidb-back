@@ -15,11 +15,11 @@ return [
     |
     */
 
-    'paths' => ['api/*','sanctum/csrf-cookie'],
+    'paths' => ['api/*', 'login', 'logout', 'forgot-password', 'reset-password', 'sanctum/csrf-cookie'],
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://arquidb-front.vercel.app/'],
+    'allowed_origins' => [env('FRONTEND_URL'),'https://arquidb-front.vercel.app/'],
 
     'allowed_origins_patterns' => [],
 
