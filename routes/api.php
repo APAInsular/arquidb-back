@@ -105,6 +105,8 @@ Route::middleware('auth:sanctum')->as('api.')->group(function () {
     Orion::hasManyResource('user', 'documents', UserDocumentsController::class);
     Orion::hasManyResource('user', 'records', UserRecordsController::class);
 
+    Route::get('expedientCount', [ExpedientController::class, 'count']);
+
     Route::post('phase/titles', [PhaseController::class, 'titles']);
     Route::post('/import-excel', [ExcelImportController::class, 'import']);
     Route::post('/expedients/{expedient}/people', [ExpedientHasPeopleController::class, 'assignPeople']);
