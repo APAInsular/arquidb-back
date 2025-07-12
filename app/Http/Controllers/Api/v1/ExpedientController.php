@@ -122,11 +122,35 @@ class ExpedientController extends Controller
         $expedients = $query->get();
 
         $expedientCount = $expedients->count();
+        $collegiateCount = 0;
+        $clientCount = 0;
+        $peopleCounted = collect([]);
 
-        // $collegiatesCount = collect($expedients)->map(function ($expedient){});
+        foreach ($expedients as $expedient) {
+            foreach ($expedient->people as $person) {
+                switch ($person->pivot->role) {
+                    case 'collegiate':
+                        if (!$peopleCounted->contains($person->id)) {
+                            $peopleCounted->push($person->id);
+                            $collegiateCount++;
+                        }
+                        break;
+                    case 'client':
+                        if (!$peopleCounted->contains($person->id)) {
+                            $peopleCounted->push($person->id);
+                            $clientCount++;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
 
         return response()->json([
             'expedients_account' => $expedientCount,
+            'collegiates_account' => $collegiateCount,
+            'clients_account' => $clientCount,
         ]);
     }
 }
