@@ -13,4 +13,16 @@ class ClientController extends Controller
     // prueba
     // use DisableAuthorization, DisablePagination;
     protected $model = Client::class;
+
+    public function count(Request $request)
+    {
+        $query = Client::orderBy('id', 'Asc');
+        $clients = $query->get();
+
+        $clientCount = $clients->count();
+
+        return response()->json([
+            'clients_account' => $clientCount,
+        ]);
+    }
 }

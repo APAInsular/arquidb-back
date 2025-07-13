@@ -30,13 +30,12 @@ class CenterController extends Controller
         $all = $request->boolean('all', false);
 
         $query = Center::orderBy('id', 'Asc')
-            ->where('id', '!=', auth()->id())
+            // ->where('id', '!=', auth()->id())
             ->nameOrPhone($search);
 
         $all ? $centers = $query->get() : $centers = $query->paginate($page ? $page : 10);
 
         return response()->json($centers);
-
     }
 
     public function show($id)
@@ -109,6 +108,18 @@ class CenterController extends Controller
         return response()->json([
             'message' => 'Centro eliminado correctamente.',
             'record' => $record,
+        ]);
+    }
+
+    public function count(Request $request)
+    {
+        $query = Center::orderBy('id', 'Asc');
+        $centers = $query->get();
+
+        $centerCount = $centers->count();
+
+        return response()->json([
+            'centers_account' => $centerCount,
         ]);
     }
 }

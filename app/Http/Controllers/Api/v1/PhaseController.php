@@ -105,10 +105,22 @@ class PhaseController extends Controller
             ->with('documents');
         $phases = $query->get();
 
-        $phasesCount = $phases->count();
+        $phaseCount = $phases->count();
+        $documentCount = 0;
+        $documentCounted = collect([]);
 
         foreach ($phases as $phase) {
-            # code...
+            foreach ($phase->documents as $document) {
+                if (!$documentCounted->contains($document->id)) {
+                    $documentCounted->push($document->id);
+                    $documentCount++;
+                }
+            }
         }
+
+        return response()->json([
+            'phases_account' => $phaseCount,
+            'documents_account' => $documentCount,
+        ]);
     }
 }
