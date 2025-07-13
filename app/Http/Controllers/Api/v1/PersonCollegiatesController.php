@@ -50,7 +50,6 @@ class PersonCollegiatesController extends Controller
         $all ? $collegiates = $query->get() : $collegiates = $query->paginate($page ? $page : 10);
 
         return response()->json($collegiates);
-
     }
 
     public function store(PersonRequest $request)
@@ -103,7 +102,6 @@ class PersonCollegiatesController extends Controller
                 'person' => $person->load(['collegiates', 'emails', 'addresses', 'phones']),
                 'record' => $record
             ], 201);
-
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error al crear la persona',
@@ -153,7 +151,6 @@ class PersonCollegiatesController extends Controller
                 'person' => $person->load(['collegiates', 'emails', 'addresses', 'phones']),
                 'record' => $record
             ], 200);
-
         } catch (\Exception $e) {
             Log::error('Error al actualizar persona', [
                 'exception' => $e,
@@ -165,7 +162,6 @@ class PersonCollegiatesController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
-
     }
 
 
@@ -195,7 +191,6 @@ class PersonCollegiatesController extends Controller
                 'message' => 'colegiado eliminado correctamente',
                 'record' => $record
             ], 200);
-
         } catch (\Exception $e) {
             Log::error('Error al eliminar al colegiado', [
                 'exception' => $e,
@@ -230,7 +225,22 @@ class PersonCollegiatesController extends Controller
             'phone' => $phone,
             'address' => $address,
         ]);
+    }
 
+    public function count(Request $request)
+    {
+        $user = $request->user();
 
+        $query = Person::orderBy('id', 'Asc')
+            ->centersCollegiate($user->center_id)
+            ->whereHas('collegiates')
+            ->with('collegiates');
+        $collegiates = $query->get();
+
+        $collegiateCount = $collegiates->count();
+
+        return response()->json([
+            'collegiates_account' => $collegiateCount,
+        ]);
     }
 }

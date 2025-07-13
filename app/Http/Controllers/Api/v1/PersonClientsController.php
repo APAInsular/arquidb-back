@@ -50,7 +50,6 @@ class PersonClientsController extends Controller
         $all ? $clients = $query->get() : $clients = $query->paginate($page ? $page : 10);
 
         return response()->json($clients);
-
     }
 
     public function store(PersonRequest $request)
@@ -94,7 +93,6 @@ class PersonClientsController extends Controller
                 'person' => $person->load(['client', 'emails', 'addresses', 'phones']),
                 'record' => $record
             ], 201);
-
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Error al crear la persona',
@@ -134,7 +132,6 @@ class PersonClientsController extends Controller
                 'person' => $person->load(['client', 'emails', 'addresses', 'phones']),
                 'record' => $record
             ], 200);
-
         } catch (\Exception $e) {
             Log::error('Error al actualizar persona', [
                 'exception' => $e,
@@ -175,7 +172,6 @@ class PersonClientsController extends Controller
                 'message' => 'Cliente eliminado correctamente',
                 'record' => $record
             ], 200);
-
         } catch (\Exception $e) {
             Log::error('Error al eliminar cliente', [
                 'exception' => $e,
@@ -210,6 +206,22 @@ class PersonClientsController extends Controller
             'phone' => $phone,
             'address' => $address,
         ]);
+    }
 
+    public function count(Request $request)
+    {
+        $user = $request->user();
+
+        $query = Person::orderBy('id', 'Asc')
+            ->centers($user->center_id)
+            ->whereHas('client')
+            ->with('client');
+        $clients = $query->get();
+
+        $clientCount = $clients->count();
+
+        return response()->json([
+            'clients_account' => $clientCount,
+        ]);
     }
 }
