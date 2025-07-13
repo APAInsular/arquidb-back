@@ -113,6 +113,8 @@ class CenterController extends Controller
 
     public function count(Request $request)
     {
+        Gate::authorize('count', Center::class);
+
         $query = Center::orderBy('id', 'Asc');
         $centers = $query->get();
 

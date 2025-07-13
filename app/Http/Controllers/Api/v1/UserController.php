@@ -155,6 +155,8 @@ class UserController extends Controller
 
     public function count(Request $request)
     {
+        Gate::authorize('count', User::class);
+
         $query = User::orderBy('id', 'Asc');
         $users = $query->get();
 
