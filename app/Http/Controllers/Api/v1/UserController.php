@@ -117,7 +117,6 @@ class UserController extends Controller
         $all ? $users = $query->get() : $users = $query->paginate($page ? $page : 10);
 
         return response()->json($users);
-
     }
 
     public function show(OrionRequest $request, ...$args)
@@ -131,7 +130,6 @@ class UserController extends Controller
             ->where('id', '!=', auth()->id())
             ->findOrFail($id);
         return response()->json($users);
-
     }
 
     public function destroy(OrionRequest $request, ...$args)
@@ -155,4 +153,34 @@ class UserController extends Controller
         return response()->json(['message' => 'Users deleted successfully', 'record' => $record]);
     }
 
+    public function count(Request $request)
+    {
+        $query = User::orderBy('id', 'Asc');
+        $users = $query->get();
+
+        $userCount = $users->count();
+        $superAdminCount = 0;
+        $visorCount = 0;
+
+        foreach ($users as $user) {
+            foreach ($user->roles as $role) {
+                switch ($role->name) {
+                    case 'superAdmin':
+                        $superAdminCount++;
+                        break;
+                    case 'visor':
+                        $visorCount++;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        return response()->json([
+            'users_account' => $userCount,
+            'super_admins_account' => $superAdminCount,
+            'visors_account' => $visorCount,
+        ]);
+    }
 }

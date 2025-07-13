@@ -110,6 +110,7 @@ Route::middleware('auth:sanctum')->as('api.')->group(function () {
     Route::get('centerCount', [CenterController::class, 'count']);
     Route::get('clientCount', [ClientController::class, 'count']);
     Route::get('collegiateCount', [CollegiateController::class, 'count']);
+    Route::get('userCount', [UserController::class, 'count']);
 
     Route::post('phase/titles', [PhaseController::class, 'titles']);
     Route::post('/import-excel', [ExcelImportController::class, 'import']);
