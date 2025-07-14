@@ -48,6 +48,14 @@ class ExpedientController extends Controller
         return response()->json($expedients);
     }
 
+    public function show($id)
+    {
+        $expedient = Expedient::with('people.client', 'people.collegiates', 'phases.documents')
+            ->findOrFail($id);
+
+        return response()->json($expedient);
+    }
+
     public function store(ExpedientRequest $request)
     {
         Gate::authorize('create', Expedient::class);
