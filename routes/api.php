@@ -108,8 +108,8 @@ Route::middleware('auth:sanctum')->as('api.')->group(function () {
     Route::get('expedientCount', [ExpedientController::class, 'count']);
     Route::get('phaseCount', [PhaseController::class, 'count']);
     Route::get('centerCount', [CenterController::class, 'count']);
-    Route::get('personClientsCount', [PersonClientsController::class, 'count']);
-    Route::get('personCollegiatesCount', [PersonCollegiatesController::class, 'count']);
+    Route::get('personClientCount', [PersonClientsController::class, 'count']);
+    Route::get('personCollegiateCount', [PersonCollegiatesController::class, 'count']);
     Route::get('userCount', [UserController::class, 'count']);
 
     Route::post('phase/titles', [PhaseController::class, 'titles']);
