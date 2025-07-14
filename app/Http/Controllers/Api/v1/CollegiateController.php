@@ -7,6 +7,7 @@ use App\Models\Collegiate;
 use Orion\Concerns\DisableAuthorization;
 use Orion\Concerns\DisablePagination;
 use Orion\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class CollegiateController extends Controller
 {

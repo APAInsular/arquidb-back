@@ -95,4 +95,32 @@ class PhaseController extends Controller
         // dd($title, $expedientId);
         return response()->json($newPhases);
     }
+
+    public function count(Request $request)
+    {
+        $user = $request->user();
+
+        $query = Phase::orderBy('id', 'Asc')
+            ->centers($user->center_id)
+            ->with('documents');
+        $phases = $query->get();
+
+        $phaseCount = $phases->count();
+        $documentCount = 0;
+        $documentCounted = collect([]);
+
+        foreach ($phases as $phase) {
+            foreach ($phase->documents as $document) {
+                if (!$documentCounted->contains($document->id)) {
+                    $documentCounted->push($document->id);
+                    $documentCount++;
+                }
+            }
+        }
+
+        return response()->json([
+            'phases_account' => $phaseCount,
+            'documents_account' => $documentCount,
+        ]);
+    }
 }

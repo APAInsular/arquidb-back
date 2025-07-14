@@ -46,7 +46,6 @@ class ExpedientController extends Controller
         $all ? $expedients = $query->get() : $expedients = $query->paginate($page ? $page : 10);
 
         return response()->json($expedients);
-
     }
 
     public function store(ExpedientRequest $request)
@@ -110,6 +109,48 @@ class ExpedientController extends Controller
             'message' => 'Expediente eliminado correctamente.',
             'data' => $expedient,
             'record' => $record,
+        ]);
+    }
+
+    public function count(Request $request)
+    {
+        $user = $request->user();
+
+        $query = Expedient::orderBy('id', 'Asc')
+            ->centers($user->center_id)
+            ->with('people.client', 'people.collegiates', 'phases.documents');
+        $expedients = $query->get();
+
+        $expedientCount = $expedients->count();
+        $collegiateCount = 0;
+        $clientCount = 0;
+        $peopleCounted = collect([]);
+
+        foreach ($expedients as $expedient) {
+            foreach ($expedient->people as $person) {
+                switch ($person->pivot->role) {
+                    case 'collegiate':
+                        if (!$peopleCounted->contains($person->id)) {
+                            $peopleCounted->push($person->id);
+                            $collegiateCount++;
+                        }
+                        break;
+                    case 'client':
+                        if (!$peopleCounted->contains($person->id)) {
+                            $peopleCounted->push($person->id);
+                            $clientCount++;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        return response()->json([
+            'expedients_account' => $expedientCount,
+            'collegiates_account' => $collegiateCount,
+            'clients_account' => $clientCount,
         ]);
     }
 }

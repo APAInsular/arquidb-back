@@ -71,4 +71,9 @@ class UserPolicy
     {
         return false;
     }
+
+    public function count(User $user): bool
+    {
+        return false;
+    }
 }
