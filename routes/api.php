@@ -112,6 +112,7 @@ Route::middleware('auth:sanctum')->as('api.')->group(function () {
     Route::get('personCollegiateCount', [PersonCollegiatesController::class, 'count']);
     Route::get('usersCount', [UserController::class, 'count']);
 
+    Route::get('expedients/find-by-number', [ExpedientController::class, 'findByNumber']);
     Route::post('phase/titles', [PhaseController::class, 'titles']);
     Route::post('/import-excel', [ExcelImportController::class, 'import']);
     Route::post('/expedients/{expedient}/people', [ExpedientHasPeopleController::class, 'assignPeople']);

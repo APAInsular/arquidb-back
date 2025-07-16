@@ -120,6 +120,29 @@ class ExpedientController extends Controller
         ]);
     }
 
+    public function findByNumber(Request $request)
+    {
+        $number = $request->input('number');
+
+        if (!$number) {
+            return response()->json([
+                'message' => 'El parámetro "number" es obligatorio.'
+            ], 400);
+        }
+
+        $expedient = Expedient::with('people.client', 'people.collegiates', 'phases.documents')
+            ->where('number', $number)
+            ->first();
+
+        if (!$expedient) {
+            return response()->json([
+                'message' => 'Expediente no encontrado.'
+            ], 404);
+        }
+
+        return response()->json($expedient);
+    }
+
     public function count(Request $request)
     {
         $user = $request->user();
