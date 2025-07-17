@@ -35,7 +35,7 @@ class PhaseController extends Controller
     {
         $id = $args[0];
 
-        $phase = Phase::with('documents')->findOrFail($id);
+        $phase = Phase::with('documents.user')->findOrFail($id);
         return response()->json($phase);
     }
 
