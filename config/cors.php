@@ -19,16 +19,15 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [env('FRONTEND_URL')],
+    'allowed_origins' => ['https://arquidb-front.vercel.app', 'http://localhost:5173'],
 
     'allowed_origins_patterns' => [],
 
     'allowed_headers' => ['*'],
 
-    'exposed_headers' => ['Authorization'],
+    'exposed_headers' => [],
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
-
+    'supports_credentials' => true,
 ];
