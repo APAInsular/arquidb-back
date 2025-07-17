@@ -23,7 +23,7 @@ class PhaseController extends Controller
         $all = $request->boolean('all', false);
 
         $query = Phase::orderBy('id', 'Asc')
-            ->with('documents')
+            ->with('documents.user')
             ->centers($user->center_id);
 
         $all ? $phase = $query->get() : $phase = $query->paginate($page ? $page : 10);
