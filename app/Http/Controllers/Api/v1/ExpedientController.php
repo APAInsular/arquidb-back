@@ -14,6 +14,9 @@ use Orion\Concerns\DisablePagination;
 use Orion\Http\Requests\Request as OrionRequest;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Response;
+
 class ExpedientController extends Controller
 {
     // use DisableAuthorization;
@@ -145,43 +148,72 @@ class ExpedientController extends Controller
 
     public function count(Request $request)
     {
-        $user = $request->user();
+        try {
+            $user = $request->user();
 
-        $query = Expedient::orderBy('id', 'Asc')
-            ->centers($user->center_id)
-            ->with('people.client', 'people.collegiates', 'phases.documents');
-        $expedients = $query->get();
+            if (!$user) {
+                Log::warning('Acceso no autorizado a count(): usuario no autenticado.');
+                return response()->json(['message' => 'No autenticado'], 401);
+            }
 
-        $expedientCount = $expedients->count();
-        $collegiateCount = 0;
-        $clientCount = 0;
-        $peopleCounted = collect([]);
+            // Verifica que center_id exista
+            if (!$user->center_id) {
+                Log::error("Usuario sin center_id en count(): ID {$user->id}");
+                return response()->json(['message' => 'Usuario sin centro asignado'], 400);
+            }
 
-        foreach ($expedients as $expedient) {
-            foreach ($expedient->people as $person) {
-                switch ($person->pivot->role) {
-                    case 'collegiate':
-                        if (!$peopleCounted->contains($person->id)) {
-                            $peopleCounted->push($person->id);
-                            $collegiateCount++;
-                        }
-                        break;
-                    case 'client':
-                        if (!$peopleCounted->contains($person->id)) {
-                            $peopleCounted->push($person->id);
-                            $clientCount++;
-                        }
-                        break;
-                    default:
-                        break;
+            $query = Expedient::orderBy('id', 'asc')
+                ->centers($user->center_id)
+                ->with('people.client', 'people.collegiates', 'phases.documents');
+
+            $expedients = $query->get();
+
+            $expedientCount = $expedients->count();
+            $collegiateCount = 0;
+            $clientCount = 0;
+            $peopleCounted = collect([]);
+
+            foreach ($expedients as $expedient) {
+                foreach ($expedient->people as $person) {
+                    if (!$person->pivot?->role) {
+                        Log::warning("Persona sin rol en pivot: ID {$person->id}");
+                        continue;
+                    }
+
+                    switch ($person->pivot->role) {
+                        case 'collegiate':
+                            if (!$peopleCounted->contains($person->id)) {
+                                $peopleCounted->push($person->id);
+                                $collegiateCount++;
+                            }
+                            break;
+                        case 'client':
+                            if (!$peopleCounted->contains($person->id)) {
+                                $peopleCounted->push($person->id);
+                                $clientCount++;
+                            }
+                            break;
+                    }
                 }
             }
-        }
 
-        return response()->json([
-            'expedients_account' => $expedientCount,
-            'collegiates_account' => $collegiateCount,
-            'clients_account' => $clientCount,
-        ]);
+            return response()->json([
+                'expedients_account' => $expedientCount,
+                'collegiates_account' => $collegiateCount,
+                'clients_account' => $clientCount,
+            ]);
+        } catch (\Throwable $e) {
+            // Registra el error en storage/logs/laravel.log
+            Log::error('Error en count(): ' . $e->getMessage(), [
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'message' => 'Ocurrió un error interno en el servidor.',
+                'error' => 'count_failed',
+            ], 500);
+        }
     }
 }
