@@ -76,6 +76,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
+// Añade esto FUERA de cualquier grupo protegido
+Route::get('expedientCount', [ExpedientController::class, 'count']);
+
 Route::middleware('auth:sanctum')->as('api.')->group(function () {
     // Tablas Generales
     Orion::resource('users', UserController::class);
@@ -105,7 +108,7 @@ Route::middleware('auth:sanctum')->as('api.')->group(function () {
     Orion::hasManyResource('user', 'documents', UserDocumentsController::class);
     Orion::hasManyResource('user', 'records', UserRecordsController::class);
 
-    Route::get('expedientCount', [ExpedientController::class, 'count']);
+    //Route::get('expedientCount', [ExpedientController::class, 'count']);
     Route::get('phaseCount', [PhaseController::class, 'count']);
     Route::get('centersCount', [CenterController::class, 'count']);
     Route::get('personClientCount', [PersonClientsController::class, 'count']);
