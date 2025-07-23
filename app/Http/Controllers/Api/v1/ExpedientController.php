@@ -153,7 +153,7 @@ class ExpedientController extends Controller
 
             if (!$user) {
                 Log::warning('Acceso no autorizado a count(): usuario no autenticado.');
-                return response()->json(['message' => 'No autenticado'], 401);
+                return response()->json(['message' => 'Acceso no autorizado a count(): usuario no autenticado.'], 401);
             }
 
             // Verifica que center_id exista
