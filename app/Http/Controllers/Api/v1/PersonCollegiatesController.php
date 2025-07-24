@@ -183,7 +183,7 @@ class PersonCollegiatesController extends Controller
                 'user_id' => $request->user()->id,
                 'name' => $request->user()->name,
                 'action' => "delete",
-                'affected_table' => "collegiates",
+                'affected_table' => "collegiate",
                 'affected_record_id' => $person->id,
             ]);
 
