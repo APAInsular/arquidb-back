@@ -56,10 +56,13 @@ class ExpedientController extends Controller
         $expedient = Expedient::with('people.client', 'people.collegiates', 'phases.documents')
             ->findOrFail($id);
 
-        // Añade la url temporal a cada documento de cada fase
+        // Recorremos cada fase y cada documento
         foreach ($expedient->phases as $phase) {
             foreach ($phase->documents as $document) {
-                $document->url = \Storage::disk('s3')->temporaryUrl($document->path, now()->addMinutes(10));
+                $document->url = \Storage::disk('s3')->temporaryUrl(
+                    $document->path,
+                    now()->addMinutes(10)
+                );
             }
         }
 
