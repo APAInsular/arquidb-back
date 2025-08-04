@@ -71,7 +71,7 @@ class FileController extends Controller
                 ]);
 
                 // Añadir la URL pública
-                $document->url = Storage::disk('s3')->put($filePath, file_get_contents($file), 'public');;
+                $document->url = Storage::disk('s3')->url($filePath);
                 $storedDocuments[] = $document;
             }
 
