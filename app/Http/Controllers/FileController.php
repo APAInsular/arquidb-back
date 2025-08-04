@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use \Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Phase;
 use App\Models\Document;
 
@@ -12,7 +13,7 @@ class FileController extends Controller
     public function upload(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|max:102400',
+            'file' => 'required|file|max:102400', // 100MB
         ]);
 
         $file = $request->file('file');
@@ -21,73 +22,85 @@ class FileController extends Controller
             return response()->json(['message' => 'El archivo no es válido'], 400);
         }
 
-        $filename = time() . '_' . $file->getClientOriginalName(); // o solo getClientOriginalName()
+        $filename = time() . '_' . $file->getClientOriginalName();
         $path = 'documents/' . $filename;
 
-        // Usa el disco 'public' pero manualmente mueve el archivo
-        $file->move(storage_path('app/public/documents'), $filename);
+        // Subir a S3 y hacerlo público
+        Storage::disk('s3')->put($path, file_get_contents($file), 'public');
 
         return response()->json([
             'success' => true,
             'path' => $path,
-            'url' => asset('storage/' . $path),
+            'url' => Storage::disk('s3')->url($path),
         ]);
     }
 
     public function addPhaseDocuments(Request $request)
     {
-        // Validar que se envíe un array de archivos
-        $request->validate([
-            'phase_id' => ['required', 'exists:phases,id'],
-            'files' => ['required', 'array'],
-            'files.*' => ['file', 'mimes:pdf', 'max:10240'],
-        ]);
-
-        // Buscar la fase
-        $phase = Phase::findOrFail($request->phase_id);
-
-        // Definir la carpeta de almacenamiento
-        $folderPath = "documents/{$phase->id}/files";
-
-        $storedDocuments = [];
-
-        DB::beginTransaction();
-
         try {
+            $request->validate([
+                'phase_id' => ['required', 'exists:phases,id'],
+                'files' => ['required', 'array', 'min:1'],
+                'files.*' => ['file', 'mimes:pdf', 'max:10240'],
+            ]);
+
+            $phase = Phase::findOrFail($request->phase_id);
+            $folderPath = "documents/{$phase->id}/files";
+            $storedDocuments = [];
+
+            DB::beginTransaction();
+
             foreach ($request->file('files') as $file) {
-                if ($file->isValid()) {
-                    // Almacenar el archivo
-                    $filePath = $file->store($folderPath, 'public');
-
-                    if (!$filePath) {
-                        throw new \Exception('Error al almacenar el archivo');
-                    }
-
-                    // Guardar el documento en la base de datos
-                    $document = Document::create([
-                        'name' => $file->getClientOriginalName(),
-                        'path' => $filePath,
-                        'phase_id' => $phase->id,
-                    ]);
-
-                    $storedDocuments[] = $document;
+                if (!$file->isValid()) {
+                    throw new \Exception('Archivo inválido: ' . $file->getClientOriginalName());
                 }
+
+                // Almacenar el archivo en S3
+                $filePath = Storage::disk('s3')->putFile($folderPath, $file);
+
+                if (!$filePath) {
+                    throw new \Exception('No se pudo guardar el archivo en S3: ' . $file->getClientOriginalName());
+                }
+
+                // Crear el registro en la base de datos
+                $document = Document::create([
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $filePath,
+                    'phase_id' => $phase->id,
+                ]);
+
+                // Añadir la URL pública
+                $document->url = Storage::disk('s3')->url($filePath);
+                $storedDocuments[] = $document;
             }
 
             DB::commit();
 
             return response()->json([
-                'message' => 'Imágenes añadidas correctamente.',
-                'images' => $storedDocuments,
+                'message' => 'Documentos añadidos correctamente.',
+                'documents' => $storedDocuments,
             ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'error' => 'Error de validación.',
+                'messages' => $e->errors(),
+            ], 422);
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('Error en addPhaseDocuments', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return response()->json([
-                'error' => 'Error al añadir las imágenes.',
-                'details' => $e->getMessage(),
+                'error' => 'Error al añadir los documentos.',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
+
 
     public function erase(Request $request)
     {
@@ -95,35 +108,32 @@ class FileController extends Controller
             'path' => 'required|string',
         ]);
 
-        // Extrae solo el nombre del archivo de la ruta completa
-        $relativePath = $request->path;
-        $fullPath = storage_path('app/public/' . $relativePath);
+        $path = $request->path;
 
-        // Verificación adicional de seguridad
-        if (strpos($relativePath, '..') !== false) {
+        if (strpos($path, '..') !== false) {
             return response()->json([
                 'success' => false,
                 'message' => 'Ruta inválida'
             ], 400);
         }
 
-        if (!file_exists($fullPath)) {
+        if (!Storage::disk('s3')->exists($path)) {
             return response()->json([
                 'success' => false,
-                'message' => 'El archivo no existe en: ' . $fullPath
+                'message' => 'El archivo no existe en S3.'
             ], 404);
         }
 
-        if (!unlink($fullPath)) {
+        if (!Storage::disk('s3')->delete($path)) {
             return response()->json([
                 'success' => false,
-                'message' => 'No se pudo eliminar el archivo. Verifica los permisos.'
+                'message' => 'No se pudo eliminar el archivo.'
             ], 500);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'Archivo eliminado correctamente'
+            'message' => 'Archivo eliminado correctamente.'
         ]);
     }
 }

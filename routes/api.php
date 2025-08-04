@@ -39,12 +39,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/user', [AuthUserController::class, 'update']);
     Route::put('/change-password', [AuthUserController::class, 'changePassword']);
     Route::delete('/user', [AuthUserController::class, 'destroy']);
+    Route::post('logout', [AuthenticatedSessionController::class, 'destroy']);
 });
 
 Route::post('login', [AuthenticatedSessionController::class, 'store']);
 Route::post('/forgot-password', [PasswordResetLinkController::class, 'store']);
 Route::post('/reset-password', [NewPasswordController::class, 'store']);
-Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth:sanctum');
 Route::post('/upload', [FileController::class, 'upload'])->middleware('auth:sanctum');
 Route::post('/multiupload', [FileController::class, 'addPhaseDocuments'])->middleware('auth:sanctum');
 Route::post('/erase', [FileController::class, 'erase'])->middleware('auth:sanctum');
