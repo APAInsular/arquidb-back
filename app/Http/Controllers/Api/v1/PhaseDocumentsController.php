@@ -18,18 +18,21 @@ class PhaseDocumentsController extends RelationController
 
     protected $relation = 'documents';
 
-    /**
+   /**
      * Añade la URL temporal S3/R2 a cada documento antes de devolver la respuesta.
      */
-    protected function afterIndex(Request $request, $documents)
-    {
-        foreach ($documents as $document) {
+    protected function afterIndex(
+        \Orion\Http\Requests\Request $request,
+        \Illuminate\Database\Eloquent\Model $parentEntity,
+        $entities
+    ) {
+        foreach ($entities as $document) {
             $document->url = Storage::disk('s3')->temporaryUrl(
                 $document->path,
                 now()->addMinutes(10)
             );
         }
 
-        return $documents;
+        return $entities;
     }
 }
