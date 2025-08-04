@@ -32,8 +32,6 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Si necesitas excepciones CSRF para login/logout (solo si usas sesiones/cookies):
         $middleware->validateCsrfTokens(except: [
-            // 'api/login',
-            // 'api/logout',
             // 'api/*',
         ]);
     })
