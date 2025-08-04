@@ -66,7 +66,9 @@ class ExpedientController extends Controller
             }
         }
 
-        return response()->json($expedient);
+        //return response()->json($expedient);
+        // Convierte el resultado a array explícitamente
+        return response()->json($expedient->toArray());
     }
 
     public function store(ExpedientRequest $request)
