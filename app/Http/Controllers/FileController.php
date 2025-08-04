@@ -53,7 +53,7 @@ class FileController extends Controller
             foreach ($request->file('files') as $file) {
                 if ($file->isValid()) {
                     $filePath = $file->store($folderPath, 's3');
-                    Storage::disk('s3')->setVisibility($filePath, 'public');
+                    //Storage::disk('s3')->setVisibility($filePath, 'public');
 
                     $document = Document::create([
                         'name' => $file->getClientOriginalName(),
@@ -74,9 +74,13 @@ class FileController extends Controller
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'error' => 'Error al añadir los documentos.',
-                'details' => $e->getMessage(),
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => collect($e->getTrace())->take(5), // solo las primeras líneas del trace
             ], 500);
         }
     }
