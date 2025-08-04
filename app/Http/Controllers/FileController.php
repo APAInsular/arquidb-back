@@ -28,11 +28,15 @@ class FileController extends Controller
         // Subir a S3 y hacerlo público
         Storage::disk('s3')->put($path, file_get_contents($file), 'public');
 
+        // Generar una URL temporal válida por 10 minutos
+        $tempUrl = Storage::disk('s3')->temporaryUrl($path, now()->addMinutes(10));
+
 
         return response()->json([
             'success' => true,
             'path' => $path,
-            'url' => Storage::disk('s3')->url($path),
+            'url' => $tempUrl,
+            //'url' => Storage::disk('s3')->url($path),
         ]);
     }
 
