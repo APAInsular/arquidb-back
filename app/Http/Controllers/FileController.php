@@ -57,7 +57,7 @@ class FileController extends Controller
                 }
 
                 // Almacenar el archivo en S3
-                $filePath = Storage::disk('s3')->putFile($folderPath, $file);
+                $filePath = Storage::disk('s3')->putFile($folderPath, $file, 'public');
 
                 if (!$filePath) {
                     throw new \Exception('No se pudo guardar el archivo en S3: ' . $file->getClientOriginalName());
