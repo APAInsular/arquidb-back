@@ -37,33 +37,41 @@ class FileController extends Controller
 
     public function addPhaseDocuments(Request $request)
     {
-        $request->validate([
-            'phase_id' => ['required', 'exists:phases,id'],
-            'files' => ['required', 'array'],
-            'files.*' => ['file', 'mimes:pdf', 'max:10240'],
-        ]);
-
-        $phase = Phase::findOrFail($request->phase_id);
-        $folderPath = "documents/{$phase->id}/files";
-        $storedDocuments = [];
-
-        DB::beginTransaction();
-
         try {
+            $request->validate([
+                'phase_id' => ['required', 'exists:phases,id'],
+                'files' => ['required', 'array', 'min:1'],
+                'files.*' => ['file', 'mimes:pdf', 'max:10240'],
+            ]);
+
+            $phase = Phase::findOrFail($request->phase_id);
+            $folderPath = "documents/{$phase->id}/files";
+            $storedDocuments = [];
+
+            DB::beginTransaction();
+
             foreach ($request->file('files') as $file) {
-                if ($file->isValid()) {
-                    $filePath = $file->store($folderPath, 's3');
-                    //Storage::disk('s3')->setVisibility($filePath, 'public');
-
-                    $document = Document::create([
-                        'name' => $file->getClientOriginalName(),
-                        'path' => $filePath,
-                        'phase_id' => $phase->id,
-                    ]);
-
-                    $document->url = Storage::disk('s3')->url($filePath);
-                    $storedDocuments[] = $document;
+                if (!$file->isValid()) {
+                    throw new \Exception('Archivo inválido: ' . $file->getClientOriginalName());
                 }
+
+                // Almacenar el archivo en S3
+                $filePath = Storage::disk('s3')->putFile($folderPath, $file);
+
+                if (!$filePath) {
+                    throw new \Exception('No se pudo guardar el archivo en S3: ' . $file->getClientOriginalName());
+                }
+
+                // Crear el registro en la base de datos
+                $document = Document::create([
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $filePath,
+                    'phase_id' => $phase->id,
+                ]);
+
+                // Añadir la URL pública
+                $document->url = Storage::disk('s3')->url($filePath);
+                $storedDocuments[] = $document;
             }
 
             DB::commit();
@@ -72,18 +80,27 @@ class FileController extends Controller
                 'message' => 'Documentos añadidos correctamente.',
                 'documents' => $storedDocuments,
             ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'error' => 'Error de validación.',
+                'messages' => $e->errors(),
+            ], 422);
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('Error en addPhaseDocuments', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
 
             return response()->json([
                 'error' => 'Error al añadir los documentos.',
                 'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => collect($e->getTrace())->take(5), // solo las primeras líneas del trace
             ], 500);
         }
     }
+
 
     public function erase(Request $request)
     {
