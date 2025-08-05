@@ -48,6 +48,7 @@ Route::post('/reset-password', [NewPasswordController::class, 'store']);
 Route::post('/upload', [FileController::class, 'upload'])->middleware('auth:sanctum');
 Route::post('/multiupload', [FileController::class, 'addPhaseDocuments'])->middleware('auth:sanctum');
 Route::post('/erase', [FileController::class, 'erase'])->middleware('auth:sanctum');
+Route::get('/documents/{id}/url', [DocumentController::class, 'getDocumentUrlById']);
 
 Route::middleware('auth:sanctum')->group(function () {
 

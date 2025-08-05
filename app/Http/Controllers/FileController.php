@@ -40,6 +40,31 @@ class FileController extends Controller
         ]);
     }
 
+    public function getDocumentUrlById($id)
+    {
+        try {
+            // Buscar el documento
+            $document = Document::findOrFail($id);
+
+            // Obtener la URL pública desde S3
+            $url = Storage::disk('s3')->url($document->path);
+
+            return response()->json([
+                'message' => 'URL obtenida correctamente.',
+                'url' => $url,
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Documento no encontrado.',
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Error al obtener la URL del documento.',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function addPhaseDocuments(Request $request)
     {
         try {
