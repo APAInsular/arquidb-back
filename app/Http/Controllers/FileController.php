@@ -42,51 +42,6 @@ class FileController extends Controller
         ]);
     }
 
-    public function getDocumentUrlById($id)
-    {
-        try {
-            Log::info("Iniciando consulta del documento con ID: $id");
-
-            $document = Document::findOrFail($id);
-            Log::info("Documento encontrado:", ['path' => $document->path]);
-
-            if (!$document->path) {
-                throw new \Exception('El documento no tiene una ruta asignada.');
-            }
-
-            $exists = Storage::disk('s3')->exists($document->path);
-            Log::info("¿Existe el archivo en S3?", ['exists' => $exists]);
-
-            if (!$exists) {
-                throw new \Exception('El archivo no existe en S3.');
-            }
-
-            $url = Storage::disk('s3')->temporaryUrl(
-                $document->path,
-                Carbon::now()->addMinutes(15)
-            );
-
-            Log::info("URL temporal generada:", ['url' => $url]);
-
-            return response()->json([
-                'message' => 'URL temporal generada correctamente.',
-                'url' => $url,
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Error al generar la URL del documento', [
-                'id' => $id,
-                'message' => $e->getMessage(),
-                'line' => $e->getLine(),
-                'file' => $e->getFile(),
-            ]);
-
-            return response()->json([
-                'error' => 'Error al generar la URL del documento.',
-                'message' => 'Consulta el log para más detalles.',
-            ], 500);
-        }
-    }
-
     public function addPhaseDocuments(Request $request)
     {
         try {
