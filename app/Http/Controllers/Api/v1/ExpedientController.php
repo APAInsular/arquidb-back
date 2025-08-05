@@ -56,7 +56,19 @@ class ExpedientController extends Controller
         $expedient = Expedient::with('people.client', 'people.collegiates', 'phases.documents')
             ->findOrFail($id);
 
-        return response()->json($expedient);
+        // Recorremos cada fase y cada documento
+        foreach ($expedient->phases as $phase) {
+            foreach ($phase->documents as $document) {
+                $document->url = \Storage::disk('s3')->temporaryUrl(
+                    $document->path,
+                    now()->addMinutes(10)
+                );
+            }
+        }
+
+        //return response()->json($expedient);
+        // Convierte el resultado a array explícitamente
+        return response()->json($expedient->toArray());
     }
 
     public function store(ExpedientRequest $request)

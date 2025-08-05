@@ -17,4 +17,6 @@ class PhaseDocumentsController extends RelationController
     protected $model = Phase::class;
 
     protected $relation = 'documents';
+
+ 
 }
