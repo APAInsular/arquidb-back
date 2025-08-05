@@ -43,27 +43,41 @@ class FileController extends Controller
     public function getDocumentUrlById($id)
     {
         try {
-            // Buscar el documento
             $document = Document::findOrFail($id);
 
-            // Obtener la URL pública desde S3
-            $url = Storage::disk('s3')->url($document->path);
+            if (!$document->path) {
+                throw new \Exception('El documento no tiene una ruta asignada.');
+            }
+
+            // Verificar que el archivo exista en S3
+            if (!Storage::disk('s3')->exists($document->path)) {
+                throw new \Exception('El archivo no existe en S3.');
+            }
+
+            // Generar una URL temporal válida por 15 minutos
+            $url = Storage::disk('s3')->temporaryUrl(
+                $document->path,
+                Carbon::now()->addMinutes(15)
+            );
 
             return response()->json([
-                'message' => 'URL obtenida correctamente.',
+                'message' => 'URL temporal generada correctamente.',
                 'url' => $url,
             ]);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json([
-                'error' => 'Documento no encontrado.',
-            ], 404);
         } catch (\Exception $e) {
+            \Log::error('Error al generar URL temporal del documento', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return response()->json([
-                'error' => 'Error al obtener la URL del documento.',
-                'message' => $e->getMessage(),
+                'error' => 'Error al generar la URL del documento.',
+                'message' => 'Consulta el log para más detalles.',
             ], 500);
         }
     }
+
     public function addPhaseDocuments(Request $request)
     {
         try {
