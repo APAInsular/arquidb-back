@@ -67,10 +67,8 @@ class ExpedientsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBat
     {
         // Validar campos obligatorios
         $requiredFields = [
-            'title' => $row['descripcion'] ?? $row['title'] ?? $row['titulo'] ?? null,
             'number' => $row['idexpedientefue'] ?? $row['nexpediente'] ?? $row['numero'] ?? null,
             'start_date' => $row['fecha_inicio'] ?? $row['start_date'] ?? null,
-            'site' => $row['emplazamiento'] ?? $row['site'] ?? null,
         ];
 
         foreach ($requiredFields as $field => $value) {
@@ -158,12 +156,12 @@ class ExpedientsImport implements ToModel, WithHeadingRow, SkipsOnError, WithBat
     {
         try {
             $validator = Validator::make($expedientData, [
-                'title' => 'required|string|max:255',
+                'title' => 'nullable|string|max:255',
                 'number' => 'required|string|max:50',
                 'start_date' => 'required|date',
                 'end_date' => 'nullable|date',
                 'description' => 'nullable|string',
-                'site' => 'required|string|max:100',
+                'site' => 'nullable|string|max:100',
                 'postal_code' => 'nullable|string|max:10',
                 'budget' => 'nullable|numeric',
                 'center_id' => 'required|exists:centers,id',
