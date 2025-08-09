@@ -92,7 +92,7 @@ class Expedient extends Model
     public function scopeClient($query, $client)
     {
         if ($client) {
-            $query->whereHas('client', function ($q) use ($client) {
+            $query->whereHas('people.client', function ($q) use ($client) {
                 $q->where('name', 'LIKE', "%$client%");
             });
         }
@@ -101,7 +101,7 @@ class Expedient extends Model
     public function scopeCollegiate($query, $collegiate)
     {
         if ($collegiate) {
-            $query->whereHas('collegiate', function ($q) use ($collegiate) {
+            $query->whereHas('people.collegiate', function ($q) use ($collegiate) {
                 $q->where('name', 'LIKE', "%$collegiate%");
             });
         }

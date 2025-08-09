@@ -28,7 +28,7 @@ class PersonCollegiatesController extends Controller
 
     protected $model = Person::class;
 
-    protected $relation = 'collegiates';
+    protected $relation = 'collegiate';
 
     public function index(OrionRequest $request, ...$args)
     {
@@ -44,8 +44,8 @@ class PersonCollegiatesController extends Controller
         $query = Person::orderBy('id', 'Asc')
             ->searchPerson($perSearch)
             ->centersCollegiate($user->center_id)
-            ->whereHas('collegiates')
-            ->with('collegiates');
+            ->whereHas('collegiate')
+            ->with('collegiate');
 
         $all ? $collegiates = $query->get() : $collegiates = $query->paginate($page ? $page : 10);
 
@@ -74,7 +74,7 @@ class PersonCollegiatesController extends Controller
                 $data['graduation_date'] = isset($data['graduation_date']) ? substr($data['graduation_date'], 0, 10) : null;
                 $data['termination_date'] = isset($data['termination_date']) ? substr($data['termination_date'], 0, 10) : null;
 
-                $person->collegiates()->create($data);
+                $person->collegiate()->create($data);
             }
 
             if (!empty($request->email)) {
@@ -133,7 +133,7 @@ class PersonCollegiatesController extends Controller
                 $data['graduation_date'] = isset($data['graduation_date']) ? substr($data['graduation_date'], 0, 10) : null;
                 $data['termination_date'] = isset($data['termination_date']) ? substr($data['termination_date'], 0, 10) : null;
 
-                $person->collegiates()->update($data);
+                $person->collegiate()->update($data);
             }
 
             $person->updateRelations($request->all());
@@ -172,7 +172,7 @@ class PersonCollegiatesController extends Controller
         try {
             $person = Person::findOrFail($id);
 
-            $person->collegiates()->delete();
+            $person->collegiate()->delete();
             $person->emails()->delete();
             $person->addresses()->delete();
             $person->phones()->delete();
@@ -233,8 +233,8 @@ class PersonCollegiatesController extends Controller
 
         $query = Person::orderBy('id', 'Asc')
             ->centersCollegiate($user->center_id)
-            ->whereHas('collegiates')
-            ->with('collegiates');
+            ->whereHas('collegiate')
+            ->with('collegiate');
         $collegiates = $query->get();
 
         $collegiateCount = $collegiates->count();

@@ -43,7 +43,7 @@ class Person extends Model
         return $this->belongsToMany(Expedient::class, 'expedient_person')->withPivot('role');
     }
 
-    public function collegiates(): HasOne
+    public function collegiate(): HasOne
     {
         return $this->hasOne(Collegiate::class);
     }

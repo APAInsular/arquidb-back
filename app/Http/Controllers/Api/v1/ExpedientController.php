@@ -45,7 +45,7 @@ class ExpedientController extends Controller
             ->dateTo($dateTo)
             ->centers($user->center_id);
 
-        $query->with('people.client', 'people.collegiates', 'phases.documents');
+        $query->with('people.client', 'people.collegiate', 'phases.documents');
         $all ? $expedients = $query->get() : $expedients = $query->paginate($page ? $page : 10);
 
         return response()->json($expedients);
@@ -53,7 +53,7 @@ class ExpedientController extends Controller
 
     public function show($id)
     {
-        $expedient = Expedient::with('people.client', 'people.collegiates', 'phases.documents')
+        $expedient = Expedient::with('people.client', 'people.collegiate', 'phases.documents')
             ->findOrFail($id);
 
         // Recorremos cada fase y cada documento
@@ -145,7 +145,7 @@ class ExpedientController extends Controller
             ], 400);
         }
 
-        $expedient = Expedient::with('people.client', 'people.collegiates', 'phases.documents')
+        $expedient = Expedient::with('people.client', 'people.collegiate', 'phases.documents')
             ->where('number', $number)
             ->first();
 
@@ -176,7 +176,7 @@ class ExpedientController extends Controller
 
             $query = Expedient::orderBy('id', 'asc')
                 ->centers($user->center_id)
-                ->with('people.client', 'people.collegiates', 'phases.documents');
+                ->with('people.client', 'people.collegiate', 'phases.documents');
 
             $expedients = $query->get();
 
