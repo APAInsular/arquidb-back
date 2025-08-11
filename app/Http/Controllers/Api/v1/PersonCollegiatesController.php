@@ -99,7 +99,7 @@ class PersonCollegiatesController extends Controller
 
             return response()->json([
                 'message' => 'Persona creada correctamente',
-                'person' => $person->load(['collegiates', 'emails', 'addresses', 'phones']),
+                'person' => $person->load(['collegiate', 'emails', 'addresses', 'phones']),
                 'record' => $record
             ], 201);
         } catch (\Exception $e) {
@@ -148,7 +148,7 @@ class PersonCollegiatesController extends Controller
 
             return response()->json([
                 'message' => 'Persona actualizada correctamente',
-                'person' => $person->load(['collegiates', 'emails', 'addresses', 'phones']),
+                'person' => $person->load(['collegiate', 'emails', 'addresses', 'phones']),
                 'record' => $record
             ], 200);
         } catch (\Exception $e) {

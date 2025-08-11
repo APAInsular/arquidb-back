@@ -90,7 +90,7 @@ class Person extends Model
         if (Auth::user()->hasRole('superAdmin')) {
             return $query;
         } else {
-            return $query->whereHas('collegiates', function ($q) use ($centerId) {
+            return $query->whereHas('collegiate', function ($q) use ($centerId) {
                 $q->where('center_id', $centerId);
             });
         }
@@ -112,7 +112,7 @@ class Person extends Model
     public function scopeSearchCollegiate($query, $search)
     {
         if ($search) {
-            $query->where('collegiates', function ($q) use ($search) {
+            $query->where('collegiate', function ($q) use ($search) {
 
                 $q->orWhere('birth_date', 'LIKE', "%$search%")
                     ->orWhere('nationality', 'LIKE', "%$search%")
@@ -141,7 +141,7 @@ class Person extends Model
     // public function updateCollegiate(array $collegiate): void
     // {
     //     $collegiateDates = $this->collegiateDates($collegiate);
-    //     $this->collegiates()->update($collegiateDates);
+    //     $this->collegiate()->update($collegiateDates);
     // }
 
     // protected function collegiateDates(array $data): array
