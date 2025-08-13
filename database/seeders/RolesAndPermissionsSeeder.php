@@ -11,13 +11,28 @@ class RolesAndPermissionsSeeder extends Seeder
 {
     public function run()
     {
-        // 1. Create roles
-        $superAdmin = Role::create(['name' => 'superAdmin']);
-        $visor = Role::create(['name' => 'visor']);
-        $user = Role::create(['name' => 'user']);
+        // 1. Create roles (idempotent)
+        $superAdmin = Role::firstOrCreate(['name' => 'superAdmin']);
+        $admin = Role::firstOrCreate(['name' => 'admin']);
+        $visor = Role::firstOrCreate(['name' => 'visor']);
+        $user = Role::firstOrCreate(['name' => 'user']);
 
-        // 2. Create permissions
-        $permissions = [
+        // 2. Define permission groups
+        $userPermissions = [
+            'get users',
+            'insert users',
+            'update users',
+            'delete users',
+        ];
+
+        $centerPermissions = [
+            'get centers',
+            'insert centers',
+            'update centers',
+            'delete centers',
+        ];
+
+        $otherPermissions = [
             //people
             'get people',
             'insert people',
@@ -73,20 +88,30 @@ class RolesAndPermissionsSeeder extends Seeder
             'get expedient_person',
             'insert expedient_person',
             'update expedient_person',
-            'delete expedient_person'
+            'delete expedient_person',
         ];
 
-        foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+        // 3. Merge all permissions
+        $allPermissions = array_merge($userPermissions, $centerPermissions, $otherPermissions);
+
+        // 4. Create permissions (idempotent)
+        foreach ($allPermissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
-        $getPermissions = array_filter($permissions, function ($permission) {
-            return strpos($permission, 'get ') === 0; // Verifica si el string comienza con 'get '
-        });
+        // 5. Assign permissions
 
-        // 3. Assign permission to a role
-        $superAdmin->givePermissionTo(Permission::all());
-        $visor->givePermissionTo(Permission::all());
+        // Super admin: all permissions
+        $superAdmin->syncPermissions(Permission::all());
+
+        // Admin: all (user + other)
+        $admin->syncPermissions(array_merge($userPermissions, $otherPermissions));
+
+        // Visor: only others
+        $visor->syncPermissions($otherPermissions);
+
+        // User: only "get" permissions
+        $getPermissions = array_filter($otherPermissions, fn($perm) => str_starts_with($perm, 'get '));
         $user->syncPermissions($getPermissions);
     }
 }
