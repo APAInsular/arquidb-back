@@ -9,7 +9,7 @@ class UserPolicy
 {
     public function before(?User $user, string $ability): ?bool
     {
-        if ($user && $user->hasRole('superAdmin')) {
+        if ($user && ($user->hasRole('superAdmin') || $user->hasRole('admin'))) {
             return true;
         }
 

@@ -12,6 +12,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
+use Auth;
 
 class User extends Authenticatable
 {
@@ -74,6 +75,26 @@ class User extends Authenticatable
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'LIKE', "%$search%")
                     ->orWhere('email', 'LIKE', "%$search%");
+            });
+        }
+    }
+
+    public function scopeCenters($query, $centerId)
+    {
+        if (Auth::user()->hasRole('superAdmin')) {
+            return $query;
+        } else {
+            return $query->where('center_id', $centerId);
+        }
+    }
+
+    public function scopeUsers($query)
+    {
+        if (Auth::user()->hasRole('superAdmin')) {
+            return $query;
+        } else {
+            return $query->whereDoesntHave('roles', function ($q) {
+                $q->where('name', 'superAdmin');
             });
         }
     }

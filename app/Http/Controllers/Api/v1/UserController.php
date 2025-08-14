@@ -104,6 +104,7 @@ class UserController extends Controller
     {
 
         Gate::authorize('view', User::class);
+        $user = $request->user();
 
         $search = $request->get('name') ?? $request->get('email');
         $page = $request->get('per_page');
@@ -112,6 +113,8 @@ class UserController extends Controller
         $query = User::orderBy('id', 'Asc')
             ->where('id', '!=', auth()->id())
             ->nameOrEmail($search)
+            ->centers($user->center_id)
+            ->users()
             ->with('center', 'roles', 'permissions');
 
         $all ? $users = $query->get() : $users = $query->paginate($page ? $page : 10);
