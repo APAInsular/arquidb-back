@@ -38,11 +38,13 @@ class UserController extends Controller
             'role.*' => 'string|exists:roles,name',
         ]);
 
+        $auth->hasRole('superAdmin') ? $centerId = $request->center_id : $centerId = $auth->center_id;
+
         $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
-            'center_id' => $auth->center_id,
+            'center_id' => $centerId,
         ]);
 
         $record = Record::create([
@@ -66,6 +68,7 @@ class UserController extends Controller
     public function update(OrionRequest $request, ...$args)
     {
         Gate::authorize('update', User::class);
+        $auth = $request->user();
 
         $id = $args[0];
 
@@ -77,6 +80,8 @@ class UserController extends Controller
         ]);
 
         $user = User::findOrFail($id);
+
+        if ($auth->hasRole('superAdmin')) $user->center_id = $request->center_id;
 
         $user->name = $data['name'];
         $user->email = $data['email'];
@@ -131,6 +136,8 @@ class UserController extends Controller
 
         $users = User::with('center', 'roles', 'roles.permissions')
             ->where('id', '!=', auth()->id())
+            ->centers(Auth::user()->center_id)
+            ->users()
             ->findOrFail($id);
         return response()->json($users);
     }
