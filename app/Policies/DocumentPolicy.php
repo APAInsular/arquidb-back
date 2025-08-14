@@ -8,12 +8,21 @@ use Illuminate\Auth\Access\Response;
 
 class DocumentPolicy
 {
+    public function before(?User $user, string $ability): ?bool
+    {
+        if ($user && ($user->hasRole('visor') || $user->hasRole('admin') || $user->hasRole('superAdmin'))) {
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -21,7 +30,7 @@ class DocumentPolicy
      */
     public function view(User $user, Document $document): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -29,7 +38,7 @@ class DocumentPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasRole('superAdmin') || $user->hasRole('visor');
+        return false;
     }
 
     /**
@@ -37,12 +46,12 @@ class DocumentPolicy
      */
     public function update(User $user, Document $document): bool
     {
-        return $user->hasRole('superAdmin') || $user->hasRole('visor');
+        return false;
     }
 
     public function sign(User $user, Document $document): bool
     {
-        return $user->hasRole('visor');
+        return false;
     }
 
     /**
@@ -50,7 +59,7 @@ class DocumentPolicy
      */
     public function delete(User $user, Document $document): bool
     {
-        return $user->hasRole('superAdmin') || $user->hasRole('visor');
+        return false;
     }
 
     /**
