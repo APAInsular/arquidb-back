@@ -150,9 +150,7 @@ class ExpedientController extends Controller
             ->first();
 
         if (!$expedient) {
-            return response()->json([
-                'message' => 'Expediente no encontrado.'
-            ], 404);
+            return response()->noContent();
         }
 
         return response()->json($expedient);
